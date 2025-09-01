@@ -1,0 +1,22 @@
+{
+  "name": "D&D Digital Tool: Dice Roller & Solo Character Sheet",
+  "short_name": "DnD Dashboard",
+  "description": "Manage your Dungeons & Dragons character without paper. A digital dice roller and character sheet app designed for modern sessions, especially for solo players.",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/1f2937/d4a76c?text=D20",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://placehold.co/512x512/1f2937/d4a76c?text=D20",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#1f2937"
+}
+
