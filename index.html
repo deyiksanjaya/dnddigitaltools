@@ -342,9 +342,12 @@
     </div>
     <div id="defeatModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 modal-backdrop hidden">
         <div class="bg-gray-800 border-4 border-red-700 rounded-xl shadow-lg p-8 w-full max-w-md text-center modal-content">
-            <h2 class="font-cinzel text-4xl font-bold text-red-400 mb-4">Adventure Over</h2>
-            <p class="text-amber-300 mb-8 text-lg">Your character has been defeated.</p>
-            <button id="playAgainBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-3 px-8 rounded-lg text-xl transition-colors">Play Again</button>
+            <h2 class="font-cinzel text-4xl font-bold text-red-400 mb-4">You Have Been Defeated</h2>
+            <p class="text-amber-300 mb-8 text-lg">Your journey doesn't have to end here. Choose your path:</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                 <button id="reviveCharacterBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg transition-colors">Revive Character</button>
+                 <button id="createNewCharacterBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">Create New Character</button>
+            </div>
         </div>
     </div>
     <div id="toast-notification" class="fixed bottom-5 right-5 bg-green-600 text-white py-2 px-5 rounded-lg shadow-lg">
@@ -400,7 +403,8 @@
                 settingsModalContent: document.getElementById('settingsModalContent'),
                 resetModal: document.getElementById('resetModal'),
                 defeatModal: document.getElementById('defeatModal'), 
-                playAgainBtn: document.getElementById('playAgainBtn'),
+                reviveCharacterBtn: document.getElementById('reviveCharacterBtn'),
+                createNewCharacterBtn: document.getElementById('createNewCharacterBtn'),
                 createCharacterBtn: document.getElementById('createCharacterBtn'),
                 openSettingsBtn: document.getElementById('openSettingsBtn'),
                 saveSettingsBtn: document.getElementById('saveSettingsBtn'),
@@ -728,6 +732,14 @@
                 init();
             };
 
+            const reviveCharacter = () => {
+                if (!characterData) return;
+                characterData.currentHp = characterData.maxHp; // Restore to full health
+                saveData('dndCharacterData', characterData);
+                updateUI();
+                toggleModal(dom.defeatModal, false);
+            };
+
             const init = () => {
                 characterData = loadData('dndCharacterData');
                 appSettings = loadData('dndAppSettings') || JSON.parse(JSON.stringify(defaultSettings));
@@ -866,7 +878,8 @@
                 dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
                 dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
                 dom.confirmResetBtn.addEventListener('click', resetCharacter);
-                dom.playAgainBtn.addEventListener('click', resetCharacter);
+                dom.reviveCharacterBtn.addEventListener('click', reviveCharacter);
+                dom.createNewCharacterBtn.addEventListener('click', resetCharacter);
                 dom.cancelResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, false));
                 
                 allModals.forEach(modal => modal.addEventListener('click', (e) => {
