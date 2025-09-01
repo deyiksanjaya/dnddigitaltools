@@ -112,24 +112,19 @@
         #modifier-flyout.show { transform: translateY(-50%) scale(1); opacity: 1; }
         #roll-details-text { opacity: 0; transition: opacity 0.4s ease-in; }
         #roll-details-text.show { opacity: 1; }
-        /* Style for main screen coin inputs */
-        .main-coin-input {
+        
+        .transaction-input {
             -moz-appearance: textfield;
-            background-color: transparent;
-            border: none;
-            border-bottom: 1px dashed #6b7280;
-            text-align: right;
-            width: 6rem;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            text-align: center;
             color: white;
+            border-radius: 0.375rem; /* rounded-md */
         }
-        .main-coin-input:focus {
+        .transaction-input:focus {
             outline: none;
-            border-bottom: 1px solid #d4a76c;
-        }
-        .main-coin-input::-webkit-outer-spin-button,
-        .main-coin-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+            border-color: #d4a76c;
+            box-shadow: 0 0 0 2px rgba(212, 167, 108, 0.5);
         }
     </style>
 </head>
@@ -185,26 +180,61 @@
         <!-- Coin Inventory -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Currency</h3>
-            <div class="max-w-xs mx-auto space-y-2">
+            <div class="max-w-sm mx-auto space-y-3">
+                <!-- Platinum -->
                 <div class="flex justify-between items-center">
-                    <label for="main-coin-pp" class="font-bold text-amber-100">Platinum (pp)</label>
-                    <input type="number" id="main-coin-pp" class="main-coin-input font-bold">
+                    <label class="font-bold text-amber-100 w-28">Platinum (pp)</label>
+                    <span id="main-pp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="main-pp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
+                        <button id="main-pp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex justify-between items-center">
-                    <label for="main-coin-gp" class="font-bold text-amber-200">Gold (gp)</label>
-                    <input type="number" id="main-coin-gp" class="main-coin-input font-bold">
+                <!-- Gold -->
+                 <div class="flex justify-between items-center">
+                    <label class="font-bold text-amber-200 w-28">Gold (gp)</label>
+                    <span id="main-gp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="main-gp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
+                         <button id="main-gp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
                 </div>
+                 <!-- Electrum -->
                 <div class="flex justify-between items-center">
-                    <label for="main-coin-ep" class="font-bold text-gray-300">Electrum (ep)</label>
-                    <input type="number" id="main-coin-ep" class="main-coin-input font-bold">
+                    <label class="font-bold text-gray-300 w-28">Electrum (ep)</label>
+                    <span id="main-ep-total" class="font-bold text-white text-lg w-16 text-right">0</span>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="main-ep-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
+                         <button id="main-ep-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
                 </div>
+                <!-- Silver -->
                 <div class="flex justify-between items-center">
-                    <label for="main-coin-sp" class="font-bold text-gray-400">Silver (sp)</label>
-                    <input type="number" id="main-coin-sp" class="main-coin-input font-bold">
+                    <label class="font-bold text-gray-400 w-28">Silver (sp)</label>
+                    <span id="main-sp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="main-sp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
+                         <button id="main-sp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
                 </div>
+                 <!-- Copper -->
                 <div class="flex justify-between items-center">
-                    <label for="main-coin-cp" class="font-bold text-orange-400">Copper (cp)</label>
-                    <input type="number" id="main-coin-cp" class="main-coin-input font-bold">
+                    <label class="font-bold text-orange-400 w-28">Copper (cp)</label>
+                    <span id="main-cp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="main-cp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
+                         <button id="main-cp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -262,32 +292,6 @@
                         <div>
                             <label for="levelInput" class="block text-amber-300 mb-1 text-sm">Level</label>
                             <input type="number" id="levelInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                        </div>
-                    </div>
-                     <!-- Coin Inputs -->
-                    <div class="pt-2">
-                        <h5 class="text-amber-300 font-bold text-sm mb-2">Currency</h5>
-                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                            <div>
-                                <label for="pp-input" class="block text-amber-300 text-xs text-center">PP</label>
-                                <input type="number" id="pp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                            <div>
-                                <label for="gp-input" class="block text-amber-300 text-xs text-center">GP</label>
-                                <input type="number" id="gp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                            <div>
-                                <label for="ep-input" class="block text-amber-300 text-xs text-center">EP</label>
-                                <input type="number" id="ep-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                            <div>
-                                <label for="sp-input" class="block text-amber-300 text-xs text-center">SP</label>
-                                <input type="number" id="sp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                            <div>
-                                <label for="cp-input" class="block text-amber-300 text-xs text-center">CP</label>
-                                <input type="number" id="cp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -426,18 +430,22 @@
                 modifierOptions: document.getElementById('modifierOptions'),
                 rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
                 toast: document.getElementById('toast-notification'),
-                // Coin input elements in settings modal
-                ppInput: document.getElementById('pp-input'),
-                gpInput: document.getElementById('gp-input'),
-                epInput: document.getElementById('ep-input'),
-                spInput: document.getElementById('sp-input'),
-                cpInput: document.getElementById('cp-input'),
-                // Coin input elements on main screen
-                mainCoinPp: document.getElementById('main-coin-pp'),
-                mainCoinGp: document.getElementById('main-coin-gp'),
-                mainCoinEp: document.getElementById('main-coin-ep'),
-                mainCoinSp: document.getElementById('main-coin-sp'),
-                mainCoinCp: document.getElementById('main-coin-cp'),
+                // Currency transaction elements
+                mainPpTotal: document.getElementById('main-pp-total'),
+                mainPpTransaction: document.getElementById('main-pp-transaction'),
+                mainPpApply: document.getElementById('main-pp-apply'),
+                mainGpTotal: document.getElementById('main-gp-total'),
+                mainGpTransaction: document.getElementById('main-gp-transaction'),
+                mainGpApply: document.getElementById('main-gp-apply'),
+                mainEpTotal: document.getElementById('main-ep-total'),
+                mainEpTransaction: document.getElementById('main-ep-transaction'),
+                mainEpApply: document.getElementById('main-ep-apply'),
+                mainSpTotal: document.getElementById('main-sp-total'),
+                mainSpTransaction: document.getElementById('main-sp-transaction'),
+                mainSpApply: document.getElementById('main-sp-apply'),
+                mainCpTotal: document.getElementById('main-cp-total'),
+                mainCpTransaction: document.getElementById('main-cp-transaction'),
+                mainCpApply: document.getElementById('main-cp-apply'),
             };
             const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.defeatModal];
 
@@ -474,13 +482,13 @@
                     dom.skillsList.innerHTML = activeSkills || '<span class="italic text-gray-400">No proficient skills</span>';
                 }
 
-                // Update main screen coin input values
-                if (dom.mainCoinPp && characterData.coins) {
-                    dom.mainCoinPp.value = characterData.coins.pp || 0;
-                    dom.mainCoinGp.value = characterData.coins.gp || 0;
-                    dom.mainCoinEp.value = characterData.coins.ep || 0;
-                    dom.mainCoinSp.value = characterData.coins.sp || 0;
-                    dom.mainCoinCp.value = characterData.coins.cp || 0;
+                // Update main screen coin totals
+                if (dom.mainPpTotal && characterData.coins) {
+                    dom.mainPpTotal.textContent = characterData.coins.pp || 0;
+                    dom.mainGpTotal.textContent = characterData.coins.gp || 0;
+                    dom.mainEpTotal.textContent = characterData.coins.ep || 0;
+                    dom.mainSpTotal.textContent = characterData.coins.sp || 0;
+                    dom.mainCpTotal.textContent = characterData.coins.cp || 0;
                 }
             };
 
@@ -490,13 +498,6 @@
                 dom.levelInput.value = characterData.level;
                 dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
                 dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
-
-                // Populate coin inputs in settings
-                dom.ppInput.value = characterData.coins.pp || 0;
-                dom.gpInput.value = characterData.coins.gp || 0;
-                dom.epInput.value = characterData.coins.ep || 0;
-                dom.spInput.value = characterData.coins.sp || 0;
-                dom.cpInput.value = characterData.coins.cp || 0;
 
                 const skillContainer = dom.skillInputsContainer;
                 skillContainer.innerHTML = '<h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>'; 
@@ -705,12 +706,6 @@
                         const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
                         if (inputElement) characterData.skills[skill] = parseInt(inputElement.value, 10) || 0;
                     });
-                    // Save coin data from settings inputs
-                    characterData.coins.pp = parseInt(dom.ppInput.value, 10) || 0;
-                    characterData.coins.gp = parseInt(dom.gpInput.value, 10) || 0;
-                    characterData.coins.ep = parseInt(dom.epInput.value, 10) || 0;
-                    characterData.coins.sp = parseInt(dom.spInput.value, 10) || 0;
-                    characterData.coins.cp = parseInt(dom.cpInput.value, 10) || 0;
                 }
                 
                 saveData('dndCharacterData', characterData);
@@ -816,28 +811,40 @@
                         showToast('Notes saved!');
                     }
                 });
-                
-                // Event listeners for main screen coin inputs
-                const coinInputs = [
-                    { el: dom.mainCoinPp, key: 'pp' }, { el: dom.mainCoinGp, key: 'gp' },
-                    { el: dom.mainCoinEp, key: 'ep' }, { el: dom.mainCoinSp, key: 'sp' },
-                    { el: dom.mainCoinCp, key: 'cp' }
-                ];
-                coinInputs.forEach(({ el, key }) => {
-                    // Highlight text on click/focus
-                    el.addEventListener('focus', (e) => {
-                        e.target.select();
-                    });
 
-                    // Save on change
-                    el.addEventListener('change', (e) => {
-                        const newValue = parseInt(e.target.value, 10) || 0;
-                        if (characterData.coins[key] !== newValue) {
-                            characterData.coins[key] = newValue;
-                            saveData('dndCharacterData', characterData);
+                // Function to set up transaction handlers to avoid repetition
+                const setupTransactionHandler = (inputEl, buttonEl, coinKey) => {
+                    const processTransaction = () => {
+                        const value = parseInt(inputEl.value, 10);
+                        if (isNaN(value) || value === 0) {
+                            inputEl.value = '';
+                            return;
+                        }
+                        
+                        const currentAmount = characterData.coins[coinKey] || 0;
+                        characterData.coins[coinKey] = Math.max(0, currentAmount + value);
+                        
+                        saveData('dndCharacterData', characterData);
+                        updateUI();
+                        inputEl.value = '';
+                    };
+
+                    buttonEl.addEventListener('click', processTransaction);
+                    inputEl.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            processTransaction();
                         }
                     });
-                });
+                };
+
+                // Set up handlers for all currencies
+                setupTransactionHandler(dom.mainPpTransaction, dom.mainPpApply, 'pp');
+                setupTransactionHandler(dom.mainGpTransaction, dom.mainGpApply, 'gp');
+                setupTransactionHandler(dom.mainEpTransaction, dom.mainEpApply, 'ep');
+                setupTransactionHandler(dom.mainSpTransaction, dom.mainSpApply, 'sp');
+                setupTransactionHandler(dom.mainCpTransaction, dom.mainCpApply, 'cp');
+
 
                 dom.createCharacterBtn.addEventListener('click', () => {
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
