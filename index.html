@@ -543,7 +543,7 @@
                 const total = roll + modifier;
                 animateAndShowResult(currentDiceSides, roll, modifier, total, skillName);
                 if(appSettings.autoCopyRoll) {
-                    copyToClipboard(`d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Mod: ${modifier})`, 'Dice roll copied!');
+                    copyToClipboard(`d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Modifier: ${modifier})`, 'Dice roll copied!');
                 }
             };
             
