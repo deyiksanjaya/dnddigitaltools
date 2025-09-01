@@ -24,26 +24,13 @@
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            display: flex;
-            align-items: flex-start;
-            gap: 1.5rem;
         }
         .guide-section p, .guide-section ul {
             text-align: justify;
         }
-        .guide-section .icon {
-            flex-shrink: 0;
-            width: 3rem;
-            height: 3rem;
-            color: #d4a76c;
-            background-color: #374151;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
         .guide-section h2 {
             color: #fde68a;
+            text-align: center;
         }
         .guide-section code {
             background-color: #111827;
@@ -136,11 +123,6 @@
         <main class="mt-8">
             <!-- Introduction Section -->
             <section id="getting-started" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-9-5.747h18" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Getting Started</h2>
                     <p class="text-lg">Welcome to your digital D&D tool, designed for seamless gameplay. This app saves everything directly in your browser, so there's no need for an account. If this is your first time, you'll be prompted to <strong>create a character</strong>. This will open the <strong>Settings</strong> modal where you can fill in your hero's details. Let's dive into the features.</p>
@@ -149,11 +131,6 @@
 
             <!-- The Dashboard Section -->
             <section id="main-dashboard" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm0 0V4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v1m-7 5h4m-4 4h4" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">The Main Dashboard</h2>
                     <div class="space-y-4">
@@ -169,11 +146,6 @@
 
             <!-- Rolling Dice Section -->
             <section id="rolling-dice" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-6 0l6 6" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Rolling the Dice</h2>
                     <div class="space-y-4">
@@ -189,11 +161,6 @@
 
             <!-- Currency and Notes -->
             <section id="wealth-wisdom" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Wealth & Wisdom</h2>
                     <div class="space-y-4">
@@ -208,11 +175,6 @@
 
             <!-- More Info Section -->
             <section id="diving-deeper" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2M5 12a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Diving Deeper</h2>
                     <p class="text-lg">The <strong>"More Character Info"</strong> section is a collapsible dropdown that contains the heart of your character sheet. Here you'll find:</p>
@@ -227,11 +189,6 @@
 
             <!-- Health & Death Section -->
             <section id="health-death" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Health & Death's Door</h2>
                     <div class="space-y-4">
@@ -246,12 +203,6 @@
             
             <!-- Settings & JSON Section -->
             <section id="advanced-customization" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Advanced Customization</h2>
                     <div class="space-y-4">
@@ -263,15 +214,6 @@
 
             <!-- Add to Homescreen Section -->
             <section id="add-to-homescreen" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v-4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 10h4" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 16v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 10h0" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Add to Homescreen</h2>
                     <p class="text-lg">Turn this web tool into a full-fledged app on your mobile device for offline use and quick access. Follow the steps for your device:</p>
@@ -302,11 +244,6 @@
             
             <!-- Solo D&D Section -->
             <section id="solo-dnd" class="guide-section">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-9-5.747h18" />
-                    </svg>
-                </div>
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Solo D&D with an AI Dungeon Master</h2>
                     <p class="text-lg mb-4">Want to play D&D but don't have a group? Use this AI Dungeon Master prompt to play a solo campaign, with the AI controlling the world and NPCs.</p>
@@ -332,7 +269,7 @@ Deck of DM Things (Cole Porter)</textarea>
         
         <footer class="text-center mt-12">
             <button id="back-to-app-button" class="back-link">
-                &larr; Back to the App
+                Back to the App
             </button>
         </footer>
     </div>
