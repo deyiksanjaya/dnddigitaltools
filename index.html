@@ -8,13 +8,12 @@
     <title>D&D Digital Tool: Dice Roller & Solo Character Sheet</title>
     <meta name="description" content="Manage your Dungeons & Dragons character without paper. A digital dice roller and character sheet app designed for modern sessions, especially for solo players.">
     <meta name="keywords" content="d&d, dungeons and dragons, dnd dice roller, digital character sheet, solo dnd, dnd tool, 5e character sheet">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
     <link rel="canonical" href="https://your-domain.com/index.html"> <!-- Replace with your actual URL -->
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1f2937">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icon-512x512.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DnD Dashboard">
@@ -45,7 +44,8 @@
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                // Path diubah menjadi relatif agar sesuai dengan struktur file PWA
+                navigator.serviceWorker.register('./service-worker.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     })
@@ -112,13 +112,13 @@
         #roll-details-text.show { opacity: 1; }
     </style>
 </head>
-<body class="bg-gray-900 text-amber-400 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-900 text-amber-400 min-h-screen">
 
     <!-- Main App Container -->
-    <div id="app-container" class="w-full max-w-3xl bg-gray-800 border-4 border-amber-800 rounded-3xl shadow-2xl p-6 md:p-8 flex flex-col items-center space-y-6">
+    <div id="app-container" class="w-full max-w-3xl mx-auto p-6 md:p-8 flex flex-col items-center space-y-6">
 
         <!-- Character Info Header -->
-        <header class="w-full flex flex-col items-center space-y-4">
+        <header class="w-full flex flex-col items-center space-y-4 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <div class="w-full flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <div class="text-center md:text-left">
                     <h1 id="characterName" class="font-cinzel text-3xl md:text-4xl font-bold text-amber-200">Character Name</h1>
@@ -151,7 +151,7 @@
         </div>
         
         <!-- Dice Button Grid -->
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 w-full">
+        <div class="w-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="4">d4</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="6">d6</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="8">d8</button>
@@ -162,7 +162,7 @@
         </div>
 
         <!-- Settings and Reset Buttons -->
-        <footer class="w-full flex justify-center gap-4 pt-4">
+        <footer class="w-full flex justify-center gap-4 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <button id="openSettingsBtn" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Settings</button>
             <button id="openResetBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">Reset</button>
         </footer>
