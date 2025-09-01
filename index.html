@@ -112,6 +112,25 @@
         #modifier-flyout.show { transform: translateY(-50%) scale(1); opacity: 1; }
         #roll-details-text { opacity: 0; transition: opacity 0.4s ease-in; }
         #roll-details-text.show { opacity: 1; }
+        /* Style for main screen coin inputs */
+        .main-coin-input {
+            -moz-appearance: textfield;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px dashed #6b7280;
+            text-align: right;
+            width: 6rem;
+            color: white;
+        }
+        .main-coin-input:focus {
+            outline: none;
+            border-bottom: 1px solid #d4a76c;
+        }
+        .main-coin-input::-webkit-outer-spin-button,
+        .main-coin-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-amber-400 min-h-screen">
@@ -140,7 +159,6 @@
             </div>
         </header>
 
-
         <!-- Dice Display Area -->
         <div class="w-full bg-gray-900 border-4 border-amber-800 rounded-xl p-4 shadow-inner min-h-[120px] flex items-center justify-center">
             <div id="roll-result-display" class="text-center">
@@ -151,13 +169,7 @@
                 <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>
             </div>
         </div>
-        
-        <!-- Character Skills Display -->
-        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700 text-center">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
-            <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
-        </div>
-        
+
         <!-- Dice Button Grid -->
         <div class="w-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="4">d4</button>
@@ -167,6 +179,39 @@
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="12">d12</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="20">d20</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="100">d100</button>
+        </div>
+        
+        <!-- Coin Inventory -->
+        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Currency</h3>
+            <div class="max-w-xs mx-auto space-y-2">
+                <div class="flex justify-between items-center">
+                    <label for="main-coin-pp" class="font-bold text-amber-100">Platinum (pp)</label>
+                    <input type="number" id="main-coin-pp" class="main-coin-input font-bold">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label for="main-coin-gp" class="font-bold text-amber-200">Gold (gp)</label>
+                    <input type="number" id="main-coin-gp" class="main-coin-input font-bold">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label for="main-coin-ep" class="font-bold text-gray-300">Electrum (ep)</label>
+                    <input type="number" id="main-coin-ep" class="main-coin-input font-bold">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label for="main-coin-sp" class="font-bold text-gray-400">Silver (sp)</label>
+                    <input type="number" id="main-coin-sp" class="main-coin-input font-bold">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label for="main-coin-cp" class="font-bold text-orange-400">Copper (cp)</label>
+                    <input type="number" id="main-coin-cp" class="main-coin-input font-bold">
+                </div>
+            </div>
+        </div>
+
+        <!-- Character Skills Display -->
+        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700 text-center">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
+            <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
         </div>
 
         <!-- Settings and Reset Buttons -->
@@ -205,6 +250,32 @@
                     <div>
                         <label for="maxHpInput" class="block text-amber-300 mb-1 text-sm">Max HP</label>
                         <input type="number" id="maxHpInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                     <!-- Coin Inputs -->
+                    <div class="pt-2">
+                        <h5 class="text-amber-300 font-bold text-sm mb-2">Currency</h5>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                            <div>
+                                <label for="pp-input" class="block text-amber-300 text-xs text-center">PP</label>
+                                <input type="number" id="pp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label for="gp-input" class="block text-amber-300 text-xs text-center">GP</label>
+                                <input type="number" id="gp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label for="ep-input" class="block text-amber-300 text-xs text-center">EP</label>
+                                <input type="number" id="ep-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label for="sp-input" class="block text-amber-300 text-xs text-center">SP</label>
+                                <input type="number" id="sp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label for="cp-input" class="block text-amber-300 text-xs text-center">CP</label>
+                                <input type="number" id="cp-input" class="w-full text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -275,29 +346,19 @@
             let currentDiceSides = 0;
             let isAnimating = false;
             
-            // Template JSON sekarang menyertakan maxHp dan daftar skill lengkap.
+            // Template JSON now includes a coins object.
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
                 maxHp: 20,
                 skills: {
-                    "Acrobatics": 0,
-                    "Animal Handling": 0,
-                    "Arcana": 0,
-                    "Athletics": 0,
-                    "Deception": 0,
-                    "History": 0,
-                    "Insight": 0,
-                    "Intimidation": 0,
-                    "Investigation": 0,
-                    "Medicine": 0,
-                    "Nature": 0,
-                    "Perception": 0,
-                    "Performance": 0,
-                    "Persuasion": 0,
-                    "Religion": 0,
-                    "Sleight of Hand": 0,
-                    "Stealth": 0,
-                    "Survival": 0
+                    "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0,
+                    "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
+                    "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0,
+                    "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
+                    "Stealth": 0, "Survival": 0
+                },
+                coins: {
+                    pp: 0, gp: 0, ep: 0, sp: 0, cp: 0
                 }
             };
             const defaultSettings = {
@@ -342,7 +403,19 @@
                 jsonFeedback: document.getElementById('jsonFeedback'),
                 modifierOptions: document.getElementById('modifierOptions'),
                 rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
-                toast: document.getElementById('toast-notification')
+                toast: document.getElementById('toast-notification'),
+                // Coin input elements in settings modal
+                ppInput: document.getElementById('pp-input'),
+                gpInput: document.getElementById('gp-input'),
+                epInput: document.getElementById('ep-input'),
+                spInput: document.getElementById('sp-input'),
+                cpInput: document.getElementById('cp-input'),
+                // Coin input elements on main screen
+                mainCoinPp: document.getElementById('main-coin-pp'),
+                mainCoinGp: document.getElementById('main-coin-gp'),
+                mainCoinEp: document.getElementById('main-coin-ep'),
+                mainCoinSp: document.getElementById('main-coin-sp'),
+                mainCoinCp: document.getElementById('main-coin-cp'),
             };
             const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.defeatModal];
 
@@ -369,13 +442,21 @@
                 else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
                 else dom.healthBar.classList.add('bg-red-600');
 
-                // Update skills display
                 if (dom.skillsList && characterData.skills) {
                     const activeSkills = Object.entries(characterData.skills)
                         .filter(([skill, value]) => value > 0)
                         .map(([skill, value]) => `<span><strong>${skill}</strong> (+${value})</span>`)
                         .join('');
                     dom.skillsList.innerHTML = activeSkills || '<span class="italic text-gray-400">No proficient skills</span>';
+                }
+
+                // Update main screen coin input values
+                if (dom.mainCoinPp && characterData.coins) {
+                    dom.mainCoinPp.value = characterData.coins.pp || 0;
+                    dom.mainCoinGp.value = characterData.coins.gp || 0;
+                    dom.mainCoinEp.value = characterData.coins.ep || 0;
+                    dom.mainCoinSp.value = characterData.coins.sp || 0;
+                    dom.mainCoinCp.value = characterData.coins.cp || 0;
                 }
             };
 
@@ -385,6 +466,13 @@
                 dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
                 dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
 
+                // Populate coin inputs in settings
+                dom.ppInput.value = characterData.coins.pp || 0;
+                dom.gpInput.value = characterData.coins.gp || 0;
+                dom.epInput.value = characterData.coins.ep || 0;
+                dom.spInput.value = characterData.coins.sp || 0;
+                dom.cpInput.value = characterData.coins.cp || 0;
+
                 const skillContainer = dom.skillInputsContainer;
                 skillContainer.innerHTML = '<h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>'; 
                 Object.entries(characterData.skills).forEach(([skill, value]) => {
@@ -393,11 +481,11 @@
                     skillContainer.insertAdjacentHTML('beforeend', skillHtml);
                 });
 
-                // Create a temporary object for JSON view including maxHp
                 const characterJsonForEditor = {
                     name: characterData.name,
                     maxHp: characterData.maxHp,
-                    skills: characterData.skills
+                    skills: characterData.skills,
+                    coins: characterData.coins
                 };
                 dom.jsonEditor.value = JSON.stringify(characterJsonForEditor, null, 2);
                 dom.jsonFeedback.textContent = '';
@@ -453,7 +541,6 @@
                 const modifierVisibleDuration = 1000; 
                 const countDuration = 350;
                 
-                // Prepare HTML structure for animation
                 dom.rollResultDisplay.innerHTML = `
                     <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Rolling d${sides}...</span>
                     <div id="dice-result-wrapper" class="relative">
@@ -468,7 +555,6 @@
                 const diceTypeTextEl = document.getElementById('dice-type-text');
                 const rollDetailsTextEl = document.getElementById('roll-details-text');
                 
-                // 1. Scramble animation (2 seconds)
                 const scrambleInterval = setInterval(() => {
                     animatedNumberEl.textContent = Math.floor(Math.random() * sides) + 1;
                 }, 30); 
@@ -477,29 +563,24 @@
                     clearInterval(scrambleInterval);
                     animatedNumberEl.textContent = finalRoll;
                     
-                    // 2. Pause after scramble
                     setTimeout(() => {
                         diceTypeTextEl.textContent = `d${sides} (${skillName})`;
 
-                        if (sides === 100 || modifier === 0) { // Case for no modifier
+                        if (sides === 100 || modifier === 0) {
                              rollDetailsTextEl.innerHTML = sides === 100 ? "No Modifier" : `Modifier: +0 | Total: <span class="font-bold">${total}</span>`;
                              rollDetailsTextEl.classList.add('show');
                              isAnimating = false;
                              return;
                         }
 
-                        // 3. Show modifier flyout
                         modifierFlyoutEl.textContent = `${modifier >= 0 ? '+' : ''}${modifier}`;
                         modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400');
                         modifierFlyoutEl.classList.add('show');
 
-                        // 4. Hide flyout and start count animation
                         setTimeout(() => {
                             modifierFlyoutEl.classList.remove('show');
                             
-                            // 5. Animate count to total
                             animateCount(animatedNumberEl, finalRoll, total, countDuration, () => {
-                                // 6. Show final details text
                                 rollDetailsTextEl.innerHTML = `Modifier: ${modifier >= 0 ? '+' : ''}${modifier} | Total: <span class="font-bold">${total}</span>`;
                                 rollDetailsTextEl.classList.add('show');
                                 isAnimating = false;
@@ -519,7 +600,8 @@
                     const roll = Math.floor(Math.random() * 100) + 1;
                     animateAndShowResult(100, roll, 0, roll, 'Percentage');
                     if(appSettings.autoCopyRoll) {
-                        copyToClipboard(`d100 (Percentage) Roll: ${roll}`, 'Dice roll copied!');
+                        const hpStatus = ` | HP: ${characterData.currentHp}/${characterData.maxHp}`;
+                        copyToClipboard(`d100 (Percentage) Roll: ${roll}${hpStatus}`, 'Dice roll copied!');
                     }
                 } else {
                     currentDiceSides = sides;
@@ -543,7 +625,16 @@
                 const total = roll + modifier;
                 animateAndShowResult(currentDiceSides, roll, modifier, total, skillName);
                 if(appSettings.autoCopyRoll) {
-                    copyToClipboard(`d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Modifier: ${modifier})`, 'Dice roll copied!');
+                    let clipboardText = '';
+                    
+                    if (skillName === 'No Modifier' || skillName === 'Manual') {
+                         clipboardText = `d${currentDiceSides} Roll: ${total}`;
+                    } else {
+                         clipboardText = `d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Modifier: ${modifier})`;
+                    }
+                    
+                    const hpStatus = ` | HP: ${characterData.currentHp}/${characterData.maxHp}`;
+                    copyToClipboard(clipboardText + hpStatus, 'Dice roll copied!');
                 }
             };
             
@@ -553,16 +644,17 @@
                 if (isJsonMode) {
                     try {
                         const newData = JSON.parse(dom.jsonEditor.value);
-                        // Validation now checks for name, maxHp, and skills.
-                        if (!newData.name || typeof newData.skills !== 'object' || typeof newData.maxHp !== 'number') {
-                           throw new Error("Invalid structure. Must include 'name', 'maxHp', and 'skills'.");
+                        if (!newData.name || typeof newData.skills !== 'object' || typeof newData.maxHp !== 'number' || typeof newData.coins !== 'object') {
+                           throw new Error("Invalid structure. Must include 'name', 'maxHp', 'skills', and 'coins'.");
                         }
-                        // Merge JSON data, preserving existing HP unless maxHp changes.
+                        
                         characterData.name = newData.name;
                         characterData.skills = newData.skills;
+                        characterData.coins = newData.coins;
+
                         if(characterData.maxHp !== newData.maxHp) {
                             characterData.maxHp = newData.maxHp;
-                            characterData.currentHp = newData.maxHp; // Reset current HP
+                            characterData.currentHp = newData.maxHp;
                         }
                         
                         dom.jsonFeedback.textContent = "Character data applied successfully!";
@@ -577,12 +669,18 @@
                     const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
                     if (newMaxHp !== characterData.maxHp) {
                         characterData.maxHp = newMaxHp;
-                        characterData.currentHp = newMaxHp; // Reset current HP when max is changed
+                        characterData.currentHp = newMaxHp;
                     }
                     Object.keys(characterData.skills).forEach(skill => {
                         const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
                         if (inputElement) characterData.skills[skill] = parseInt(inputElement.value, 10) || 0;
                     });
+                    // Save coin data from settings inputs
+                    characterData.coins.pp = parseInt(dom.ppInput.value, 10) || 0;
+                    characterData.coins.gp = parseInt(dom.gpInput.value, 10) || 0;
+                    characterData.coins.ep = parseInt(dom.epInput.value, 10) || 0;
+                    characterData.coins.sp = parseInt(dom.spInput.value, 10) || 0;
+                    characterData.coins.cp = parseInt(dom.cpInput.value, 10) || 0;
                 }
                 
                 saveData('dndCharacterData', characterData);
@@ -611,9 +709,9 @@
                 if (!characterData) {
                     toggleModal(dom.onboardingModal, true);
                 } else {
-                    // Ensure older character data has HP stats
                     if (characterData.maxHp === undefined) characterData.maxHp = 20;
                     if (characterData.currentHp === undefined) characterData.currentHp = 20;
+                    if (characterData.coins === undefined) characterData.coins = JSON.parse(JSON.stringify(defaultCharacterTemplate.coins));
                     updateUI();
                 }
                 setupEventListeners();
@@ -668,11 +766,32 @@
                     dom.hpChangeBtn.disabled = true;
                     dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
                 });
+                
+                // Event listeners for main screen coin inputs
+                const coinInputs = [
+                    { el: dom.mainCoinPp, key: 'pp' }, { el: dom.mainCoinGp, key: 'gp' },
+                    { el: dom.mainCoinEp, key: 'ep' }, { el: dom.mainCoinSp, key: 'sp' },
+                    { el: dom.mainCoinCp, key: 'cp' }
+                ];
+                coinInputs.forEach(({ el, key }) => {
+                    // Highlight text on click/focus
+                    el.addEventListener('focus', (e) => {
+                        e.target.select();
+                    });
+
+                    // Save on change
+                    el.addEventListener('change', (e) => {
+                        const newValue = parseInt(e.target.value, 10) || 0;
+                        if (characterData.coins[key] !== newValue) {
+                            characterData.coins[key] = newValue;
+                            saveData('dndCharacterData', characterData);
+                        }
+                    });
+                });
 
                 dom.createCharacterBtn.addEventListener('click', () => {
-                    // Create new character from template
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
-                    characterData.currentHp = characterData.maxHp; // Set currentHp to max
+                    characterData.currentHp = characterData.maxHp;
                     appSettings = JSON.parse(JSON.stringify(defaultSettings));
                     toggleModal(dom.onboardingModal, false);
                     populateSettingsModal();
@@ -723,3 +842,4 @@
     </script>
 </body>
 </html>
+
