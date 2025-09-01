@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>D&D Digital Tool: Dice Roller & Solo Character Sheet</title>
+    <meta name="description" content="Manage your Dungeons & Dragons character without paper. A digital dice roller and character sheet app designed for modern sessions, especially for solo players.">
+    <meta name="keywords" content="d&d, dungeons and dragons, dnd dice roller, digital character sheet, solo dnd, dnd tool, 5e character sheet">
+    <link rel="canonical" href="https://your-domain.com/index.html"> <!-- Replace with your actual URL -->
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1f2937">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/1f2937/d4a76c?text=D20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DnD Dashboard">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Structured Data (JSON-LD) for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "D&D Digital Tool: Dice Roller & Character Sheet",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web",
+      "description": "A web-based application to manage Dungeons & Dragons character sheets and roll dice digitally, designed for modern and solo players.",
+      "author": {
+        "@type": "Person",
+        "name": "D&D Community"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
+    
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #111827;
+            color: #d4a76c;
+        }
+        body.modal-open { overflow: hidden; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .dice-button {
+            transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out, background-color 0.2s;
+            background: linear-gradient(145deg, #4b5563, #1f2937);
+            border: 2px solid #9ca3af;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        }
+        .dice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+            background-color: #374151;
+        }
+        .dice-button:active {
+            transform: translateY(0);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        .modal-backdrop { transition: opacity 0.3s ease-in-out; }
+        .modal-content { transition: transform 0.3s ease-in-out, opacity 0.3s; }
+        #health-bar-inner { transition: width 0.5s ease-out, background-color 0.5s ease-out; }
+        #toast-notification {
+            transition: transform 0.3s ease-in-out, opacity 0.3s;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        #toast-notification.show { transform: translateY(0); opacity: 1; }
+        #hp-change-btn:disabled { background-color: #4b5563; cursor: not-allowed; }
+        #roll-result-display {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #dice-result-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
+        #modifier-flyout {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%) scale(0.5);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            pointer-events: none;
+        }
+        #modifier-flyout.show { transform: translateY(-50%) scale(1); opacity: 1; }
+        #roll-details-text { opacity: 0; transition: opacity 0.4s ease-in; }
+        #roll-details-text.show { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-900 text-amber-400 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main App Container -->
+    <div id="app-container" class="w-full max-w-3xl bg-gray-800 border-4 border-amber-800 rounded-3xl shadow-2xl p-6 md:p-8 flex flex-col items-center space-y-6">
+
+        <!-- Character Info Header -->
+        <header class="w-full flex flex-col items-center space-y-4">
+            <div class="w-full flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <div class="text-center md:text-left">
+                    <h1 id="characterName" class="font-cinzel text-3xl md:text-4xl font-bold text-amber-200">Character Name</h1>
+                    <p id="characterHP" class="text-lg text-amber-400">HP: 20 / 20</p>
+                </div>
+                <!-- Health Bar -->
+                <div class="w-full md:w-1/2">
+                    <div id="health-bar-outer" class="h-6 bg-gray-700 rounded-full border-2 border-gray-600 shadow-inner">
+                        <div id="health-bar-inner" class="h-full rounded-full" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+             <!-- HP Management Section -->
+            <div class="w-full flex items-center justify-center gap-2 pt-2">
+                <input type="text" id="hp-change-input" placeholder="+ Heal / - Damage" class="w-48 text-center px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
+                <button id="hp-change-btn" class="text-white font-bold py-2 px-4 rounded-lg transition-all w-32" disabled>Apply</button>
+            </div>
+        </header>
+
+
+        <!-- Dice Display Area -->
+        <div class="w-full bg-gray-900 border-4 border-amber-800 rounded-xl p-4 shadow-inner min-h-[120px] flex items-center justify-center">
+            <div id="roll-result-display" class="text-center">
+                <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Ready to Roll</span>
+                 <div id="dice-result-wrapper">
+                    <span id="animated-dice-number" class="block text-6xl text-amber-100 font-bold">...</span>
+                </div>
+                <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>
+            </div>
+        </div>
+        
+        <!-- Dice Button Grid -->
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 w-full">
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="4">d4</button>
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="6">d6</button>
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="8">d8</button>
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="10">d10</button>
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="12">d12</button>
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="20">d20</button>
+            <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="100">d100</button>
+        </div>
+
+        <!-- Settings and Reset Buttons -->
+        <footer class="w-full flex justify-center gap-4 pt-4">
+            <button id="openSettingsBtn" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Settings</button>
+            <button id="openResetBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">Reset</button>
+        </footer>
+    </div>
+    
+    <!-- Modals -->
+    <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 modal-backdrop hidden">
+        <div class="bg-gray-800 border-2 border-amber-600 rounded-xl shadow-lg p-8 w-full max-w-md text-center modal-content">
+            <h2 class="font-cinzel text-3xl font-bold text-amber-200 mb-4">Welcome!</h2>
+            <p class="text-amber-300 mb-6">It looks like you're new here. Let's create your first character to begin the adventure!</p>
+            <button id="createCharacterBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-2 px-8 rounded-lg text-lg transition-colors">Create Character</button>
+        </div>
+    </div>
+    <div id="modifierModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 modal-backdrop hidden">
+        <div class="bg-gray-800 border-2 border-amber-600 rounded-xl shadow-lg p-6 w-full max-w-lg modal-content overflow-y-auto max-h-[90vh]">
+            <h3 class="font-cinzel text-2xl font-bold text-amber-200 text-center mb-4">Choose Modifier</h3>
+            <div id="modifierOptions" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+            <button id="rollWithoutModifierBtn" class="w-full mt-4 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">Roll Without Modifier</button>
+        </div>
+    </div>
+    <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 modal-backdrop hidden">
+        <div id="settingsModalContent" class="bg-gray-800 border-2 border-amber-600 rounded-xl shadow-lg p-6 w-full max-w-lg modal-content overflow-y-auto max-h-[90vh]">
+            <h3 class="font-cinzel text-2xl font-bold text-amber-200 text-center mb-6">Settings</h3>
+            <div class="space-y-4">
+                <!-- Character Details -->
+                <div class="space-y-2 pb-2 border-b border-gray-600">
+                     <h4 class="text-amber-300 font-bold">Character Data</h4>
+                    <div>
+                        <label for="charNameInput" class="block text-amber-300 mb-1 text-sm">Character Name</label>
+                        <input type="text" id="charNameInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label for="maxHpInput" class="block text-amber-300 mb-1 text-sm">Max HP</label>
+                        <input type="number" id="maxHpInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+                
+                <!-- App Settings -->
+                <div class="pt-2 pb-2 border-b border-gray-600 space-y-2">
+                     <h4 class="text-amber-300 font-bold">App Settings</h4>
+                     <div class="flex items-center gap-2">
+                        <input type="checkbox" id="autoCopyRollSetting" class="w-4 h-4 accent-amber-500">
+                        <label for="autoCopyRollSetting" class="text-amber-300 text-sm">Auto-copy dice rolls</label>
+                     </div>
+                     <div class="flex items-center gap-2">
+                        <input type="checkbox" id="autoCopyHpSetting" class="w-4 h-4 accent-amber-500">
+                        <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change (for solo play)</label>
+                     </div>
+                </div>
+
+                <!-- Skill Modifiers -->
+                <div id="skillInputsContainer" class="space-y-2 pt-2">
+                    <h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>
+                </div>
+                
+                <!-- JSON Editor -->
+                <div id="jsonEditorContainer" class="hidden pt-2 border-t border-gray-600">
+                    <label for="jsonEditor" class="block text-amber-300 mb-1">Character Data (JSON)</label>
+                    <textarea id="jsonEditor" rows="8" class="w-full px-3 py-2 rounded-lg bg-gray-900 text-green-400 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                    <div id="jsonFeedback" class="text-center text-sm font-bold mt-2 h-4"></div>
+                    <div class="flex gap-2 mt-2">
+                        <button id="copyJsonTemplateBtn" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Copy Character Template</button>
+                    </div>
+                </div>
+
+                <div class="text-center pt-2">
+                    <button id="toggleJsonViewBtn" class="text-sm text-blue-400 hover:text-blue-300 underline">Edit Character with JSON</button>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <button id="cancelSettingsBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">Cancel</button>
+                <button id="saveSettingsBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-2 px-6 rounded-lg transition-colors">Save</button>
+            </div>
+        </div>
+    </div>
+    <div id="resetModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 modal-backdrop hidden">
+        <div class="bg-gray-800 border-2 border-red-500 rounded-xl shadow-lg p-8 w-full max-w-md text-center modal-content">
+            <h2 class="font-cinzel text-3xl font-bold text-red-300 mb-4">Are You Sure?</h2>
+            <p class="text-amber-300 mb-6">All character data and settings will be permanently deleted.</p>
+            <div class="flex justify-center gap-4">
+                <button id="cancelResetBtn" class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-8 rounded-lg transition-colors">Cancel</button>
+                <button id="confirmResetBtn" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-8 rounded-lg transition-colors">Reset</button>
+            </div>
+        </div>
+    </div>
+    <div id="defeatModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 modal-backdrop hidden">
+        <div class="bg-gray-800 border-4 border-red-700 rounded-xl shadow-lg p-8 w-full max-w-md text-center modal-content">
+            <h2 class="font-cinzel text-4xl font-bold text-red-400 mb-4">Adventure Over</h2>
+            <p class="text-amber-300 mb-8 text-lg">Your character has been defeated.</p>
+            <button id="playAgainBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-3 px-8 rounded-lg text-xl transition-colors">Play Again</button>
+        </div>
+    </div>
+    <div id="toast-notification" class="fixed bottom-5 right-5 bg-green-600 text-white py-2 px-5 rounded-lg shadow-lg">
+        Text copied to clipboard!
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE MANAGEMENT ---
+            let characterData = {};
+            let appSettings = {};
+            let currentDiceSides = 0;
+            let isAnimating = false;
+            
+            const defaultCharacterTemplate = {
+                name: "New Adventurer",
+                maxHp: 20,
+                currentHp: 20,
+                skills: {
+                    "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0,
+                    "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
+                    "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0,
+                    "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
+                    "Stealth": 0, "Survival": 0
+                }
+            };
+            const defaultSettings = {
+                autoCopyRoll: true,
+                autoCopyHp: false,
+            };
+
+            // --- DOM ELEMENT REFERENCES ---
+            const dom = {
+                body: document.body,
+                characterName: document.getElementById('characterName'),
+                characterHP: document.getElementById('characterHP'),
+                healthBar: document.getElementById('health-bar-inner'),
+                rollResultDisplay: document.getElementById('roll-result-display'),
+                diceButtons: document.querySelectorAll('.dice-button'),
+                hpChangeInput: document.getElementById('hp-change-input'),
+                hpChangeBtn: document.getElementById('hp-change-btn'),
+                onboardingModal: document.getElementById('onboardingModal'),
+                modifierModal: document.getElementById('modifierModal'),
+                settingsModal: document.getElementById('settingsModal'),
+                settingsModalContent: document.getElementById('settingsModalContent'),
+                resetModal: document.getElementById('resetModal'),
+                defeatModal: document.getElementById('defeatModal'), 
+                playAgainBtn: document.getElementById('playAgainBtn'),
+                createCharacterBtn: document.getElementById('createCharacterBtn'),
+                openSettingsBtn: document.getElementById('openSettingsBtn'),
+                saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+                cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
+                openResetBtn: document.getElementById('openResetBtn'),
+                confirmResetBtn: document.getElementById('confirmResetBtn'),
+                cancelResetBtn: document.getElementById('cancelResetBtn'),
+                charNameInput: document.getElementById('charNameInput'),
+                maxHpInput: document.getElementById('maxHpInput'),
+                autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
+                autoCopyHpSetting: document.getElementById('autoCopyHpSetting'),
+                skillInputsContainer: document.getElementById('skillInputsContainer'),
+                jsonEditorContainer: document.getElementById('jsonEditorContainer'),
+                toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'),
+                jsonEditor: document.getElementById('jsonEditor'),
+                copyJsonTemplateBtn: document.getElementById('copyJsonTemplateBtn'),
+                jsonFeedback: document.getElementById('jsonFeedback'),
+                modifierOptions: document.getElementById('modifierOptions'),
+                rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
+                toast: document.getElementById('toast-notification')
+            };
+            const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.defeatModal];
+
+            // --- DATA PERSISTENCE FUNCTIONS ---
+            const loadData = (key) => {
+                const savedData = localStorage.getItem(key);
+                try { return savedData ? JSON.parse(savedData) : null; } 
+                catch (e) { localStorage.removeItem(key); return null; }
+            };
+            const saveData = (key, data) => {
+                try { localStorage.setItem(key, JSON.stringify(data)); } 
+                catch (e) { console.error(`Failed to save data for ${key}.`, e); }
+            };
+
+            // --- CORE FUNCTIONS ---
+            const updateUI = () => {
+                if (!characterData || Object.keys(characterData).length === 0) return;
+                dom.characterName.textContent = characterData.name;
+                dom.characterHP.textContent = `HP: ${characterData.currentHp} / ${characterData.maxHp}`;
+                const hpPercentage = (characterData.currentHp / characterData.maxHp) * 100;
+                dom.healthBar.style.width = `${Math.max(0, hpPercentage)}%`;
+                dom.healthBar.classList.remove('bg-green-500', 'bg-yellow-500', 'bg-red-600');
+                if (hpPercentage > 50) dom.healthBar.classList.add('bg-green-500');
+                else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
+                else dom.healthBar.classList.add('bg-red-600');
+            };
+
+            const populateSettingsModal = () => {
+                dom.charNameInput.value = characterData.name;
+                dom.maxHpInput.value = characterData.maxHp;
+                dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
+                dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
+
+                const skillContainer = dom.skillInputsContainer;
+                skillContainer.innerHTML = '<h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>'; 
+                Object.entries(characterData.skills).forEach(([skill, value]) => {
+                    const skillId = `skill-input-${skill.replace(/\s+/g, '-')}`;
+                    const skillHtml = `<div class="flex justify-between items-center"><label for="${skillId}" class="text-amber-300 text-sm">${skill}</label><input type="number" id="${skillId}" value="${value}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></div>`;
+                    skillContainer.insertAdjacentHTML('beforeend', skillHtml);
+                });
+
+                dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
+                dom.jsonFeedback.textContent = '';
+            };
+
+            const toggleModal = (modalElement, show) => {
+                if (show) allModals.forEach(modal => modal.classList.add('hidden'));
+                modalElement.classList.toggle('hidden', !show);
+                dom.body.classList.toggle('modal-open', show);
+            };
+
+            const toggleJsonView = (showJson) => {
+                 dom.skillInputsContainer.classList.toggle('hidden', showJson);
+                 dom.jsonEditorContainer.classList.toggle('hidden', !showJson);
+                 dom.toggleJsonViewBtn.textContent = showJson ? 'Manual Skill Input' : 'Edit Character with JSON';
+            };
+
+            const showToast = (message) => {
+                dom.toast.textContent = message;
+                dom.toast.classList.add('show');
+                setTimeout(() => dom.toast.classList.remove('show'), 2000);
+            };
+
+            const copyToClipboard = (text, message) => navigator.clipboard.writeText(text).then(() => showToast(message)).catch(err => console.error(err));
+
+            // --- ANIMATION FUNCTIONS ---
+            const animateCount = (element, start, end, duration, onComplete) => {
+                if (start === end) {
+                    if(onComplete) onComplete();
+                    return;
+                }
+                const range = end - start;
+                const increment = end > start ? 1 : -1;
+                const stepTime = Math.max(10, Math.abs(Math.floor(duration / range)));
+                let current = start;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    element.textContent = current;
+                    if (current == end) {
+                        clearInterval(timer);
+                        if(onComplete) onComplete();
+                    }
+                }, stepTime);
+            };
+
+            const animateAndShowResult = (sides, finalRoll, modifier, total, skillName) => {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                const scrambleDuration = 2000;
+                const pauseAfterScramble = 400; 
+                const modifierVisibleDuration = 1000; 
+                const countDuration = 350;
+                
+                // Prepare HTML structure for animation
+                dom.rollResultDisplay.innerHTML = `
+                    <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Rolling d${sides}...</span>
+                    <div id="dice-result-wrapper" class="relative">
+                        <span id="animated-dice-number" class="block text-6xl text-amber-100 font-bold">--</span>
+                        <span id="modifier-flyout" class="absolute text-2xl font-bold ml-2"></span>
+                    </div>
+                    <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>
+                `;
+
+                const animatedNumberEl = document.getElementById('animated-dice-number');
+                const modifierFlyoutEl = document.getElementById('modifier-flyout');
+                const diceTypeTextEl = document.getElementById('dice-type-text');
+                const rollDetailsTextEl = document.getElementById('roll-details-text');
+                
+                // 1. Scramble animation (2 seconds)
+                const scrambleInterval = setInterval(() => {
+                    animatedNumberEl.textContent = Math.floor(Math.random() * sides) + 1;
+                }, 30); 
+
+                setTimeout(() => {
+                    clearInterval(scrambleInterval);
+                    animatedNumberEl.textContent = finalRoll;
+                    
+                    // 2. Pause after scramble
+                    setTimeout(() => {
+                        diceTypeTextEl.textContent = `d${sides} (${skillName})`;
+
+                        if (sides === 100 || modifier === 0) { // Case for no modifier
+                             rollDetailsTextEl.innerHTML = sides === 100 ? "No Modifier" : `Modifier: +0 | Total: <span class="font-bold">${total}</span>`;
+                             rollDetailsTextEl.classList.add('show');
+                             isAnimating = false;
+                             return;
+                        }
+
+                        // 3. Show modifier flyout
+                        modifierFlyoutEl.textContent = `${modifier >= 0 ? '+' : ''}${modifier}`;
+                        modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400');
+                        modifierFlyoutEl.classList.add('show');
+
+                        // 4. Hide flyout and start count animation
+                        setTimeout(() => {
+                            modifierFlyoutEl.classList.remove('show');
+                            
+                            // 5. Animate count to total
+                            animateCount(animatedNumberEl, finalRoll, total, countDuration, () => {
+                                // 6. Show final details text
+                                rollDetailsTextEl.innerHTML = `Modifier: ${modifier >= 0 ? '+' : ''}${modifier} | Total: <span class="font-bold">${total}</span>`;
+                                rollDetailsTextEl.classList.add('show');
+                                isAnimating = false;
+                            });
+
+                        }, modifierVisibleDuration);
+
+                    }, pauseAfterScramble);
+
+                }, scrambleDuration);
+            };
+
+            // --- EVENT HANDLERS ---
+            const handleDiceClick = (sides) => {
+                if (isAnimating) return;
+                if (sides === 100) {
+                    const roll = Math.floor(Math.random() * 100) + 1;
+                    animateAndShowResult(100, roll, 0, roll, 'Percentage');
+                    if(appSettings.autoCopyRoll) {
+                        copyToClipboard(`d100 (Percentage) Roll: ${roll}`, 'Dice roll copied!');
+                    }
+                } else {
+                    currentDiceSides = sides;
+                    dom.modifierOptions.innerHTML = '';
+                    Object.entries(characterData.skills).forEach(([skill, modifier]) => {
+                        const button = document.createElement('button');
+                        button.className = 'bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-3 px-2 rounded-lg transition-colors text-sm';
+                        button.textContent = `${skill} (${modifier >= 0 ? '+' : ''}${modifier})`;
+                        button.dataset.skill = skill;
+                        button.dataset.modifier = modifier;
+                        dom.modifierOptions.appendChild(button);
+                    });
+                    toggleModal(dom.modifierModal, true);
+                }
+            };
+
+            const handleModifierSelection = (modifier = 0, skillName = 'Manual') => {
+                if (isAnimating) return;
+                toggleModal(dom.modifierModal, false);
+                const roll = Math.floor(Math.random() * currentDiceSides) + 1;
+                const total = roll + modifier;
+                animateAndShowResult(currentDiceSides, roll, modifier, total, skillName);
+                if(appSettings.autoCopyRoll) {
+                    copyToClipboard(`d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Mod: ${modifier})`, 'Dice roll copied!');
+                }
+            };
+            
+            const applySettingsChanges = () => {
+                let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
+                
+                if (isJsonMode) {
+                    try {
+                        const newData = JSON.parse(dom.jsonEditor.value);
+                        if (!newData.name || !newData.maxHp || !newData.currentHp || !newData.skills) {
+                           throw new Error("Invalid character data structure.");
+                        }
+                        characterData = newData; 
+                        dom.jsonFeedback.textContent = "Character data applied successfully!";
+                        dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-green-400";
+                    } catch (error) {
+                        dom.jsonFeedback.textContent = "Error: Invalid JSON format.";
+                        dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
+                        return; 
+                    }
+                } else {
+                    characterData.name = dom.charNameInput.value || "Nameless";
+                    const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
+                    if (newMaxHp !== characterData.maxHp) {
+                        characterData.maxHp = newMaxHp;
+                        characterData.currentHp = newMaxHp;
+                    }
+                    Object.keys(characterData.skills).forEach(skill => {
+                        const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
+                        if (inputElement) characterData.skills[skill] = parseInt(inputElement.value, 10) || 0;
+                    });
+                }
+                
+                saveData('dndCharacterData', characterData);
+                
+                appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
+                appSettings.autoCopyHp = dom.autoCopyHpSetting.checked;
+                saveData('dndAppSettings', appSettings);
+
+                updateUI();
+                toggleModal(dom.settingsModal, false);
+            };
+
+            const resetCharacter = () => {
+                localStorage.removeItem('dndCharacterData');
+                localStorage.removeItem('dndAppSettings');
+                characterData = {};
+                appSettings = {};
+                allModals.forEach(modal => modal.classList.add('hidden'));
+                init();
+            };
+
+            const init = () => {
+                characterData = loadData('dndCharacterData');
+                appSettings = loadData('dndAppSettings') || JSON.parse(JSON.stringify(defaultSettings));
+                
+                if (!characterData) {
+                    toggleModal(dom.onboardingModal, true);
+                } else {
+                    updateUI();
+                }
+                setupEventListeners();
+            };
+
+            function setupEventListeners() {
+                dom.diceButtons.forEach(button => button.addEventListener('click', () => handleDiceClick(parseInt(button.dataset.sides, 10))));
+                dom.modifierOptions.addEventListener('click', (e) => {
+                    const button = e.target.closest('button');
+                    if(button) handleModifierSelection(parseInt(button.dataset.modifier, 10), button.dataset.skill);
+                });
+                dom.rollWithoutModifierBtn.addEventListener('click', () => handleModifierSelection(0, 'No Modifier'));
+
+                dom.hpChangeInput.addEventListener('input', () => {
+                    const value = dom.hpChangeInput.value;
+                    const number = parseInt(value, 10);
+                    const btn = dom.hpChangeBtn;
+                    btn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+                    if (isNaN(number) || value.trim() === '' || number === 0) {
+                        btn.textContent = 'Apply';
+                        btn.disabled = true;
+                    } else if (number < 0) {
+                        btn.textContent = 'Set Damage';
+                        btn.disabled = false;
+                        btn.classList.add('bg-red-800', 'hover:bg-red-700');
+                    } else {
+                        btn.textContent = 'Heal';
+                        btn.disabled = false;
+                        btn.classList.add('bg-green-800', 'hover:bg-green-700');
+                    }
+                });
+
+                dom.hpChangeBtn.addEventListener('click', () => {
+                    const value = parseInt(dom.hpChangeInput.value, 10);
+                    if (isNaN(value)) return;
+                    
+                    const newHp = characterData.currentHp + value;
+                    characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, newHp));
+                    saveData('dndCharacterData', characterData);
+                    updateUI();
+                    
+                    if (appSettings.autoCopyHp) {
+                        copyToClipboard(`Character HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Current HP copied!');
+                    }
+                    
+                    if (characterData.currentHp <= 0) {
+                        toggleModal(dom.defeatModal, true);
+                    }
+
+                    dom.hpChangeInput.value = '';
+                    dom.hpChangeBtn.textContent = 'Apply';
+                    dom.hpChangeBtn.disabled = true;
+                    dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+                });
+
+                dom.createCharacterBtn.addEventListener('click', () => {
+                    characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+                    appSettings = JSON.parse(JSON.stringify(defaultSettings));
+                    toggleModal(dom.onboardingModal, false);
+                    populateSettingsModal();
+                    toggleJsonView(false);
+                    toggleModal(dom.settingsModal, true);
+                    dom.cancelSettingsBtn.classList.add('hidden');
+                });
+
+                dom.openSettingsBtn.addEventListener('click', () => {
+                    populateSettingsModal();
+                    toggleJsonView(false);
+                    toggleModal(dom.settingsModal, true);
+                    dom.cancelSettingsBtn.classList.remove('hidden');
+                });
+                
+                dom.settingsModalContent.addEventListener('focusin', (e) => {
+                    if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
+                        e.target.dataset.originalValue = e.target.value;
+                        e.target.value = '';
+                    }
+                });
+                dom.settingsModalContent.addEventListener('focusout', (e) => {
+                     if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
+                        if (e.target.value === '') e.target.value = e.target.dataset.originalValue;
+                    }
+                });
+                
+                dom.toggleJsonViewBtn.addEventListener('click', () => toggleJsonView(dom.jsonEditorContainer.classList.contains('hidden')));
+                dom.copyJsonTemplateBtn.addEventListener('click', () => {
+                    copyToClipboard(JSON.stringify(defaultCharacterTemplate, null, 2), 'Character template copied!');
+                });
+                
+                dom.saveSettingsBtn.addEventListener('click', applySettingsChanges);
+                dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
+                dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
+                dom.confirmResetBtn.addEventListener('click', resetCharacter);
+                dom.playAgainBtn.addEventListener('click', resetCharacter);
+                dom.cancelResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, false));
+                
+                allModals.forEach(modal => modal.addEventListener('click', (e) => {
+                    if (e.target === modal) toggleModal(modal, false);
+                }));
+            }
+
+            // --- START APP ---
+            init();
+        });
+    </script>
+</body>
+</html>
+
