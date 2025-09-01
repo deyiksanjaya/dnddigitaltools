@@ -8,12 +8,13 @@
     <title>D&D Digital Tool: Dice Roller & Solo Character Sheet</title>
     <meta name="description" content="Manage your Dungeons & Dragons character without paper. A digital dice roller and character sheet app designed for modern sessions, especially for solo players.">
     <meta name="keywords" content="d&d, dungeons and dragons, dnd dice roller, digital character sheet, solo dnd, dnd tool, 5e character sheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
     <link rel="canonical" href="https://your-domain.com/index.html"> <!-- Replace with your actual URL -->
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1f2937">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://placehold.co/192x192/1f2937/d4a76c?text=D20">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DnD Dashboard">
@@ -203,12 +204,12 @@
                 <div class="pt-2 pb-2 border-b border-gray-600 space-y-2">
                      <h4 class="text-amber-300 font-bold">App Settings</h4>
                      <div class="flex items-center gap-2">
-                        <input type="checkbox" id="autoCopyRollSetting" class="w-4 h-4 accent-amber-500">
-                        <label for="autoCopyRollSetting" class="text-amber-300 text-sm">Auto-copy dice rolls</label>
+                         <input type="checkbox" id="autoCopyRollSetting" class="w-4 h-4 accent-amber-500">
+                         <label for="autoCopyRollSetting" class="text-amber-300 text-sm">Auto-copy dice rolls</label>
                      </div>
                      <div class="flex items-center gap-2">
-                        <input type="checkbox" id="autoCopyHpSetting" class="w-4 h-4 accent-amber-500">
-                        <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change (for solo play)</label>
+                         <input type="checkbox" id="autoCopyHpSetting" class="w-4 h-4 accent-amber-500">
+                         <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change (for solo play)</label>
                      </div>
                 </div>
 
@@ -266,16 +267,29 @@
             let currentDiceSides = 0;
             let isAnimating = false;
             
+            // Template sekarang hanya menyertakan nama dan keahlian untuk pengeditan JSON.
+            // Daftar keahlian telah dilengkapi sesuai D&D 5e.
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
-                maxHp: 20,
-                currentHp: 20,
                 skills: {
-                    "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0,
-                    "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
-                    "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0,
-                    "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
-                    "Stealth": 0, "Survival": 0
+                    "Acrobatics": 0,
+                    "Animal Handling": 0,
+                    "Arcana": 0,
+                    "Athletics": 0,
+                    "Deception": 0,
+                    "History": 0,
+                    "Insight": 0,
+                    "Intimidation": 0,
+                    "Investigation": 0,
+                    "Medicine": 0,
+                    "Nature": 0,
+                    "Perception": 0,
+                    "Performance": 0,
+                    "Persuasion": 0,
+                    "Religion": 0,
+                    "Sleight of Hand": 0,
+                    "Stealth": 0,
+                    "Survival": 0
                 }
             };
             const defaultSettings = {
@@ -361,7 +375,12 @@
                     skillContainer.insertAdjacentHTML('beforeend', skillHtml);
                 });
 
-                dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
+                // Create a temporary object for JSON view without HP stats
+                const characterJsonForEditor = {
+                    name: characterData.name,
+                    skills: characterData.skills
+                };
+                dom.jsonEditor.value = JSON.stringify(characterJsonForEditor, null, 2);
                 dom.jsonFeedback.textContent = '';
             };
 
@@ -515,14 +534,17 @@
                 if (isJsonMode) {
                     try {
                         const newData = JSON.parse(dom.jsonEditor.value);
-                        if (!newData.name || !newData.maxHp || !newData.currentHp || !newData.skills) {
-                           throw new Error("Invalid character data structure.");
+                        // Validation now only checks for name and skills.
+                        if (!newData.name || typeof newData.skills !== 'object') {
+                           throw new Error("Invalid character data structure. Must include 'name' and 'skills'.");
                         }
-                        characterData = newData; 
+                        // Merge JSON data, preserving existing HP.
+                        characterData.name = newData.name;
+                        characterData.skills = newData.skills;
                         dom.jsonFeedback.textContent = "Character data applied successfully!";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-green-400";
                     } catch (error) {
-                        dom.jsonFeedback.textContent = "Error: Invalid JSON format.";
+                        dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
                         return; 
                     }
@@ -531,7 +553,7 @@
                     const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
                     if (newMaxHp !== characterData.maxHp) {
                         characterData.maxHp = newMaxHp;
-                        characterData.currentHp = newMaxHp;
+                        characterData.currentHp = newMaxHp; // Reset current HP when max is changed
                     }
                     Object.keys(characterData.skills).forEach(skill => {
                         const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
@@ -565,6 +587,9 @@
                 if (!characterData) {
                     toggleModal(dom.onboardingModal, true);
                 } else {
+                    // Ensure older character data has HP stats
+                    if (characterData.maxHp === undefined) characterData.maxHp = 20;
+                    if (characterData.currentHp === undefined) characterData.currentHp = 20;
                     updateUI();
                 }
                 setupEventListeners();
@@ -621,7 +646,10 @@
                 });
 
                 dom.createCharacterBtn.addEventListener('click', () => {
+                    // Create new character from template and add default HP stats
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+                    characterData.maxHp = 20;
+                    characterData.currentHp = 20;
                     appSettings = JSON.parse(JSON.stringify(defaultSettings));
                     toggleModal(dom.onboardingModal, false);
                     populateSettingsModal();
@@ -645,7 +673,7 @@
                 });
                 dom.settingsModalContent.addEventListener('focusout', (e) => {
                      if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
-                        if (e.target.value === '') e.target.value = e.target.dataset.originalValue;
+                         if (e.target.value === '') e.target.value = e.target.dataset.originalValue;
                     }
                 });
                 
