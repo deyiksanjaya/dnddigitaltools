@@ -28,6 +28,9 @@
             align-items: flex-start;
             gap: 1.5rem;
         }
+        .guide-section p, .guide-section ul {
+            text-align: justify;
+        }
         .guide-section .icon {
             flex-shrink: 0;
             width: 3rem;
@@ -68,7 +71,6 @@
         .navbar {
             background-color: #111827;
             padding: 1rem 0;
-            border-bottom: 1px solid #374151;
             z-index: 10;
         }
         .navbar ul {
@@ -126,6 +128,7 @@
                 <li><a href="#diving-deeper">More Info</a></li>
                 <li><a href="#health-death">Health & Death</a></li>
                 <li><a href="#advanced-customization">Settings</a></li>
+                <li><a href="#add-to-homescreen">Add to Homescreen</a></li>
                 <li><a href="#solo-dnd">Solo D&D with AI</a></li>
             </ul>
         </nav>
@@ -254,6 +257,45 @@
                     <div class="space-y-4">
                         <p>The <strong>Settings</strong> button gives you full control. Here you can edit every aspect of your character, from their name and level to their ability scores and skill proficiencies.</p>
                         <p>For power users, clicking <strong>"Edit with JSON"</strong> reveals the raw data for your character. You can copy this text to back up your character, share it with a friend, or import a character someone else has shared with you by pasting their data in and hitting Save.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add to Homescreen Section -->
+            <section id="add-to-homescreen" class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v-4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 10h4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 16v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 10h0" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Add to Homescreen</h2>
+                    <p class="text-lg">Turn this web tool into a full-fledged app on your mobile device for offline use and quick access. Follow the steps for your device:</p>
+                    <div class="space-y-6 mt-4">
+                        <div>
+                            <h3 class="font-bold text-xl text-yellow-300 mb-2">iOS (iPhone/iPad)</h3>
+                            <ol class="list-decimal list-inside space-y-2 pl-4">
+                                <li>Launch <strong>Safari</strong> on your device.</li>
+                                <li>Navigate to this page.</li>
+                                <li>Tap the <strong>Share</strong> button at the bottom of the screen. </li>
+                                <li>Scroll down and select <strong>"Add to Home Screen."</strong> </li>
+                                <li>Tap <strong>"Add"</strong> in the top-right corner to finish.</li>
+                            </ol>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-yellow-300 mb-2">Android (Chrome)</h3>
+                            <ol class="list-decimal list-inside space-y-2 pl-4">
+                                <li>Launch <strong>Chrome</strong> on your Android device.</li>
+                                <li>Navigate to this page.</li>
+                                <li>Tap the <strong>three vertical dots</strong> in the top-right corner of the browser.</li>
+                                <li>Select <strong>"Add to Home screen."</strong></li>
+                                <li>Follow the on-screen prompts and tap <strong>"Add."</strong></li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </section>
