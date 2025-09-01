@@ -908,38 +908,64 @@
                 });
 
                 dom.hpChangeBtn.addEventListener('click', () => {
-                    const value = parseInt(dom.hpChangeInput.value, 10);
-                    if (isNaN(value)) return;
+                    const value = parseInt(dom.hpChangeInput.value, 10);
+                    if (isNaN(value)) return;
 
-                    const previousHp = characterData.currentHp;
-                    const newHp = characterData.currentHp + value;
-                    characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, newHp));
-                    
-                    if (previousHp <= 0 && characterData.currentHp > 0) {
-                        characterData.status = 'conscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        toggleModal(dom.deathSaveModal, false);
-                    }
-                    
-                    saveData('dndCharacterData', characterData);
-                    updateUI();
-                    
-                    if (appSettings.autoCopyHp) {
-                        copyToClipboard(`Character HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Current HP copied!');
-                    }
-                    
-                    if (characterData.currentHp <= 0 && previousHp > 0) {
-                        characterData.status = 'unconscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        saveData('dndCharacterData', characterData);
-                        showDeathSaveModal();
-                    }
+                    const previousHp = characterData.currentHp;
+                    const newHp = characterData.currentHp + value;
+                    characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, newHp));
 
-                    dom.hpChangeInput.value = '';
-                    dom.hpChangeBtn.textContent = 'Apply';
-                    dom.hpChangeBtn.disabled = true;
-                    dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
-                });
+                    // --- LOGIKA BARU DIMULAI DI SINI ---
+
+                    // Case 1: Karakter STABIL dan menerima damage. Proses death save di-reset.
+                    if (previousHp <= 0 && value < 0 && characterData.status === 'stable') {
+                        characterData.status = 'unconscious'; // Kembali ke kondisi sekarat
+                        characterData.deathSaves = { successes: 0, failures: 0 }; // **RESET HITUNGAN**
+                        saveData('dndCharacterData', characterData);
+                        showToast('Damage saat stabil! Kamu sekarat lagi.');
+                        showDeathSaveModal(); // Tampilkan kembali modal death save dari awal
+                    }
+                    // Case 2: Karakter sudah SEKARAT (unconscious) dan menerima damage. Tambah satu kegagalan.
+                    else if (previousHp <= 0 && value < 0 && (characterData.status === 'unconscious' || characterData.status !== 'dead')) {
+                        characterData.deathSaves.failures++;
+                        showToast('Damage saat pingsan! Satu kegagalan death save ditambahkan.');
+                        
+                        if (characterData.deathSaves.failures >= 3) {
+                            characterData.status = 'dead';
+                            dom.deathSaveTitle.textContent = "DEAD";
+                            dom.deathSaveStatus.textContent = "Petualanganmu telah berakhir.";
+                            dom.makeDeathSaveBtn.classList.add('hidden');
+                            dom.restartSameCharacterBtn.classList.remove('hidden');
+                            dom.createNewCharacterBtn.classList.remove('hidden');
+                        }
+                        updateDeathSaveDisplay();
+                    }
+                    // Case 3: Disembuhkan dari 0 HP (dari kondisi apapun)
+                    else if (previousHp <= 0 && characterData.currentHp > 0) {
+                        characterData.status = 'conscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        toggleModal(dom.deathSaveModal, false);
+                    }
+                    // Case 4: Turun ke 0 HP untuk pertama kali
+                    else if (previousHp > 0 && characterData.currentHp <= 0) {
+                        characterData.status = 'unconscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        saveData('dndCharacterData', characterData);
+                        showDeathSaveModal();
+                    }
+
+                    saveData('dndCharacterData', characterData);
+                    updateUI();
+                    
+                    if (appSettings.autoCopyHp) {
+                        copyToClipboard(`Character HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Current HP copied!');
+                    }
+
+                    dom.hpChangeInput.value = '';
+                    dom.hpChangeBtn.textContent = 'Apply';
+                    dom.hpChangeBtn.disabled = true;
+                    dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+                });
 
                 dom.makeDeathSaveBtn.addEventListener('click', () => {
                     const roll = Math.floor(Math.random() * 20) + 1;
@@ -1004,7 +1030,19 @@
                         showToast('Notes saved!');
                     }
                 });
-
+                const resetCharacter = () => {
+                localStorage.removeItem('dndCharacterData');
+                localStorage.removeItem('dndAppSettings');
+                window.location.reload();
+            };
+                const restartSameCharacter = () => {
+                    characterData.currentHp = characterData.maxHp;
+                    characterData.status = 'conscious';
+                    characterData.deathSaves = { successes: 0, failures: 0 };
+                    saveData('dndCharacterData', characterData);
+                    updateUI();
+                    toggleModal(dom.deathSaveModal, false);
+                };
                 const setupTransactionHandler = (inputEl, buttonEl, coinKey) => {
                     const processTransaction = () => {
                         const value = parseInt(inputEl.value, 10);
