@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use - D&D Digital Tool</title>
+    <meta name="description" content="A detailed guide on how to use the D&D Digital Dice Roller and Character Sheet tool for your solo and group campaigns.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #111827;
+            color: #d1d5db; /* Lighter gray for better readability on long text */
+        }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+
+        .guide-section {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .guide-section .icon {
+            flex-shrink: 0;
+            width: 3rem;
+            height: 3rem;
+            color: #d4a76c;
+            background-color: #374151;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guide-section h2 {
+            color: #fde68a; /* amber-200 */
+        }
+
+        .guide-section code {
+            background-color: #111827;
+            color: #f9fafb;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+
+        .guide-section strong {
+            color: #fef3c7; /* amber-300 */
+        }
+
+        .back-link {
+            display: inline-block;
+            background-color: #4b5563;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .back-link:hover {
+            background-color: #6b7280;
+        }
+
+        @media (max-width: 640px) {
+            .guide-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6 md:p-12">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-amber-200">Digital Character Sheet</h1>
+            <p class="text-xl text-amber-400 mt-2">Your Adventure Companion</p>
+        </header>
+
+        <main>
+            <!-- Introduction Section -->
+            <section class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-9-5.747h18" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Getting Started</h2>
+                    <p class="text-lg">Welcome to your digital D&D tool, designed for seamless gameplay. This app saves everything directly in your browser, so there's no need for an account. If this is your first time, you'll be prompted to <strong>create a character</strong>. This will open the <strong>Settings</strong> modal where you can fill in your hero's details. Let's dive into the features.</p>
+                </div>
+            </section>
+
+            <!-- The Dashboard Section -->
+            <section class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm0 0V4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v1m-7 5h4m-4 4h4" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">The Main Dashboard</h2>
+                    <div class="space-y-4">
+                        <p>The main screen gives you immediate access to your most-used stats.</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Character Header:</strong> At a glance, see your character's name, level, race, class, and current/max HP. The health bar provides a quick visual cue of your status.</li>
+                            <li><strong>HP Management:</strong> Use the input field below the health bar to quickly apply healing or damage. Enter a positive number (e.g., <code>10</code>) to heal or a negative number (e.g., <code>-10</code>) to take damage. Press the <strong>Apply</strong> button or hit <strong>Enter</strong> to confirm.</li>
+                            <li><strong>Dice Display:</strong> This central area shows the result of your most recent roll with a cinematic animation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Rolling Dice Section -->
+            <section class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-6 0l6 6" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Rolling the Dice</h2>
+                    <div class="space-y-4">
+                        <p>The dice grid contains all standard D&D dice. Rolling is simple:</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Simple Rolls (d4-d12, d100):</strong> Just click the die you want to roll. The result appears instantly in the display area.</li>
+                            <li><strong>Smart Rolls (d20):</strong> Clicking the <strong>d20</strong> opens a "smart roll" modal. Here, you can select a <strong>Saving Throw</strong> or a <strong>Skill</strong>. The app automatically fetches the correct modifier from your character sheet and adds it to the roll, saving you time and mental math. You can also choose to roll a plain d20 without any modifiers.</li>
+                            <li><strong>Auto-Copy:</strong> If enabled in settings, the complete roll result (e.g., "d20 (Stealth) Roll: 18 (Dice: 15, Modifier: +3) | HP: 20/20") is automatically copied to your clipboard, perfect for pasting into a chat or virtual tabletop.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Currency and Notes -->
+            <section class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Wealth & Wisdom</h2>
+                    <div class="space-y-4">
+                        <p>Managing your inventory and story notes is crucial for any adventurer.</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Currency:</strong> The currency section is interactive. Simply <strong>click on the number</strong> for any coin type (PP, GP, EP, SP, CP) to edit it directly. Press <strong>Enter</strong> or click away to save the new total. It's fast, simple, and requires no extra buttons.</li>
+                            <li><strong>Adventure Notes:</strong> This is a free-form text area for all your campaign journaling. Jot down NPC names, quest details, or suspicious-looking statues. Your notes are automatically saved when you click away from the text box.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- More Info Section -->
+            <section class="guide-section">
+                <div class="icon">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2M5 12a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Diving Deeper</h2>
+                    <p class="text-lg">The <strong>"More Character Info"</strong> section is a collapsible dropdown that contains the heart of your character sheet. Here you'll find:</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4 mt-2">
+                        <li><strong>Core Combat Stats:</strong> Armor Class, Initiative, Speed, and your Proficiency Bonus.</li>
+                        <li><strong>Ability Scores:</strong> Your six core abilities (STR, DEX, CON, INT, WIS, CHA) and their calculated modifiers.</li>
+                        <li><strong>Saving Throws & Skills:</strong> A complete list of all saving throws and skills. The final modifier for each is automatically calculated based on your ability scores and proficiencies.</li>
+                        <li><strong>Spells & Features:</strong> A list of your known spells, class features, and racial traits.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Health & Death Section -->
+            <section class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Health & Death's Door</h2>
+                    <div class="space-y-4">
+                        <p>The app includes a fully automated Death Saving Throw system.</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Triggering Death Saves:</strong> When your HP drops to 0, the Death Save modal automatically appears.</li>
+                            <li><strong>Making Saves:</strong> Click the button to make a Death Saving Throw (a d20 roll). The result determines your fate: <strong>20</strong> revives you with 1 HP, <strong>10-19</strong> is one success, <strong>2-9</strong> is one failure, and a <strong>1</strong> is two failures.</li>
+                            <li><strong>Outcomes:</strong> Three successes stabilize your character (unconscious but no longer dying). Three failures mean your character has died. The modal provides options to restart or create a new character upon death.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Settings & JSON Section -->
+            <section class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Advanced Customization</h2>
+                    <div class="space-y-4">
+                        <p>The <strong>Settings</strong> button gives you full control. Here you can edit every aspect of your character, from their name and level to their ability scores and skill proficiencies.</p>
+                        <p>For power users, clicking <strong>"Edit with JSON"</strong> reveals the raw data for your character. You can copy this text to back up your character, share it with a friend, or import a character someone else has shared with you by pasting their data in and hitting Save.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="text-center mt-12">
+            <a href="./index.html" class="back-link">
+                &larr; Back to the App
+            </a>
+        </footer>
+    </div>
+</body>
+</html>
