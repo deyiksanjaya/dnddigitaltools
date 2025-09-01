@@ -776,81 +776,82 @@
             };
             
             const applySettingsChanges = () => {
-                let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
-                
-                if (isJsonMode) {
-                    try {
-                        let newData = JSON.parse(dom.jsonEditor.value);
-                        if (!newData.name || !newData.abilities) { throw new Error("Invalid structure."); }
-                        characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
-                    } catch (error) {
-                        dom.jsonFeedback.textContent = error.message || "Invalid JSON format.";
-                        dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
-                        return; 
-                    }
-                } else {
-                    const oldConMod = getAbilityModifier(characterData.abilities.constitution);
+    let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
 
-                    characterData.name = dom.charNameInput.value || "Nameless";
-                    characterData.race = dom.raceInput.value; characterData.class = dom.classInput.value;
-                    characterData.background = dom.backgroundInput.value; characterData.alignment = dom.alignmentInput.value;
-                    characterData.level = parseInt(dom.levelInput.value, 10) || 1;
-                    characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
-                    characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
-                    
-                    Object.keys(characterData.abilities).forEach(key => {
-                        const input = document.getElementById(`${key}-input`);
-                        if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
-                    });
-                    
-                    const newConMod = getAbilityModifier(characterData.abilities.constitution);
-                    if(newConMod !== oldConMod) {
-                        const hpChange = (newConMod - oldConMod) * characterData.level;
-                        characterData.maxHp += hpChange;
-                        characterData.currentHp += hpChange;
-                    }
+    if (isJsonMode) {
+        try {
+            let newData = JSON.parse(dom.jsonEditor.value);
 
-                    let newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
-                    if(newMaxHp !== characterData.maxHp && characterData.level === 1) {
-                         characterData.maxHp = newMaxHp;
-                         characterData.currentHp = newMaxHp;
-                    }
+            if (!newData.name || !newData.abilities) {
+                dom.jsonFeedback.textContent = "Error: Invalid JSON structure.";
+                dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
+                return;
+            }
 
-
-                    characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
-                    characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
-                    characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
+            // Memeriksa dan menyesuaikan HP
+            if (newData.maxHp !== undefined && newData.currentHp !== undefined) {
+                if (newData.maxHp < newData.currentHp) {
+                    newData.currentHp = newData.maxHp;
+                    showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
+                } else if (newData.currentHp < 0) {
+                    newData.currentHp = 0;
+                    showToast("Current HP Auto-adjusted because it cannot be less than 0.");
                 }
-                
-                characterData = calculateAllModifiers(characterData);
-                saveData('dndCharacterData', characterData);
-                
-                appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
-                appSettings.autoCopyHp = dom.autoCopyHpSetting.checked;
-                saveData('dndAppSettings', appSettings);
+            }
 
-                updateUI();
-                toggleModal(dom.settingsModal, false);
-            };
+            characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
+        } catch (error) {
+            dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
+            dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
+            return;
+        }
+    } else {
+        const oldConMod = getAbilityModifier(characterData.abilities.constitution);
 
-            const resetCharacter = () => {
-                localStorage.removeItem('dndCharacterData');
-                localStorage.removeItem('dndAppSettings');
-                characterData = {};
-                appSettings = {};
-                allModals.forEach(modal => modal.classList.add('hidden'));
-                init();
-            };
+        characterData.name = dom.charNameInput.value || "Nameless";
+        characterData.race = dom.raceInput.value;
+        characterData.class = dom.classInput.value;
+        characterData.background = dom.backgroundInput.value;
+        characterData.alignment = dom.alignmentInput.value;
+        characterData.level = parseInt(dom.levelInput.value, 10) || 1;
+        characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
+        characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
 
-            const restartSameCharacter = () => {
-                if (!characterData) return;
-                characterData.currentHp = characterData.maxHp;
-                characterData.status = 'conscious';
-                characterData.deathSaves = { successes: 0, failures: 0 };
-                saveData('dndCharacterData', characterData);
-                updateUI();
-                toggleModal(dom.deathSaveModal, false);
-            };
+        Object.keys(characterData.abilities).forEach(key => {
+            const input = document.getElementById(`${key}-input`);
+            if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
+        });
+
+        const newConMod = getAbilityModifier(characterData.abilities.constitution);
+        const hpChange = (newConMod - oldConMod) * characterData.level;
+        const newMaxHp = (parseInt(dom.maxHpInput.value, 10) || 1) + hpChange;
+
+        // Memeriksa dan menyesuaikan HP
+        if (characterData.currentHp > newMaxHp) {
+            characterData.currentHp = newMaxHp;
+            showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
+        } else if (characterData.currentHp < 0) {
+            characterData.currentHp = 0;
+            showToast("Current HP Auto-adjusted because it cannot be less than 0.");
+        }
+
+        characterData.maxHp = newMaxHp;
+
+        characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
+        characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
+        characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
+    }
+
+    characterData = calculateAllModifiers(characterData);
+    saveData('dndCharacterData', characterData);
+
+    appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
+    appSettings.autoCopyHp = dom.autoCopyHpSetting.checked;
+    saveData('dndAppSettings', appSettings);
+
+    updateUI();
+    toggleModal(dom.settingsModal, false);
+};
 
             const init = () => {
                 let loadedCharacter = loadData('dndCharacterData');
