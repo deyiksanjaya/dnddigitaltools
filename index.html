@@ -42,22 +42,6 @@
     }
     </script>
     
-    <script>
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Path is correct (relative)
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
-            });
-        }
-    </script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap');
         
@@ -167,7 +151,7 @@
         </header>
         
         <!-- Core Stats -->
-        <div class="w-full grid grid-cols-3 gap-4 text-center bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700">
+        <div class="w-full grid grid-cols-4 gap-4 text-center bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700">
             <div>
                 <span class="font-bold text-amber-300">Armor Class</span>
                 <p id="armorClassDisplay" class="text-2xl font-bold text-white">10</p>
@@ -180,6 +164,10 @@
                 <span class="font-bold text-amber-300">Speed</span>
                 <p id="speedDisplay" class="text-2xl font-bold text-white">30 ft</p>
             </div>
+             <div>
+                <span class="font-bold text-amber-300">Prof. Bonus</span>
+                <p id="proficiencyBonusDisplay" class="text-2xl font-bold text-white">+2</p>
+            </div>
         </div>
 
         <!-- Ability Scores -->
@@ -187,6 +175,14 @@
             <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Ability Scores</h3>
             <div id="abilityScoresContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
                 <!-- Abilities will be populated by JS -->
+            </div>
+        </div>
+        
+        <!-- Saving Throws -->
+        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Saving Throws</h3>
+            <div id="savingThrowsContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
+                <!-- Saving Throws will be populated by JS -->
             </div>
         </div>
 
@@ -213,14 +209,14 @@
         </div>
         
         <!-- Character Skills Display -->
-        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700 text-center">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
-            <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
+        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Skills</h3>
+            <div id="skills-list" class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-amber-200"></div>
         </div>
 
         <!-- Spells Display -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells</h3>
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells & Features</h3>
             <div id="spellsList" class="text-amber-200 space-y-2"></div>
         </div>
         
@@ -309,9 +305,9 @@
     </div>
     <div id="modifierModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 modal-backdrop hidden">
         <div class="bg-gray-800 border-2 border-amber-600 rounded-xl shadow-lg p-6 w-full max-w-lg modal-content overflow-y-auto max-h-[90vh]">
-            <h3 class="font-cinzel text-2xl font-bold text-amber-200 text-center mb-4">Choose Modifier</h3>
-            <div id="modifierOptions" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-            <button id="rollWithoutModifierBtn" class="w-full mt-4 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">Roll Without Modifier</button>
+            <h3 class="font-cinzel text-2xl font-bold text-amber-200 text-center mb-4">Choose a Roll</h3>
+            <div id="modifierOptions" class="space-y-4"></div>
+            <button id="rollWithoutModifierBtn" class="w-full mt-6 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">Roll Without Modifier</button>
         </div>
     </div>
     <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 modal-backdrop hidden">
@@ -376,6 +372,22 @@
                     </div>
                 </div>
 
+                <!-- Saving Throw Proficiencies -->
+                <div class="space-y-2 py-4 border-b border-gray-600">
+                    <h4 class="text-amber-300 font-bold">Saving Throw Proficiencies</h4>
+                    <div id="savingThrowProficienciesContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <!-- Saving Throw proficiency checkboxes will be generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Skill Proficiencies -->
+                <div class="space-y-2 py-4 border-b border-gray-600">
+                    <h4 class="text-amber-300 font-bold">Skill Proficiencies</h4>
+                    <div id="skillProficienciesContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
+                         <!-- Skill proficiency checkboxes will be generated by JS -->
+                    </div>
+                </div>
+
                 <!-- Spells & Features -->
                 <div class="space-y-2 py-4 border-b border-gray-600">
                     <h4 class="text-amber-300 font-bold">Spells & Features</h4>
@@ -396,11 +408,6 @@
                         <input type="checkbox" id="autoCopyHpSetting" class="w-4 h-4 accent-amber-500">
                         <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change</label>
                     </div>
-                </div>
-
-                <!-- Skill Modifiers -->
-                <div id="skillInputsContainer" class="space-y-2 pt-4">
-                    <h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>
                 </div>
                 
                 <!-- JSON Editor -->
@@ -451,6 +458,7 @@
             <div id="deathSaveActions" class="flex flex-col sm:flex-row justify-center gap-4">
                  <button id="makeDeathSaveBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">Make Death Saving Throw</button>
                  <button id="closeDeathSaveModalBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg transition-colors hidden">Close</button>
+                 <button id="restartSameCharacterBtn" class="bg-green-700 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors hidden">Restart Same Character</button>
                  <button id="createNewCharacterBtn" class="bg-red-800 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors hidden">Start New Character</button>
             </div>
         </div>
@@ -466,14 +474,25 @@
             let appSettings = {};
             let currentDiceSides = 0;
             let isAnimating = false;
+
+            const SKILL_ABILITY_MAP = {
+                "Acrobatics": "dexterity", "Animal Handling": "wisdom", "Arcana": "intelligence", "Athletics": "strength", "Deception": "charisma", "History": "intelligence",
+                "Insight": "wisdom", "Intimidation": "charisma", "Investigation": "intelligence", "Medicine": "wisdom", "Nature": "intelligence", "Perception": "wisdom",
+                "Performance": "charisma", "Persuasion": "charisma", "Religion": "intelligence", "Sleight of Hand": "dexterity", "Stealth": "dexterity", "Survival": "wisdom"
+            };
             
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
                 level: 1, race: "Human", class: "Fighter", background: "Acolyte", alignment: "Neutral Good",
-                maxHp: 10, armorClass: 10, speed: 30,
-                status: 'conscious', // conscious, unconscious, stable, dead
+                maxHp: 10, armorClass: 10, speed: 30, hitDie: 10,
+                status: 'conscious',
                 deathSaves: { successes: 0, failures: 0 },
                 abilities: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+                savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
+                proficiencies: {
+                    savingThrows: [],
+                    skills: []
+                },
                 notes: "",
                 skills: {
                     "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
@@ -488,86 +507,61 @@
 
             // --- DOM ELEMENT REFERENCES ---
             const dom = {
-                body: document.body,
-                characterName: document.getElementById('characterName'),
-                characterInfo: document.getElementById('characterInfo'),
-                characterHP: document.getElementById('characterHP'),
-                healthBar: document.getElementById('health-bar-inner'),
-                armorClassDisplay: document.getElementById('armorClassDisplay'),
-                initiativeDisplay: document.getElementById('initiativeDisplay'),
-                speedDisplay: document.getElementById('speedDisplay'),
-                abilityScoresContainer: document.getElementById('abilityScoresContainer'),
-                rollResultDisplay: document.getElementById('roll-result-display'),
-                diceButtons: document.querySelectorAll('.dice-button'),
-                hpChangeInput: document.getElementById('hp-change-input'),
-                hpChangeBtn: document.getElementById('hp-change-btn'),
-                skillsList: document.getElementById('skills-list'),
-                spellsList: document.getElementById('spellsList'),
-                adventureNotes: document.getElementById('adventureNotes'),
-                onboardingModal: document.getElementById('onboardingModal'),
-                modifierModal: document.getElementById('modifierModal'),
-                settingsModal: document.getElementById('settingsModal'),
-                settingsModalContent: document.getElementById('settingsModalContent'),
-                resetModal: document.getElementById('resetModal'),
-                deathSaveModal: document.getElementById('deathSaveModal'),
-                deathSaveTitle: document.getElementById('deathSaveTitle'),
-                deathSaveSuccesses: document.getElementById('deathSaveSuccesses'),
-                deathSaveFailures: document.getElementById('deathSaveFailures'),
-                deathSaveStatus: document.getElementById('deathSaveStatus'),
-                deathSaveResult: document.getElementById('deathSaveResult'),
-                makeDeathSaveBtn: document.getElementById('makeDeathSaveBtn'),
-                closeDeathSaveModalBtn: document.getElementById('closeDeathSaveModalBtn'),
-                createNewCharacterBtn: document.getElementById('createNewCharacterBtn'),
-                createCharacterBtn: document.getElementById('createCharacterBtn'),
-                openSettingsBtn: document.getElementById('openSettingsBtn'),
-                saveSettingsBtn: document.getElementById('saveSettingsBtn'),
-                cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
-                openResetBtn: document.getElementById('openResetBtn'),
-                confirmResetBtn: document.getElementById('confirmResetBtn'),
-                cancelResetBtn: document.getElementById('cancelResetBtn'),
-                charNameInput: document.getElementById('charNameInput'),
-                raceInput: document.getElementById('raceInput'),
-                classInput: document.getElementById('classInput'),
-                backgroundInput: document.getElementById('backgroundInput'),
-                alignmentInput: document.getElementById('alignmentInput'),
-                levelInput: document.getElementById('levelInput'),
-                maxHpInput: document.getElementById('maxHpInput'),
-                armorClassInput: document.getElementById('armorClassInput'),
-                speedInput: document.getElementById('speedInput'),
-                abilityInputsContainer: document.getElementById('abilityInputsContainer'),
-                spellsInput: document.getElementById('spellsInput'),
-                autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
-                autoCopyHpSetting: document.getElementById('autoCopyHpSetting'),
-                skillInputsContainer: document.getElementById('skillInputsContainer'),
-                jsonEditorContainer: document.getElementById('jsonEditorContainer'),
-                toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'),
-                jsonEditor: document.getElementById('jsonEditor'),
-                copyJsonTemplateBtn: document.getElementById('copyJsonTemplateBtn'),
-                jsonFeedback: document.getElementById('jsonFeedback'),
-                modifierOptions: document.getElementById('modifierOptions'),
-                rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
-                toast: document.getElementById('toast-notification'),
-                mainPpTotal: document.getElementById('main-pp-total'),
-                mainPpTransaction: document.getElementById('main-pp-transaction'),
-                mainPpApply: document.getElementById('main-pp-apply'),
-                mainGpTotal: document.getElementById('main-gp-total'),
-                mainGpTransaction: document.getElementById('main-gp-transaction'),
-                mainGpApply: document.getElementById('main-gp-apply'),
-                mainEpTotal: document.getElementById('main-ep-total'),
-                mainEpTransaction: document.getElementById('main-ep-transaction'),
-                mainEpApply: document.getElementById('main-ep-apply'),
-                mainSpTotal: document.getElementById('main-sp-total'),
-                mainSpTransaction: document.getElementById('main-sp-transaction'),
-                mainSpApply: document.getElementById('main-sp-apply'),
-                mainCpTotal: document.getElementById('main-cp-total'),
-                mainCpTransaction: document.getElementById('main-cp-transaction'),
+                body: document.body, characterName: document.getElementById('characterName'), characterInfo: document.getElementById('characterInfo'), characterHP: document.getElementById('characterHP'),
+                healthBar: document.getElementById('health-bar-inner'), armorClassDisplay: document.getElementById('armorClassDisplay'), initiativeDisplay: document.getElementById('initiativeDisplay'),
+                speedDisplay: document.getElementById('speedDisplay'), proficiencyBonusDisplay: document.getElementById('proficiencyBonusDisplay'), abilityScoresContainer: document.getElementById('abilityScoresContainer'),
+                savingThrowsContainer: document.getElementById('savingThrowsContainer'), rollResultDisplay: document.getElementById('roll-result-display'), diceButtons: document.querySelectorAll('.dice-button'),
+                hpChangeInput: document.getElementById('hp-change-input'), hpChangeBtn: document.getElementById('hp-change-btn'), skillsList: document.getElementById('skills-list'),
+                spellsList: document.getElementById('spellsList'), adventureNotes: document.getElementById('adventureNotes'), onboardingModal: document.getElementById('onboardingModal'),
+                modifierModal: document.getElementById('modifierModal'), settingsModal: document.getElementById('settingsModal'), settingsModalContent: document.getElementById('settingsModalContent'),
+                resetModal: document.getElementById('resetModal'), deathSaveModal: document.getElementById('deathSaveModal'), deathSaveTitle: document.getElementById('deathSaveTitle'),
+                deathSaveSuccesses: document.getElementById('deathSaveSuccesses'), deathSaveFailures: document.getElementById('deathSaveFailures'), deathSaveStatus: document.getElementById('deathSaveStatus'),
+                deathSaveResult: document.getElementById('deathSaveResult'), makeDeathSaveBtn: document.getElementById('makeDeathSaveBtn'), closeDeathSaveModalBtn: document.getElementById('closeDeathSaveModalBtn'),
+                restartSameCharacterBtn: document.getElementById('restartSameCharacterBtn'), createNewCharacterBtn: document.getElementById('createNewCharacterBtn'), createCharacterBtn: document.getElementById('createCharacterBtn'),
+                openSettingsBtn: document.getElementById('openSettingsBtn'), saveSettingsBtn: document.getElementById('saveSettingsBtn'), cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
+                openResetBtn: document.getElementById('openResetBtn'), confirmResetBtn: document.getElementById('confirmResetBtn'), cancelResetBtn: document.getElementById('cancelResetBtn'),
+                charNameInput: document.getElementById('charNameInput'), raceInput: document.getElementById('raceInput'), classInput: document.getElementById('classInput'),
+                backgroundInput: document.getElementById('backgroundInput'), alignmentInput: document.getElementById('alignmentInput'), levelInput: document.getElementById('levelInput'),
+                maxHpInput: document.getElementById('maxHpInput'), armorClassInput: document.getElementById('armorClassInput'), speedInput: document.getElementById('speedInput'),
+                abilityInputsContainer: document.getElementById('abilityInputsContainer'), savingThrowProficienciesContainer: document.getElementById('savingThrowProficienciesContainer'),
+                skillProficienciesContainer: document.getElementById('skillProficienciesContainer'), spellsInput: document.getElementById('spellsInput'), autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
+                autoCopyHpSetting: document.getElementById('autoCopyHpSetting'), jsonEditorContainer: document.getElementById('jsonEditorContainer'),
+                toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'), jsonEditor: document.getElementById('jsonEditor'), copyJsonTemplateBtn: document.getElementById('copyJsonTemplateBtn'),
+                jsonFeedback: document.getElementById('jsonFeedback'), modifierOptions: document.getElementById('modifierOptions'), rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
+                toast: document.getElementById('toast-notification'), mainPpTotal: document.getElementById('main-pp-total'), mainPpTransaction: document.getElementById('main-pp-transaction'),
+                mainPpApply: document.getElementById('main-pp-apply'), mainGpTotal: document.getElementById('main-gp-total'), mainGpTransaction: document.getElementById('main-gp-transaction'),
+                mainGpApply: document.getElementById('main-gp-apply'), mainEpTotal: document.getElementById('main-ep-total'), mainEpTransaction: document.getElementById('main-ep-transaction'),
+                mainEpApply: document.getElementById('main-ep-apply'), mainSpTotal: document.getElementById('main-sp-total'), mainSpTransaction: document.getElementById('main-sp-transaction'),
+                mainSpApply: document.getElementById('main-sp-apply'), mainCpTotal: document.getElementById('main-cp-total'), mainCpTransaction: document.getElementById('main-cp-transaction'),
                 mainCpApply: document.getElementById('main-cp-apply'),
             };
             const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
 
-            // --- UTILITY FUNCTIONS ---
+            // --- UTILITY & CALCULATION FUNCTIONS ---
             const getAbilityModifier = (score) => Math.floor((score - 10) / 2);
             const formatModifier = (mod) => mod >= 0 ? `+${mod}` : `${mod}`;
+            const getProficiencyBonus = (level) => Math.ceil(level / 4) + 1;
+
+            const calculateAllModifiers = (charData) => {
+                const proficiencyBonus = getProficiencyBonus(charData.level);
+                charData.proficiencyBonus = proficiencyBonus;
+
+                // Calculate Saving Throws
+                for (const ability in charData.savingThrows) {
+                    const abilityMod = getAbilityModifier(charData.abilities[ability]);
+                    const isProficient = charData.proficiencies.savingThrows.includes(ability);
+                    charData.savingThrows[ability] = abilityMod + (isProficient ? proficiencyBonus : 0);
+                }
+
+                // Calculate Skills
+                for (const skill in charData.skills) {
+                    const ability = SKILL_ABILITY_MAP[skill];
+                    const abilityMod = getAbilityModifier(charData.abilities[ability]);
+                    const isProficient = charData.proficiencies.skills.includes(skill);
+                    charData.skills[skill] = abilityMod + (isProficient ? proficiencyBonus : 0);
+                }
+                return charData;
+            };
 
             // --- DATA PERSISTENCE FUNCTIONS ---
             const loadData = (key) => {
@@ -582,109 +576,58 @@
 
             // --- CORE UI FUNCTIONS ---
             const updateUI = () => {
-                if (!characterData || Object.keys(characterData).length === 0) return;
+                if (!characterData || !characterData.abilities) return;
                 
-                // Header
+                // Header & Core Stats
                 dom.characterName.textContent = characterData.name;
                 dom.characterInfo.textContent = `Level ${characterData.level} ${characterData.race} ${characterData.class}`;
                 dom.characterHP.textContent = `HP: ${characterData.currentHp} / ${characterData.maxHp}`;
                 const hpPercentage = (characterData.currentHp / characterData.maxHp) * 100;
                 dom.healthBar.style.width = `${Math.max(0, hpPercentage)}%`;
-                dom.healthBar.classList.remove('bg-green-500', 'bg-yellow-500', 'bg-red-600');
+                dom.healthBar.className = 'h-full rounded-full ';
                 if (hpPercentage > 50) dom.healthBar.classList.add('bg-green-500');
                 else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
                 else dom.healthBar.classList.add('bg-red-600');
-
-                // Core Stats
                 dom.armorClassDisplay.textContent = characterData.armorClass;
                 dom.speedDisplay.textContent = `${characterData.speed} ft`;
-                const dexMod = getAbilityModifier(characterData.abilities.dexterity);
-                dom.initiativeDisplay.textContent = formatModifier(dexMod);
+                dom.initiativeDisplay.textContent = formatModifier(getAbilityModifier(characterData.abilities.dexterity));
+                dom.proficiencyBonusDisplay.textContent = formatModifier(characterData.proficiencyBonus);
 
-                // Ability Scores
-                dom.abilityScoresContainer.innerHTML = Object.entries(characterData.abilities).map(([key, score]) => {
-                    const mod = getAbilityModifier(score);
-                    return `
-                        <div>
-                            <span class="font-bold text-amber-300 uppercase">${key.substring(0,3)}</span>
-                            <p class="text-xl font-bold text-white">${score}</p>
-                            <p class="text-sm font-bold bg-gray-700 rounded-full">${formatModifier(mod)}</p>
-                        </div>
-                    `;
-                }).join('');
-
-                // Skills
-                if (dom.skillsList && characterData.skills) {
-                    const activeSkills = Object.entries(characterData.skills)
-                        .filter(([skill, value]) => value !== 0)
-                        .map(([skill, value]) => `<span><strong>${skill}</strong> (${formatModifier(value)})</span>`)
-                        .join('');
-                    dom.skillsList.innerHTML = activeSkills || '<span class="italic text-gray-400">No proficient skills</span>';
-                }
+                // Ability Scores, Saving Throws, Skills
+                dom.abilityScoresContainer.innerHTML = Object.entries(characterData.abilities).map(([key, score]) => `<div><span class="font-bold text-amber-300 uppercase">${key.substring(0,3)}</span><p class="text-xl font-bold text-white">${score}</p><p class="text-sm font-bold bg-gray-700 rounded-full">${formatModifier(getAbilityModifier(score))}</p></div>`).join('');
+                dom.savingThrowsContainer.innerHTML = Object.entries(characterData.savingThrows).map(([key, score]) => `<div><span class="font-bold text-amber-300 capitalize">${key.substring(0,3)}</span><p class="text-2xl font-bold text-white">${formatModifier(score)}</p></div>`).join('');
+                dom.skillsList.innerHTML = Object.entries(characterData.skills).map(([skill, mod]) => `<div class="flex justify-between"><span class="${characterData.proficiencies.skills.includes(skill) ? 'text-amber-100' : 'text-gray-400'}">${skill}</span><span class="font-bold text-white">${formatModifier(mod)}</span></div>`).join('');
                 
-                // Spells
-                if (dom.spellsList && characterData.spells) {
-                    dom.spellsList.innerHTML = characterData.spells.length > 0
-                        ? characterData.spells.map(spell => `<div>${spell}</div>`).join('')
-                        : '<span class="italic text-gray-400">No spells known</span>';
-                }
-
-                // Currency
-                if (dom.mainPpTotal && characterData.coins) {
-                    dom.mainPpTotal.textContent = characterData.coins.pp || 0;
-                    dom.mainGpTotal.textContent = characterData.coins.gp || 0;
-                    dom.mainEpTotal.textContent = characterData.coins.ep || 0;
-                    dom.mainSpTotal.textContent = characterData.coins.sp || 0;
-                    dom.mainCpTotal.textContent = characterData.coins.cp || 0;
-                }
-
-                // Notes
+                // Spells, Currency, Notes
+                dom.spellsList.innerHTML = characterData.spells.length > 0 ? characterData.spells.map(spell => `<div>${spell}</div>`).join('') : '<span class="italic text-gray-400">No spells known</span>';
+                Object.keys(characterData.coins).forEach(coin => { dom[`main${coin.charAt(0).toUpperCase() + coin.slice(1)}Total`].textContent = characterData.coins[coin] || 0; });
                 dom.adventureNotes.value = characterData.notes || "";
             };
 
             const populateSettingsModal = () => {
-                // Character Details
-                dom.charNameInput.value = characterData.name;
-                dom.raceInput.value = characterData.race;
-                dom.classInput.value = characterData.class;
-                dom.backgroundInput.value = characterData.background;
-                dom.alignmentInput.value = characterData.alignment;
-
-                // Core Stats
-                dom.levelInput.value = characterData.level;
-                dom.maxHpInput.value = characterData.maxHp;
-                dom.armorClassInput.value = characterData.armorClass;
-                dom.speedInput.value = characterData.speed;
+                // Details & Stats
+                dom.charNameInput.value = characterData.name; dom.raceInput.value = characterData.race; dom.classInput.value = characterData.class;
+                dom.backgroundInput.value = characterData.background; dom.alignmentInput.value = characterData.alignment; dom.levelInput.value = characterData.level;
+                dom.maxHpInput.value = characterData.maxHp; dom.armorClassInput.value = characterData.armorClass; dom.speedInput.value = characterData.speed;
                 
                 // Abilities
-                dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `
-                    <div class="flex items-center justify-between">
-                         <label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label>
-                         <input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-16 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    </div>
-                `).join('');
-
-                // Spells
+                dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-16 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></div>`).join('');
+                
+                // Proficiencies
+                dom.savingThrowProficienciesContainer.innerHTML = Object.keys(characterData.savingThrows).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key}-prof" ${characterData.proficiencies.savingThrows.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key}-prof" class="text-amber-300 text-sm capitalize">${key}</label></div>`).join('');
+                dom.skillProficienciesContainer.innerHTML = Object.keys(characterData.skills).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key.replace(/\s+/g, '-')}-prof" ${characterData.proficiencies.skills.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key.replace(/\s+/g, '-')}-prof" class="text-amber-300 text-sm">${key}</label></div>`).join('');
+                
+                // Spells & App Settings
                 dom.spellsInput.value = characterData.spells.join('\n');
-
-                // App Settings
                 dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
                 dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
 
-                // Skills
-                const skillContainer = dom.skillInputsContainer;
-                skillContainer.innerHTML = '<h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>'; 
-                Object.entries(characterData.skills).forEach(([skill, value]) => {
-                    const skillId = `skill-input-${skill.replace(/\s+/g, '-')}`;
-                    const skillHtml = `<div class="flex justify-between items-center"><label for="${skillId}" class="text-amber-300 text-sm">${skill}</label><input type="number" id="${skillId}" value="${value}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></div>`;
-                    skillContainer.insertAdjacentHTML('beforeend', skillHtml);
-                });
-
-                // JSON
+                // JSON Editor
                 dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
                 dom.jsonFeedback.textContent = '';
             };
-
+            
+            // --- MODAL & ANIMATION ---
             const toggleModal = (modalElement, show) => {
                 if (show) allModals.forEach(modal => modal.classList.add('hidden'));
                 modalElement.classList.toggle('hidden', !show);
@@ -711,15 +654,22 @@
             const copyToClipboard = (text, message) => navigator.clipboard.writeText(text).then(() => showToast(message)).catch(err => console.error(err));
 
             const animateCount = (element, start, end, duration, onComplete) => {
-                if (start === end) { if(onComplete) onComplete(); return; }
+                if (start === end) {
+                    if(onComplete) onComplete();
+                    return;
+                }
                 const range = end - start;
                 const increment = end > start ? 1 : -1;
                 const stepTime = Math.max(10, Math.abs(Math.floor(duration / range)));
                 let current = start;
+
                 const timer = setInterval(() => {
                     current += increment;
                     element.textContent = current;
-                    if (current == end) { clearInterval(timer); if(onComplete) onComplete(); }
+                    if (current == end) {
+                        clearInterval(timer);
+                        if(onComplete) onComplete();
+                    }
                 }, stepTime);
             };
 
@@ -741,10 +691,12 @@
                     clearInterval(scrambleInterval);
                     animatedNumberEl.textContent = finalRoll;
                     setTimeout(() => {
-                        diceTypeTextEl.textContent = `d${sides} (${skillName})`;
+                        diceTypeTextEl.textContent = `${skillName}`;
                         if (sides === 100 || modifier === 0) {
                             rollDetailsTextEl.innerHTML = `Total: <span class="font-bold">${total}</span>`;
-                            rollDetailsTextEl.classList.add('show'); isAnimating = false; return;
+                            rollDetailsTextEl.classList.add('show');
+                            isAnimating = false;
+                            return;
                         }
                         modifierFlyoutEl.textContent = formatModifier(modifier);
                         modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400', 'show');
@@ -752,7 +704,8 @@
                             modifierFlyoutEl.classList.remove('show');
                             animateCount(animatedNumberEl, finalRoll, total, countDuration, () => {
                                 rollDetailsTextEl.innerHTML = `Modifier: ${formatModifier(modifier)} | Total: <span class="font-bold">${total}</span>`;
-                                rollDetailsTextEl.classList.add('show'); isAnimating = false;
+                                rollDetailsTextEl.classList.add('show');
+                                isAnimating = false;
                             });
                         }, modifierVisibleDuration);
                     }, pauseAfterScramble);
@@ -774,32 +727,32 @@
                 dom.deathSaveStatus.textContent = "You are unconscious and in peril.";
                 dom.makeDeathSaveBtn.classList.remove('hidden');
                 dom.closeDeathSaveModalBtn.classList.add('hidden');
+                dom.restartSameCharacterBtn.classList.add('hidden');
                 dom.createNewCharacterBtn.classList.add('hidden');
                 updateDeathSaveDisplay();
                 toggleModal(dom.deathSaveModal, true);
             };
-
+            
             // --- EVENT HANDLERS ---
             const handleDiceClick = (sides) => {
                 if (isAnimating) return;
-                if (sides === 100) {
-                    const roll = Math.floor(Math.random() * 100) + 1;
-                    animateAndShowResult(100, roll, 0, roll, 'Percentage');
+                if (sides !== 20) { // For simple dice rolls
+                    const roll = Math.floor(Math.random() * sides) + 1;
+                    animateAndShowResult(sides, roll, 0, roll, `d${sides}`);
                     if(appSettings.autoCopyRoll) {
-                        const hpStatus = ` | HP: ${characterData.currentHp}/${characterData.maxHp}`;
-                        copyToClipboard(`d100 (Percentage) Roll: ${roll}${hpStatus}`, 'Dice roll copied!');
+                        copyToClipboard(`d${sides} Roll: ${roll} | HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Dice roll copied!');
                     }
-                } else {
-                    currentDiceSides = sides;
-                    dom.modifierOptions.innerHTML = '';
-                    Object.entries(characterData.skills).forEach(([skill, modifier]) => {
-                        const button = document.createElement('button');
-                        button.className = 'bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-3 px-2 rounded-lg transition-colors text-sm';
-                        button.textContent = `${skill} (${formatModifier(modifier)})`;
-                        button.dataset.skill = skill;
-                        button.dataset.modifier = modifier;
-                        dom.modifierOptions.appendChild(button);
-                    });
+                } else { // For d20 rolls, show the smart modal
+                    currentDiceSides = 20;
+                    dom.modifierOptions.innerHTML = `
+                        <div>
+                            <h4 class="font-cinzel text-lg text-amber-200 mb-2">Saving Throws</h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.savingThrows).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key} Save" data-modifier="${mod}">${key.substring(0,3)} ${formatModifier(mod)}</button>`).join('')}</div>
+                        </div>
+                        <div>
+                            <h4 class="font-cinzel text-lg text-amber-200 mt-4 mb-2">Skills</h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.skills).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key}" data-modifier="${mod}">${key} ${formatModifier(mod)}</button>`).join('')}</div>
+                        </div>`;
                     toggleModal(dom.modifierModal, true);
                 }
             };
@@ -827,45 +780,55 @@
                 
                 if (isJsonMode) {
                     try {
-                        const newData = JSON.parse(dom.jsonEditor.value);
-                        if (!newData.name || !newData.abilities) { throw new Error("Invalid structure. Must include name and abilities."); }
+                        let newData = JSON.parse(dom.jsonEditor.value);
+                        if (!newData.name || !newData.abilities) { throw new Error("Invalid structure."); }
                         characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
-                        if (characterData.maxHp !== newData.maxHp) { characterData.currentHp = newData.maxHp; }
-                        dom.jsonFeedback.textContent = "Character data applied successfully!";
-                        dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-green-400";
                     } catch (error) {
-                        dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
+                        dom.jsonFeedback.textContent = error.message || "Invalid JSON format.";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
                         return; 
                     }
                 } else {
+                    const oldConMod = getAbilityModifier(characterData.abilities.constitution);
+
                     characterData.name = dom.charNameInput.value || "Nameless";
-                    characterData.race = dom.raceInput.value;
-                    characterData.class = dom.classInput.value;
-                    characterData.background = dom.backgroundInput.value;
-                    characterData.alignment = dom.alignmentInput.value;
+                    characterData.race = dom.raceInput.value; characterData.class = dom.classInput.value;
+                    characterData.background = dom.backgroundInput.value; characterData.alignment = dom.alignmentInput.value;
                     characterData.level = parseInt(dom.levelInput.value, 10) || 1;
                     characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
                     characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
-                    const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
-                    if (newMaxHp !== characterData.maxHp) {
-                        characterData.maxHp = newMaxHp;
-                        characterData.currentHp = newMaxHp;
-                    }
+                    
                     Object.keys(characterData.abilities).forEach(key => {
                         const input = document.getElementById(`${key}-input`);
                         if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
                     });
+                    
+                    const newConMod = getAbilityModifier(characterData.abilities.constitution);
+                    if(newConMod !== oldConMod) {
+                        const hpChange = (newConMod - oldConMod) * characterData.level;
+                        characterData.maxHp += hpChange;
+                        characterData.currentHp += hpChange;
+                    }
+
+                    let newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
+                    if(newMaxHp !== characterData.maxHp && characterData.level === 1) {
+                         characterData.maxHp = newMaxHp;
+                         characterData.currentHp = newMaxHp;
+                    }
+
+
+                    characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
+                    characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
                     characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
-                    Object.keys(characterData.skills).forEach(skill => {
-                        const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
-                        if (inputElement) characterData.skills[skill] = parseInt(inputElement.value, 10) || 0;
-                    });
                 }
+                
+                characterData = calculateAllModifiers(characterData);
                 saveData('dndCharacterData', characterData);
+                
                 appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
                 appSettings.autoCopyHp = dom.autoCopyHpSetting.checked;
                 saveData('dndAppSettings', appSettings);
+
                 updateUI();
                 toggleModal(dom.settingsModal, false);
             };
@@ -879,17 +842,35 @@
                 init();
             };
 
+            const restartSameCharacter = () => {
+                if (!characterData) return;
+                characterData.currentHp = characterData.maxHp;
+                characterData.status = 'conscious';
+                characterData.deathSaves = { successes: 0, failures: 0 };
+                saveData('dndCharacterData', characterData);
+                updateUI();
+                toggleModal(dom.deathSaveModal, false);
+            };
+
             const init = () => {
-                const loadedCharacter = loadData('dndCharacterData');
-                characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
+                let loadedCharacter = loadData('dndCharacterData');
                 if (loadedCharacter) {
-                    characterData.abilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
-                    characterData.skills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
-                    characterData.coins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
-                    characterData.deathSaves = loadedCharacter.deathSaves || { successes: 0, failures: 0 };
-                    characterData.status = loadedCharacter.status || 'conscious';
+                    // Deep merge to ensure new data structure is applied to old saves
+                    let mergedAbilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
+                    let mergedSkills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
+                    let mergedCoins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
+                    characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
+                    characterData.abilities = mergedAbilities;
+                    characterData.skills = mergedSkills;
+                    characterData.coins = mergedCoins;
+                } else {
+                    characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
                 }
+                
+                characterData = calculateAllModifiers(characterData);
+                
                 appSettings = loadData('dndAppSettings') || { ...defaultSettings };
+                
                 if (!loadedCharacter) {
                     toggleModal(dom.onboardingModal, true);
                 } else {
@@ -900,7 +881,7 @@
                 }
                 setupEventListeners();
             };
-
+            
             function setupEventListeners() {
                 dom.diceButtons.forEach(button => button.addEventListener('click', () => handleDiceClick(parseInt(button.dataset.sides, 10))));
                 dom.modifierOptions.addEventListener('click', (e) => {
@@ -963,6 +944,7 @@
                     const roll = Math.floor(Math.random() * 20) + 1;
                     dom.deathSaveResult.textContent = roll;
                     let clipboardText = '';
+                    let shouldCopyToClipboard = false;
                     
                     if (roll === 20) {
                         characterData.currentHp = 1;
@@ -971,40 +953,38 @@
                         dom.deathSaveStatus.textContent = "Critical success! You regain consciousness with 1 HP.";
                         dom.makeDeathSaveBtn.classList.add('hidden');
                         dom.closeDeathSaveModalBtn.classList.remove('hidden');
-                        clipboardText = `Death Save (Critical Success!): Rolled a 20. Character is back up with 1 HP.`;
+                        clipboardText = `Death Save sequence ended. Final roll was a critical success (20). Character revived with 1 HP.`;
+                        shouldCopyToClipboard = true;
                     } else if (roll >= 10) {
                         characterData.deathSaves.successes++;
                         dom.deathSaveStatus.textContent = "Successful roll!";
-                        clipboardText = `Death Save (Success): Rolled a ${roll}. ${characterData.deathSaves.successes} successes, ${characterData.deathSaves.failures} failures. | HP: 0/${characterData.maxHp}`;
                         if (characterData.deathSaves.successes >= 3) {
                             characterData.status = 'stable';
                             dom.deathSaveTitle.textContent = "STABLE";
                             dom.deathSaveStatus.textContent = "You are stable, but still unconscious.";
                             dom.makeDeathSaveBtn.classList.add('hidden');
                             dom.closeDeathSaveModalBtn.classList.remove('hidden');
-                            clipboardText = `Death Save (Success): Rolled a ${roll}. Character is now stable. | HP: 0/${characterData.maxHp}`;
+                            clipboardText = `Death Save sequence ended. Final roll was ${roll} (Success). Character is now stable with ${characterData.deathSaves.successes} successes and ${characterData.deathSaves.failures} failures.`;
+                            shouldCopyToClipboard = true;
                         }
                     } else { // roll < 10
                         const isCritFail = roll === 1;
                         characterData.deathSaves.failures += (isCritFail ? 2 : 1);
                         dom.deathSaveStatus.textContent = (isCritFail) ? "Critical failure! (2 failures)" : "Failed roll.";
                         
-                        if (isCritFail) {
-                             clipboardText = `Death Save (Critical Failure!): Rolled a 1. Gained 2 failures. ${characterData.deathSaves.successes} successes, ${characterData.deathSaves.failures} failures. | HP: 0/${characterData.maxHp}`;
-                        } else {
-                             clipboardText = `Death Save (Failure): Rolled a ${roll}. ${characterData.deathSaves.successes} successes, ${characterData.deathSaves.failures} failures. | HP: 0/${characterData.maxHp}`;
-                        }
                         if (characterData.deathSaves.failures >= 3) {
                             characterData.status = 'dead';
                             dom.deathSaveTitle.textContent = "DEAD";
                             dom.deathSaveStatus.textContent = "Your adventure has come to an end.";
                             dom.makeDeathSaveBtn.classList.add('hidden');
+                            dom.restartSameCharacterBtn.classList.remove('hidden');
                             dom.createNewCharacterBtn.classList.remove('hidden');
-                             clipboardText = `Death Save (${isCritFail ? 'Critical Failure!' : 'Failure'}): Rolled a ${roll}. Character has died.`;
+                             clipboardText = `Death Save sequence ended. Final roll was ${roll} (${isCritFail ? 'Critical Failure' : 'Failure'}). Character died with ${characterData.deathSaves.successes} successes and ${characterData.deathSaves.failures} failures.`;
+                             shouldCopyToClipboard = true;
                         }
                     }
 
-                    if(appSettings.autoCopyRoll) {
+                    if(shouldCopyToClipboard && appSettings.autoCopyRoll) {
                         copyToClipboard(clipboardText, 'Death save result copied!');
                     }
 
@@ -1044,7 +1024,10 @@
 
                 dom.createCharacterBtn.addEventListener('click', () => {
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+                    const conMod = getAbilityModifier(characterData.abilities.constitution);
+                    characterData.maxHp = characterData.hitDie + conMod;
                     characterData.currentHp = characterData.maxHp;
+                    characterData = calculateAllModifiers(characterData);
                     appSettings = JSON.parse(JSON.stringify(defaultSettings));
                     toggleModal(dom.onboardingModal, false);
                     populateSettingsModal();
@@ -1081,6 +1064,7 @@
                 dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
                 dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
                 dom.confirmResetBtn.addEventListener('click', resetCharacter);
+                dom.restartSameCharacterBtn.addEventListener('click', restartSameCharacter);
                 dom.createNewCharacterBtn.addEventListener('click', resetCharacter);
                 dom.cancelResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, false));
                 
@@ -1089,9 +1073,9 @@
                 }));
             }
 
-            // --- START APP ---
+            // --- KICKSTART APP ---
             init();
-        });
+        })
     </script>
 </body>
 </html>
