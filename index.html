@@ -1031,10 +1031,12 @@
                     }
                 });
                 const resetCharacter = () => {
-                localStorage.removeItem('dndCharacterData');
-                localStorage.removeItem('dndAppSettings');
-                window.location.reload();
-            };
+                localStorage.removeItem('dndCharacterData');
+                localStorage.removeItem('dndAppSettings');
+                toggleModal(dom.resetModal, false);
+                toggleModal(dom.onboardingModal, true);
+                };
+
                 const restartSameCharacter = () => {
                     characterData.currentHp = characterData.maxHp;
                     characterData.status = 'conscious';
