@@ -12,7 +12,8 @@
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #111827;
-            color: #d1d5db; /* Lighter gray for better readability on long text */
+            color: #d1d5db;
+            scroll-behavior: smooth; /* Smooth scrolling for navigation links */
         }
         .font-cinzel { font-family: 'Cinzel', serif; }
 
@@ -27,7 +28,6 @@
             align-items: flex-start;
             gap: 1.5rem;
         }
-
         .guide-section .icon {
             flex-shrink: 0;
             width: 3rem;
@@ -39,11 +39,9 @@
             align-items: center;
             justify-content: center;
         }
-
         .guide-section h2 {
-            color: #fde68a; /* amber-200 */
+            color: #fde68a;
         }
-
         .guide-section code {
             background-color: #111827;
             color: #f9fafb;
@@ -51,11 +49,9 @@
             border-radius: 0.25rem;
             font-family: monospace;
         }
-
         .guide-section strong {
-            color: #fef3c7; /* amber-300 */
+            color: #fef3c7;
         }
-
         .back-link {
             display: inline-block;
             background-color: #4b5563;
@@ -69,12 +65,48 @@
         .back-link:hover {
             background-color: #6b7280;
         }
-
+        .navbar {
+            background-color: #111827;
+            padding: 1rem 0;
+            border-bottom: 1px solid #374151;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .navbar ul {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .navbar a {
+            color: #fde68a;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+        .navbar a:hover {
+            color: #fef3c7;
+        }
+        .navbar ul li + li:before {
+            content: '|';
+            color: #374151;
+            margin-right: 1rem;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+        }
         @media (max-width: 640px) {
             .guide-section {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
+            }
+            .navbar ul {
+                flex-direction: column;
+            }
+            .navbar ul li + li:before {
+                content: none;
             }
         }
     </style>
@@ -86,10 +118,23 @@
             <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-amber-200">Digital Character Sheet</h1>
             <p class="text-xl text-amber-400 mt-2">Your Adventure Companion</p>
         </header>
+        
+        <nav class="navbar">
+            <ul class="list-none p-0 m-0">
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#main-dashboard">Dashboard</a></li>
+                <li><a href="#rolling-dice">Rolling Dice</a></li>
+                <li><a href="#wealth-wisdom">Wealth & Wisdom</a></li>
+                <li><a href="#diving-deeper">More Info</a></li>
+                <li><a href="#health-death">Health & Death</a></li>
+                <li><a href="#advanced-customization">Settings</a></li>
+                <li><a href="#solo-dnd">Solo D&D with AI</a></li>
+            </ul>
+        </nav>
 
-        <main>
+        <main class="mt-8">
             <!-- Introduction Section -->
-            <section class="guide-section">
+            <section id="getting-started" class="guide-section">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-9-5.747h18" />
@@ -102,7 +147,7 @@
             </section>
 
             <!-- The Dashboard Section -->
-            <section class="guide-section">
+            <section id="main-dashboard" class="guide-section">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm0 0V4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v1m-7 5h4m-4 4h4" />
@@ -122,7 +167,7 @@
             </section>
 
             <!-- Rolling Dice Section -->
-            <section class="guide-section">
+            <section id="rolling-dice" class="guide-section">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-6 0l6 6" />
@@ -140,9 +185,9 @@
                     </div>
                 </div>
             </section>
-            
+
             <!-- Currency and Notes -->
-            <section class="guide-section">
+            <section id="wealth-wisdom" class="guide-section">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" />
@@ -161,9 +206,9 @@
             </section>
 
             <!-- More Info Section -->
-            <section class="guide-section">
+            <section id="diving-deeper" class="guide-section">
                 <div class="icon">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2M5 12a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" />
                     </svg>
                 </div>
@@ -180,7 +225,7 @@
             </section>
 
             <!-- Health & Death Section -->
-            <section class="guide-section">
+            <section id="health-death" class="guide-section">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z" />
@@ -200,7 +245,7 @@
             </section>
             
             <!-- Settings & JSON Section -->
-            <section class="guide-section">
+            <section id="advanced-customization" class="guide-section">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -215,12 +260,72 @@
                     </div>
                 </div>
             </section>
+            
+            <!-- Solo D&D Section -->
+            <section id="solo-dnd" class="guide-section">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-9-5.747h18" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Solo D&D with an AI Dungeon Master</h2>
+                    <p class="text-lg mb-4">Want to play D&D but don't have a group? Use this AI Dungeon Master prompt to play a solo campaign, with the AI controlling the world and NPCs.</p>
+                    <div class="bg-gray-800 p-6 rounded-lg text-gray-200 shadow-inner">
+                        <textarea id="dnd-prompt" readonly rows="20" class="w-full bg-transparent text-sm font-mono resize-none outline-none">Act as though we are playing a Game of Dungeons and Dragons 5th edition. Act as though you are the dungeon master and I am the player. We will be creating a narrative together, where I make decisions for my character, and you make decisions for all other characters (NPCs) and creatures in the world.
+Your responsibilities as dungeon master are to describe the setting, environment, Non-player characters (NPCs) and their actions, as well as explain the consequences of my actions on all of the above. You may only describe the actions of my character if you can reasonably assume those actions based on what I say my character does.
+It is also your responsibility to determine whether my character’s actions succeed. Simple, easily accomplished actions may succeed automatically. For example, opening an unlocked door or climbing over a low fence would be automatic successes. Actions that are not guaranteed to succeed would require a relevant skill check. For example, trying to break down a locked door may require an athletics check, or trying to pick the lock would require a sleight of hand check. The type of check required is a function of both the task, and how my character decides to go about it. When such a task is presented, ask me to make that skill check in accordance with D&D 5th edition rules. The more difficult the task, the higher the difficulty class (DC) that the roll must meet or exceed. Actions that are impossible are just that: impossible. For example, trying to pick up a building.
+Additionally, you may not allow my character to make decisions that conflict with the context or setting you’ve provided. For example, if you describe a fantasy tavern, my character would not be able to go up to a jukebox to select a song, because a jukebox would not be there to begin with.
+Try to make the setting consistent with previous descriptions of it. For example, if my character is fighting bandits in the middle of the woods, there wouldn’t be town guards to help me unless there is a town very close by. Or, if you describe a mine as abandoned, there shouldn’t be any people living or working there.
+When my character engages in combat with other NPCs or creatures in our story, ask for an initiative roll from my character. You can also generate a roll for the other creatures involved in combat. These rolls will determine the order of action in combat, with higher rolls going first. Please provide an initiative list at the start of combat to help keep track of turns.
+For each creature in combat, keep track of their health points (HP). Damage dealt to them should reduce their HP by the amount of the damage dealt. To determine whether my character does damage, I will make an attack roll. This attack roll must meet or exceed the armor class (AC) of the creature. If it does not, then it does not hit.
+On the turn of any other creature besides my character, you will decide their action. For example, you may decide that they attack my character, run away, or make some other decision, keeping in mind that a round of combat is 6 seconds.
+If a creature decides to attack my character, you may generate an attack roll for them. If the roll meets or exceeds my own AC, then the attack is successful and you can now generate a damage roll. That damage roll will be subtracted from my own hp. If the hp of a creature reaches 0, that creature dies. Participants in combat are unable to take actions outside of their own turn.
+Before we begin playing, I would like you to provide my three adventure options. Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. Once I decide on the adventure, you may provide a brief setting description and begin the game. I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, AC, and HP.
+Deck of DM Things (Cole Porter)</textarea>
+                    </div>
+                    <button id="copy-button" class="mt-4 px-6 py-3 bg-yellow-500 text-gray-900 rounded-full font-bold shadow-lg hover:bg-yellow-400 transition-colors">
+                        Copy Prompt
+                    </button>
+                </div>
+            </section>
         </main>
+        
         <footer class="text-center mt-12">
             <a href="./index.html" class="back-link">
                 &larr; Back to the App
             </a>
         </footer>
     </div>
+
+    <script>
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const promptText = document.getElementById('dnd-prompt');
+            promptText.select();
+            document.execCommand('copy');
+            
+            const originalText = this.textContent;
+            this.textContent = 'Copied!';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        });
+
+        // Add smooth scrolling functionality for navigation links
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
