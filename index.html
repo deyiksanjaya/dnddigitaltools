@@ -152,6 +152,12 @@
             </div>
         </div>
         
+        <!-- Character Skills Display -->
+        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700 text-center">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
+            <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
+        </div>
+        
         <!-- Dice Button Grid -->
         <div class="w-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="4">d4</button>
@@ -269,10 +275,10 @@
             let currentDiceSides = 0;
             let isAnimating = false;
             
-            // Template sekarang hanya menyertakan nama dan keahlian untuk pengeditan JSON.
-            // Daftar keahlian telah dilengkapi sesuai D&D 5e.
+            // Template JSON sekarang menyertakan maxHp dan daftar skill lengkap.
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
+                maxHp: 20,
                 skills: {
                     "Acrobatics": 0,
                     "Animal Handling": 0,
@@ -309,6 +315,7 @@
                 diceButtons: document.querySelectorAll('.dice-button'),
                 hpChangeInput: document.getElementById('hp-change-input'),
                 hpChangeBtn: document.getElementById('hp-change-btn'),
+                skillsList: document.getElementById('skills-list'),
                 onboardingModal: document.getElementById('onboardingModal'),
                 modifierModal: document.getElementById('modifierModal'),
                 settingsModal: document.getElementById('settingsModal'),
@@ -361,6 +368,15 @@
                 if (hpPercentage > 50) dom.healthBar.classList.add('bg-green-500');
                 else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
                 else dom.healthBar.classList.add('bg-red-600');
+
+                // Update skills display
+                if (dom.skillsList && characterData.skills) {
+                    const activeSkills = Object.entries(characterData.skills)
+                        .filter(([skill, value]) => value > 0)
+                        .map(([skill, value]) => `<span><strong>${skill}</strong> (+${value})</span>`)
+                        .join('');
+                    dom.skillsList.innerHTML = activeSkills || '<span class="italic text-gray-400">No proficient skills</span>';
+                }
             };
 
             const populateSettingsModal = () => {
@@ -377,9 +393,10 @@
                     skillContainer.insertAdjacentHTML('beforeend', skillHtml);
                 });
 
-                // Create a temporary object for JSON view without HP stats
+                // Create a temporary object for JSON view including maxHp
                 const characterJsonForEditor = {
                     name: characterData.name,
+                    maxHp: characterData.maxHp,
                     skills: characterData.skills
                 };
                 dom.jsonEditor.value = JSON.stringify(characterJsonForEditor, null, 2);
@@ -536,13 +553,18 @@
                 if (isJsonMode) {
                     try {
                         const newData = JSON.parse(dom.jsonEditor.value);
-                        // Validation now only checks for name and skills.
-                        if (!newData.name || typeof newData.skills !== 'object') {
-                           throw new Error("Invalid character data structure. Must include 'name' and 'skills'.");
+                        // Validation now checks for name, maxHp, and skills.
+                        if (!newData.name || typeof newData.skills !== 'object' || typeof newData.maxHp !== 'number') {
+                           throw new Error("Invalid structure. Must include 'name', 'maxHp', and 'skills'.");
                         }
-                        // Merge JSON data, preserving existing HP.
+                        // Merge JSON data, preserving existing HP unless maxHp changes.
                         characterData.name = newData.name;
                         characterData.skills = newData.skills;
+                        if(characterData.maxHp !== newData.maxHp) {
+                            characterData.maxHp = newData.maxHp;
+                            characterData.currentHp = newData.maxHp; // Reset current HP
+                        }
+                        
                         dom.jsonFeedback.textContent = "Character data applied successfully!";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-green-400";
                     } catch (error) {
@@ -648,10 +670,9 @@
                 });
 
                 dom.createCharacterBtn.addEventListener('click', () => {
-                    // Create new character from template and add default HP stats
+                    // Create new character from template
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
-                    characterData.maxHp = 20;
-                    characterData.currentHp = 20;
+                    characterData.currentHp = characterData.maxHp; // Set currentHp to max
                     appSettings = JSON.parse(JSON.stringify(defaultSettings));
                     toggleModal(dom.onboardingModal, false);
                     populateSettingsModal();
@@ -670,7 +691,7 @@
                 dom.settingsModalContent.addEventListener('focusin', (e) => {
                     if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
                         e.target.dataset.originalValue = e.target.value;
-                        e.target.value = '';
+                        e.target.select();
                     }
                 });
                 dom.settingsModalContent.addEventListener('focusout', (e) => {
