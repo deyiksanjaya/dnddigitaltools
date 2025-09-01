@@ -144,6 +144,7 @@
                 <div class="text-center md:text-left">
                     <h1 id="characterName" class="font-cinzel text-3xl md:text-4xl font-bold text-amber-200">Character Name</h1>
                     <p id="characterHP" class="text-lg text-amber-400">HP: 20 / 20</p>
+                    <p id="characterLevel" class="text-lg text-amber-300">Level: 1</p>
                 </div>
                 <!-- Health Bar -->
                 <div class="w-full md:w-1/2">
@@ -213,6 +214,12 @@
             <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
             <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
         </div>
+        
+        <!-- Adventure Notes -->
+        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Adventure Notes</h3>
+            <textarea id="adventureNotes" class="w-full h-40 bg-gray-900 text-amber-100 p-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Catat petunjuk, nama NPC, atau detail penting lainnya di sini..."></textarea>
+        </div>
 
         <!-- Settings and Reset Buttons -->
         <footer class="w-full flex justify-center gap-4 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
@@ -247,9 +254,15 @@
                         <label for="charNameInput" class="block text-amber-300 mb-1 text-sm">Character Name</label>
                         <input type="text" id="charNameInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
-                    <div>
-                        <label for="maxHpInput" class="block text-amber-300 mb-1 text-sm">Max HP</label>
-                        <input type="number" id="maxHpInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="maxHpInput" class="block text-amber-300 mb-1 text-sm">Max HP</label>
+                            <input type="number" id="maxHpInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label for="levelInput" class="block text-amber-300 mb-1 text-sm">Level</label>
+                            <input type="number" id="levelInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
                     </div>
                      <!-- Coin Inputs -->
                     <div class="pt-2">
@@ -346,10 +359,12 @@
             let currentDiceSides = 0;
             let isAnimating = false;
             
-            // Template JSON now includes a coins object.
+            // Template JSON now includes level and notes.
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
+                level: 1,
                 maxHp: 20,
+                notes: "",
                 skills: {
                     "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0,
                     "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
@@ -371,12 +386,14 @@
                 body: document.body,
                 characterName: document.getElementById('characterName'),
                 characterHP: document.getElementById('characterHP'),
+                characterLevel: document.getElementById('characterLevel'),
                 healthBar: document.getElementById('health-bar-inner'),
                 rollResultDisplay: document.getElementById('roll-result-display'),
                 diceButtons: document.querySelectorAll('.dice-button'),
                 hpChangeInput: document.getElementById('hp-change-input'),
                 hpChangeBtn: document.getElementById('hp-change-btn'),
                 skillsList: document.getElementById('skills-list'),
+                adventureNotes: document.getElementById('adventureNotes'),
                 onboardingModal: document.getElementById('onboardingModal'),
                 modifierModal: document.getElementById('modifierModal'),
                 settingsModal: document.getElementById('settingsModal'),
@@ -393,6 +410,7 @@
                 cancelResetBtn: document.getElementById('cancelResetBtn'),
                 charNameInput: document.getElementById('charNameInput'),
                 maxHpInput: document.getElementById('maxHpInput'),
+                levelInput: document.getElementById('levelInput'),
                 autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
                 autoCopyHpSetting: document.getElementById('autoCopyHpSetting'),
                 skillInputsContainer: document.getElementById('skillInputsContainer'),
@@ -435,6 +453,8 @@
                 if (!characterData || Object.keys(characterData).length === 0) return;
                 dom.characterName.textContent = characterData.name;
                 dom.characterHP.textContent = `HP: ${characterData.currentHp} / ${characterData.maxHp}`;
+                dom.characterLevel.textContent = `Level: ${characterData.level}`;
+                dom.adventureNotes.value = characterData.notes || "";
                 const hpPercentage = (characterData.currentHp / characterData.maxHp) * 100;
                 dom.healthBar.style.width = `${Math.max(0, hpPercentage)}%`;
                 dom.healthBar.classList.remove('bg-green-500', 'bg-yellow-500', 'bg-red-600');
@@ -463,6 +483,7 @@
             const populateSettingsModal = () => {
                 dom.charNameInput.value = characterData.name;
                 dom.maxHpInput.value = characterData.maxHp;
+                dom.levelInput.value = characterData.level;
                 dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
                 dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
 
@@ -483,7 +504,9 @@
 
                 const characterJsonForEditor = {
                     name: characterData.name,
+                    level: characterData.level,
                     maxHp: characterData.maxHp,
+                    notes: characterData.notes,
                     skills: characterData.skills,
                     coins: characterData.coins
                 };
@@ -644,11 +667,13 @@
                 if (isJsonMode) {
                     try {
                         const newData = JSON.parse(dom.jsonEditor.value);
-                        if (!newData.name || typeof newData.skills !== 'object' || typeof newData.maxHp !== 'number' || typeof newData.coins !== 'object') {
-                           throw new Error("Invalid structure. Must include 'name', 'maxHp', 'skills', and 'coins'.");
+                        if (!newData.name || typeof newData.skills !== 'object' || typeof newData.level !== 'number' || typeof newData.maxHp !== 'number' || typeof newData.coins !== 'object' || typeof newData.notes === 'undefined') {
+                           throw new Error("Invalid structure. Must include all character fields.");
                         }
                         
                         characterData.name = newData.name;
+                        characterData.level = newData.level;
+                        characterData.notes = newData.notes;
                         characterData.skills = newData.skills;
                         characterData.coins = newData.coins;
 
@@ -666,6 +691,7 @@
                     }
                 } else {
                     characterData.name = dom.charNameInput.value || "Nameless";
+                    characterData.level = parseInt(dom.levelInput.value, 10) || 1;
                     const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
                     if (newMaxHp !== characterData.maxHp) {
                         characterData.maxHp = newMaxHp;
@@ -709,9 +735,11 @@
                 if (!characterData) {
                     toggleModal(dom.onboardingModal, true);
                 } else {
+                    if (characterData.level === undefined) characterData.level = 1;
                     if (characterData.maxHp === undefined) characterData.maxHp = 20;
                     if (characterData.currentHp === undefined) characterData.currentHp = 20;
                     if (characterData.coins === undefined) characterData.coins = JSON.parse(JSON.stringify(defaultCharacterTemplate.coins));
+                    if (characterData.notes === undefined) characterData.notes = "";
                     updateUI();
                 }
                 setupEventListeners();
@@ -765,6 +793,16 @@
                     dom.hpChangeBtn.textContent = 'Apply';
                     dom.hpChangeBtn.disabled = true;
                     dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+                });
+                
+                // Event listener for adventure notes
+                dom.adventureNotes.addEventListener('blur', () => {
+                    const newNotes = dom.adventureNotes.value;
+                    if (characterData.notes !== newNotes) {
+                        characterData.notes = newNotes;
+                        saveData('dndCharacterData', characterData);
+                        showToast('Notes saved!');
+                    }
                 });
                 
                 // Event listeners for main screen coin inputs
