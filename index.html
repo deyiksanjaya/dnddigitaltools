@@ -138,8 +138,8 @@
             <div class="w-full flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <div class="text-center md:text-left">
                     <h1 id="characterName" class="font-cinzel text-3xl md:text-4xl font-bold text-amber-200">Character Name</h1>
+                    <p id="characterInfo" class="text-lg text-amber-300">Level 1 Race Class</p>
                     <p id="characterHP" class="text-lg text-amber-400">HP: 20 / 20</p>
-                    <p id="characterLevel" class="text-lg text-amber-300">Level: 1</p>
                 </div>
                 <!-- Health Bar -->
                 <div class="w-full md:w-1/2">
@@ -154,6 +154,30 @@
                 <button id="hp-change-btn" class="text-white font-bold py-2 px-4 rounded-lg transition-all w-32" disabled>Apply</button>
             </div>
         </header>
+        
+        <!-- Core Stats -->
+        <div class="w-full grid grid-cols-3 gap-4 text-center bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700">
+            <div>
+                <span class="font-bold text-amber-300">Armor Class</span>
+                <p id="armorClassDisplay" class="text-2xl font-bold text-white">10</p>
+            </div>
+            <div>
+                <span class="font-bold text-amber-300">Initiative</span>
+                <p id="initiativeDisplay" class="text-2xl font-bold text-white">+0</p>
+            </div>
+            <div>
+                <span class="font-bold text-amber-300">Speed</span>
+                <p id="speedDisplay" class="text-2xl font-bold text-white">30 ft</p>
+            </div>
+        </div>
+
+        <!-- Ability Scores -->
+        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Ability Scores</h3>
+            <div id="abilityScoresContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
+                <!-- Abilities will be populated by JS -->
+            </div>
+        </div>
 
         <!-- Dice Display Area -->
         <div class="w-full bg-gray-900 border-4 border-amber-800 rounded-xl p-4 shadow-inner min-h-[120px] flex items-center justify-center">
@@ -175,6 +199,18 @@
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="12">d12</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="20">d20</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="100">d100</button>
+        </div>
+        
+        <!-- Character Skills Display -->
+        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700 text-center">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
+            <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
+        </div>
+
+        <!-- Spells Display -->
+        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells</h3>
+            <div id="spellsList" class="text-amber-200 space-y-2"></div>
         </div>
         
         <!-- Coin Inventory -->
@@ -238,12 +274,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Character Skills Display -->
-        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700 text-center">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-2">Proficient Skills</h3>
-            <div id="skills-list" class="text-amber-200 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
-        </div>
         
         <!-- Adventure Notes -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
@@ -278,26 +308,74 @@
             <h3 class="font-cinzel text-2xl font-bold text-amber-200 text-center mb-6">Settings</h3>
             <div class="space-y-4">
                 <!-- Character Details -->
-                <div class="space-y-2 pb-2 border-b border-gray-600">
-                    <h4 class="text-amber-300 font-bold">Character Data</h4>
+                <div class="space-y-4 pb-4 border-b border-gray-600">
+                    <h4 class="text-amber-300 font-bold">Character Details</h4>
                     <div>
                         <label for="charNameInput" class="block text-amber-300 mb-1 text-sm">Character Name</label>
                         <input type="text" id="charNameInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="maxHpInput" class="block text-amber-300 mb-1 text-sm">Max HP</label>
-                            <input type="number" id="maxHpInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <label for="raceInput" class="block text-amber-300 mb-1 text-sm">Race</label>
+                            <input type="text" id="raceInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
+                        <div>
+                            <label for="classInput" class="block text-amber-300 mb-1 text-sm">Class</label>
+                            <input type="text" id="classInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                         <div>
+                            <label for="backgroundInput" class="block text-amber-300 mb-1 text-sm">Background</label>
+                            <input type="text" id="backgroundInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label for="alignmentInput" class="block text-amber-300 mb-1 text-sm">Alignment</label>
+                            <input type="text" id="alignmentInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Core Stats -->
+                <div class="space-y-4 py-4 border-b border-gray-600">
+                     <h4 class="text-amber-300 font-bold">Core Stats</h4>
+                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label for="levelInput" class="block text-amber-300 mb-1 text-sm">Level</label>
                             <input type="number" id="levelInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
+                         <div>
+                            <label for="maxHpInput" class="block text-amber-300 mb-1 text-sm">Max HP</label>
+                            <input type="number" id="maxHpInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label for="armorClassInput" class="block text-amber-300 mb-1 text-sm">Armor Class</label>
+                            <input type="number" id="armorClassInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                         <div>
+                            <label for="speedInput" class="block text-amber-300 mb-1 text-sm">Speed</label>
+                            <input type="number" id="speedInput" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ability Scores -->
+                 <div class="space-y-2 py-4 border-b border-gray-600">
+                    <h4 class="text-amber-300 font-bold">Ability Scores</h4>
+                    <div id="abilityInputsContainer" class="grid grid-cols-3 gap-x-4 gap-y-2">
+                        <!-- Ability inputs will be generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Spells & Features -->
+                <div class="space-y-2 py-4 border-b border-gray-600">
+                    <h4 class="text-amber-300 font-bold">Spells & Features</h4>
+                    <div>
+                        <label for="spellsInput" class="block text-amber-300 mb-1 text-sm">List one spell or feature per line</label>
+                        <textarea id="spellsInput" rows="5" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
                     </div>
                 </div>
                 
                 <!-- App Settings -->
-                <div class="pt-2 pb-2 border-b border-gray-600 space-y-2">
+                <div class="pt-4 pb-2 border-b border-gray-600 space-y-2">
                     <h4 class="text-amber-300 font-bold">App Settings</h4>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="autoCopyRollSetting" class="w-4 h-4 accent-amber-500">
@@ -310,14 +388,14 @@
                 </div>
 
                 <!-- Skill Modifiers -->
-                <div id="skillInputsContainer" class="space-y-2 pt-2">
+                <div id="skillInputsContainer" class="space-y-2 pt-4">
                     <h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>
                 </div>
                 
                 <!-- JSON Editor -->
-                <div id="jsonEditorContainer" class="hidden pt-2 border-t border-gray-600">
+                <div id="jsonEditorContainer" class="hidden pt-4 border-t border-gray-600">
                     <label for="jsonEditor" class="block text-amber-300 mb-1">Character Data (JSON)</label>
-                    <textarea id="jsonEditor" rows="8" class="w-full px-3 py-2 rounded-lg bg-gray-900 text-green-400 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                    <textarea id="jsonEditor" rows="10" class="w-full px-3 py-2 rounded-lg bg-gray-900 text-green-400 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
                     <div id="jsonFeedback" class="text-center text-sm font-bold mt-2 h-4"></div>
                     <div class="flex gap-2 mt-2">
                         <button id="copyJsonTemplateBtn" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Copy Character Template</button>
@@ -366,11 +444,20 @@
             let currentDiceSides = 0;
             let isAnimating = false;
             
-            // Template JSON now includes level and notes.
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
                 level: 1,
-                maxHp: 20,
+                race: "Human",
+                class: "Fighter",
+                background: "Acolyte",
+                alignment: "Neutral Good",
+                maxHp: 10,
+                armorClass: 10,
+                speed: 30,
+                abilities: {
+                    strength: 10, dexterity: 10, constitution: 10,
+                    intelligence: 10, wisdom: 10, charisma: 10
+                },
                 notes: "",
                 skills: {
                     "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0,
@@ -379,10 +466,10 @@
                     "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
                     "Stealth": 0, "Survival": 0
                 },
-                coins: {
-                    pp: 0, gp: 0, ep: 0, sp: 0, cp: 0
-                }
+                spells: [],
+                coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
             };
+
             const defaultSettings = {
                 autoCopyRoll: true,
                 autoCopyHp: false,
@@ -392,14 +479,19 @@
             const dom = {
                 body: document.body,
                 characterName: document.getElementById('characterName'),
+                characterInfo: document.getElementById('characterInfo'),
                 characterHP: document.getElementById('characterHP'),
-                characterLevel: document.getElementById('characterLevel'),
                 healthBar: document.getElementById('health-bar-inner'),
+                armorClassDisplay: document.getElementById('armorClassDisplay'),
+                initiativeDisplay: document.getElementById('initiativeDisplay'),
+                speedDisplay: document.getElementById('speedDisplay'),
+                abilityScoresContainer: document.getElementById('abilityScoresContainer'),
                 rollResultDisplay: document.getElementById('roll-result-display'),
                 diceButtons: document.querySelectorAll('.dice-button'),
                 hpChangeInput: document.getElementById('hp-change-input'),
                 hpChangeBtn: document.getElementById('hp-change-btn'),
                 skillsList: document.getElementById('skills-list'),
+                spellsList: document.getElementById('spellsList'),
                 adventureNotes: document.getElementById('adventureNotes'),
                 onboardingModal: document.getElementById('onboardingModal'),
                 modifierModal: document.getElementById('modifierModal'),
@@ -416,9 +508,18 @@
                 openResetBtn: document.getElementById('openResetBtn'),
                 confirmResetBtn: document.getElementById('confirmResetBtn'),
                 cancelResetBtn: document.getElementById('cancelResetBtn'),
+                // Settings inputs
                 charNameInput: document.getElementById('charNameInput'),
-                maxHpInput: document.getElementById('maxHpInput'),
+                raceInput: document.getElementById('raceInput'),
+                classInput: document.getElementById('classInput'),
+                backgroundInput: document.getElementById('backgroundInput'),
+                alignmentInput: document.getElementById('alignmentInput'),
                 levelInput: document.getElementById('levelInput'),
+                maxHpInput: document.getElementById('maxHpInput'),
+                armorClassInput: document.getElementById('armorClassInput'),
+                speedInput: document.getElementById('speedInput'),
+                abilityInputsContainer: document.getElementById('abilityInputsContainer'),
+                spellsInput: document.getElementById('spellsInput'),
                 autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
                 autoCopyHpSetting: document.getElementById('autoCopyHpSetting'),
                 skillInputsContainer: document.getElementById('skillInputsContainer'),
@@ -449,6 +550,10 @@
             };
             const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.defeatModal];
 
+            // --- UTILITY FUNCTIONS ---
+            const getAbilityModifier = (score) => Math.floor((score - 10) / 2);
+            const formatModifier = (mod) => mod >= 0 ? `+${mod}` : `${mod}`;
+
             // --- DATA PERSISTENCE FUNCTIONS ---
             const loadData = (key) => {
                 const savedData = localStorage.getItem(key);
@@ -460,13 +565,14 @@
                 catch (e) { console.error(`Failed to save data for ${key}.`, e); }
             };
 
-            // --- CORE FUNCTIONS ---
+            // --- CORE UI FUNCTIONS ---
             const updateUI = () => {
                 if (!characterData || Object.keys(characterData).length === 0) return;
+                
+                // Header
                 dom.characterName.textContent = characterData.name;
+                dom.characterInfo.textContent = `Level ${characterData.level} ${characterData.race} ${characterData.class}`;
                 dom.characterHP.textContent = `HP: ${characterData.currentHp} / ${characterData.maxHp}`;
-                dom.characterLevel.textContent = `Level: ${characterData.level}`;
-                dom.adventureNotes.value = characterData.notes || "";
                 const hpPercentage = (characterData.currentHp / characterData.maxHp) * 100;
                 dom.healthBar.style.width = `${Math.max(0, hpPercentage)}%`;
                 dom.healthBar.classList.remove('bg-green-500', 'bg-yellow-500', 'bg-red-600');
@@ -474,15 +580,41 @@
                 else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
                 else dom.healthBar.classList.add('bg-red-600');
 
+                // Core Stats
+                dom.armorClassDisplay.textContent = characterData.armorClass;
+                dom.speedDisplay.textContent = `${characterData.speed} ft`;
+                const dexMod = getAbilityModifier(characterData.abilities.dexterity);
+                dom.initiativeDisplay.textContent = formatModifier(dexMod);
+
+                // Ability Scores
+                dom.abilityScoresContainer.innerHTML = Object.entries(characterData.abilities).map(([key, score]) => {
+                    const mod = getAbilityModifier(score);
+                    return `
+                        <div>
+                            <span class="font-bold text-amber-300 uppercase">${key.substring(0,3)}</span>
+                            <p class="text-xl font-bold text-white">${score}</p>
+                            <p class="text-sm font-bold bg-gray-700 rounded-full">${formatModifier(mod)}</p>
+                        </div>
+                    `;
+                }).join('');
+
+                // Skills
                 if (dom.skillsList && characterData.skills) {
                     const activeSkills = Object.entries(characterData.skills)
                         .filter(([skill, value]) => value > 0)
-                        .map(([skill, value]) => `<span><strong>${skill}</strong> (+${value})</span>`)
+                        .map(([skill, value]) => `<span><strong>${skill}</strong> (${formatModifier(value)})</span>`)
                         .join('');
                     dom.skillsList.innerHTML = activeSkills || '<span class="italic text-gray-400">No proficient skills</span>';
                 }
+                
+                // Spells
+                if (dom.spellsList && characterData.spells) {
+                    dom.spellsList.innerHTML = characterData.spells.length > 0
+                        ? characterData.spells.map(spell => `<div>${spell}</div>`).join('')
+                        : '<span class="italic text-gray-400">No spells known</span>';
+                }
 
-                // Update main screen coin totals
+                // Currency
                 if (dom.mainPpTotal && characterData.coins) {
                     dom.mainPpTotal.textContent = characterData.coins.pp || 0;
                     dom.mainGpTotal.textContent = characterData.coins.gp || 0;
@@ -490,15 +622,41 @@
                     dom.mainSpTotal.textContent = characterData.coins.sp || 0;
                     dom.mainCpTotal.textContent = characterData.coins.cp || 0;
                 }
+
+                // Notes
+                dom.adventureNotes.value = characterData.notes || "";
             };
 
             const populateSettingsModal = () => {
+                // Character Details
                 dom.charNameInput.value = characterData.name;
-                dom.maxHpInput.value = characterData.maxHp;
+                dom.raceInput.value = characterData.race;
+                dom.classInput.value = characterData.class;
+                dom.backgroundInput.value = characterData.background;
+                dom.alignmentInput.value = characterData.alignment;
+
+                // Core Stats
                 dom.levelInput.value = characterData.level;
+                dom.maxHpInput.value = characterData.maxHp;
+                dom.armorClassInput.value = characterData.armorClass;
+                dom.speedInput.value = characterData.speed;
+                
+                // Abilities
+                dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `
+                    <div class="flex items-center justify-between">
+                         <label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label>
+                         <input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-16 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                `).join('');
+
+                // Spells
+                dom.spellsInput.value = characterData.spells.join('\n');
+
+                // App Settings
                 dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
                 dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
 
+                // Skills
                 const skillContainer = dom.skillInputsContainer;
                 skillContainer.innerHTML = '<h4 class="text-amber-300 font-bold col-span-1 md:col-span-2">Skill Modifiers</h4>'; 
                 Object.entries(characterData.skills).forEach(([skill, value]) => {
@@ -507,15 +665,8 @@
                     skillContainer.insertAdjacentHTML('beforeend', skillHtml);
                 });
 
-                const characterJsonForEditor = {
-                    name: characterData.name,
-                    level: characterData.level,
-                    maxHp: characterData.maxHp,
-                    notes: characterData.notes,
-                    skills: characterData.skills,
-                    coins: characterData.coins
-                };
-                dom.jsonEditor.value = JSON.stringify(characterJsonForEditor, null, 2);
+                // JSON
+                dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
                 dom.jsonFeedback.textContent = '';
             };
 
@@ -526,9 +677,14 @@
             };
 
             const toggleJsonView = (showJson) => {
-                 dom.skillInputsContainer.classList.toggle('hidden', showJson);
+                 const settingsContent = dom.settingsModalContent.querySelector('.space-y-4');
+                 Array.from(settingsContent.children).forEach(child => {
+                    if (!child.id.includes('jsonEditorContainer') && !child.classList.contains('text-center')) {
+                        child.classList.toggle('hidden', showJson);
+                    }
+                 });
                  dom.jsonEditorContainer.classList.toggle('hidden', !showJson);
-                 dom.toggleJsonViewBtn.textContent = showJson ? 'Manual Skill Input' : 'Edit Character with JSON';
+                 dom.toggleJsonViewBtn.textContent = showJson ? 'Edit with Form' : 'Edit with JSON';
             };
 
             const showToast = (message) => {
@@ -637,7 +793,7 @@
                     Object.entries(characterData.skills).forEach(([skill, modifier]) => {
                         const button = document.createElement('button');
                         button.className = 'bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-3 px-2 rounded-lg transition-colors text-sm';
-                        button.textContent = `${skill} (${modifier >= 0 ? '+' : ''}${modifier})`;
+                        button.textContent = `${skill} (${formatModifier(modifier)})`;
                         button.dataset.skill = skill;
                         button.dataset.modifier = modifier;
                         dom.modifierOptions.appendChild(button);
@@ -672,18 +828,14 @@
                 if (isJsonMode) {
                     try {
                         const newData = JSON.parse(dom.jsonEditor.value);
-                        if (!newData.name || typeof newData.skills !== 'object' || typeof newData.level !== 'number' || typeof newData.maxHp !== 'number' || typeof newData.coins !== 'object' || typeof newData.notes === 'undefined') {
-                           throw new Error("Invalid structure. Must include all character fields.");
+                        // A simple validation
+                        if (!newData.name || !newData.abilities) {
+                           throw new Error("Invalid structure. Must include at least name and abilities.");
                         }
                         
-                        characterData.name = newData.name;
-                        characterData.level = newData.level;
-                        characterData.notes = newData.notes;
-                        characterData.skills = newData.skills;
-                        characterData.coins = newData.coins;
+                        characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
 
-                        if(characterData.maxHp !== newData.maxHp) {
-                            characterData.maxHp = newData.maxHp;
+                        if (characterData.maxHp !== newData.maxHp) {
                             characterData.currentHp = newData.maxHp;
                         }
                         
@@ -696,12 +848,27 @@
                     }
                 } else {
                     characterData.name = dom.charNameInput.value || "Nameless";
+                    characterData.race = dom.raceInput.value;
+                    characterData.class = dom.classInput.value;
+                    characterData.background = dom.backgroundInput.value;
+                    characterData.alignment = dom.alignmentInput.value;
                     characterData.level = parseInt(dom.levelInput.value, 10) || 1;
+                    characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
+                    characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
+                    
                     const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
                     if (newMaxHp !== characterData.maxHp) {
                         characterData.maxHp = newMaxHp;
                         characterData.currentHp = newMaxHp;
                     }
+
+                    Object.keys(characterData.abilities).forEach(key => {
+                        const input = document.getElementById(`${key}-input`);
+                        if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
+                    });
+                    
+                    characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
+
                     Object.keys(characterData.skills).forEach(skill => {
                         const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
                         if (inputElement) characterData.skills[skill] = parseInt(inputElement.value, 10) || 0;
@@ -736,17 +903,29 @@
             };
 
             const init = () => {
-                characterData = loadData('dndCharacterData');
-                appSettings = loadData('dndAppSettings') || JSON.parse(JSON.stringify(defaultSettings));
+                const loadedCharacter = loadData('dndCharacterData');
+                // Merge loaded data with defaults to ensure all new fields exist
+                characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
+                 // Deep merge for nested objects if they exist, otherwise use default
+                if (loadedCharacter && loadedCharacter.abilities) {
+                    characterData.abilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
+                }
+                if (loadedCharacter && loadedCharacter.skills) {
+                    characterData.skills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
+                }
+                if (loadedCharacter && loadedCharacter.coins) {
+                    characterData.coins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
+                }
+
+
+                appSettings = loadData('dndAppSettings') || { ...defaultSettings };
                 
-                if (!characterData) {
+                if (!loadedCharacter) {
                     toggleModal(dom.onboardingModal, true);
                 } else {
-                    if (characterData.level === undefined) characterData.level = 1;
-                    if (characterData.maxHp === undefined) characterData.maxHp = 20;
-                    if (characterData.currentHp === undefined) characterData.currentHp = 20;
-                    if (characterData.coins === undefined) characterData.coins = JSON.parse(JSON.stringify(defaultCharacterTemplate.coins));
-                    if (characterData.notes === undefined) characterData.notes = "";
+                    if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
+                        characterData.currentHp = characterData.maxHp;
+                    }
                     updateUI();
                 }
                 setupEventListeners();
