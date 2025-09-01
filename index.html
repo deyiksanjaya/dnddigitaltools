@@ -8,13 +8,13 @@
     <title>D&D Digital Tool: Dice Roller & Solo Character Sheet</title>
     <meta name="description" content="Manage your Dungeons & Dragons character without paper. A digital dice roller and character sheet app designed for modern sessions, especially for solo players.">
     <meta name="keywords" content="d&d, dungeons and dragons, dnd dice roller, digital character sheet, solo dnd, dnd tool, 5e character sheet">
-    <!-- TODO: Ganti dengan URL domain Anda yang sebenarnya -->
+    <!-- TODO: Replace with your actual domain URL -->
     <link rel="canonical" href="https://your-domain.com/index.html"> 
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1f2937">
     <link rel="manifest" href="manifest.json">
-    <!-- Path ikon disesuaikan agar konsisten dengan manifest -->
+    <!-- Icon path adjusted to be consistent with the manifest -->
     <link rel="apple-touch-icon" href="./icons/icon-512x512.svg">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -46,7 +46,7 @@
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Path sudah benar (relatif)
+                // Path is correct (relative)
                 navigator.serviceWorker.register('./service-worker.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
@@ -59,90 +59,85 @@
     </script>
 
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap');
-    
-    body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #111827;
-        color: #d4a76c;
-    }
-    body.modal-open { overflow: hidden; }
-    .font-cinzel { font-family: 'Cinzel', serif; }
-    .dice-button {
-        transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out, background-color 0.2s;
-        background: linear-gradient(145deg, #4b5563, #1f2937);
-        border: 2px solid #9ca3af;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    }
-    .dice-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
-        background-color: #374151;
-    }
-    .dice-button:active {
-        transform: translateY(0);
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
-    }
-    .modal-backdrop { transition: opacity 0.3s ease-in-out; }
-    .modal-content { transition: transform 0.3s ease-in-out, opacity 0.3s; }
-    #health-bar-inner { transition: width 0.5s ease-out, background-color 0.5s ease-out; }
-    #toast-notification {
-        transition: transform 0.3s ease-in-out, opacity 0.3s;
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    #toast-notification.show { transform: translateY(0); opacity: 1; }
-    #hp-change-btn:disabled { background-color: #4b5563; cursor: not-allowed; }
-    #roll-result-display {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    #dice-result-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
-    #modifier-flyout {
-        position: absolute;
-        top: 50%;
-        left: 100%;
-        transform: translateY(-50%) scale(0.5);
-        opacity: 0;
-        transition: all 0.3s ease-out;
-        pointer-events: none;
-    }
-    #modifier-flyout.show { transform: translateY(-50%) scale(1); opacity: 1; }
-    #roll-details-text { opacity: 0; transition: opacity 0.4s ease-in; }
-    #roll-details-text.show { opacity: 1; }
-    
-    .transaction-input {
-        -moz-appearance: textfield;
-        background-color: #374151;
-        border: 1px solid #4b5563;
-        text-align: center;
-        color: white;
-        border-radius: 0.375rem; /* rounded-md */
-    }
-    .transaction-input:focus {
-        outline: none;
-        border-color: #d4a76c;
-        box-shadow: 0 0 0 2px rgba(212, 167, 108, 0.5);
-    }
-
-    /* Perbaikan untuk tata letak Currency di layar kecil */
-    @media (max-width: 420px) {
-        /* Menargetkan setiap baris di dalam kontainer currency */
-        .max-w-sm.mx-auto.space-y-3 > .flex.justify-between {
-            flex-wrap: wrap; /* Izinkan item untuk turun ke baris baru */
-            row-gap: 0.5rem; /* Tambahkan jarak vertikal saat item turun baris */
-            justify-content: flex-start; /* Ubah perataan agar tidak mepet */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #111827;
+            color: #d4a76c;
         }
-
-        /* Menargetkan span total koin */
-        .max-w-sm.mx-auto.space-y-3 > .flex.justify-between > span[id$="-total"] {
-            margin-right: auto; /* Dorong input ke kanan, memberi ruang */
-            padding-left: 0.5rem;
+        body.modal-open { overflow: hidden; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .dice-button {
+            transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out, background-color 0.2s;
+            background: linear-gradient(145deg, #4b5563, #1f2937);
+            border: 2px solid #9ca3af;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
         }
-    }
-</style>
+        .dice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+            background-color: #374151;
+        }
+        .dice-button:active {
+            transform: translateY(0);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        .modal-backdrop { transition: opacity 0.3s ease-in-out; }
+        .modal-content { transition: transform 0.3s ease-in-out, opacity 0.3s; }
+        #health-bar-inner { transition: width 0.5s ease-out, background-color 0.5s ease-out; }
+        #toast-notification {
+            transition: transform 0.3s ease-in-out, opacity 0.3s;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        #toast-notification.show { transform: translateY(0); opacity: 1; }
+        #hp-change-btn:disabled { background-color: #4b5563; cursor: not-allowed; }
+        #roll-result-display {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #dice-result-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
+        #modifier-flyout {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%) scale(0.5);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            pointer-events: none;
+        }
+        #modifier-flyout.show { transform: translateY(-50%) scale(1); opacity: 1; }
+        #roll-details-text { opacity: 0; transition: opacity 0.4s ease-in; }
+        #roll-details-text.show { opacity: 1; }
+        
+        .transaction-input {
+            -moz-appearance: textfield;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            text-align: center;
+            color: white;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        .transaction-input:focus {
+            outline: none;
+            border-color: #d4a76c;
+            box-shadow: 0 0 0 2px rgba(212, 167, 108, 0.5);
+        }
+         @media (max-width: 420px) {
+            .max-w-sm.mx-auto.space-y-3 > .flex.justify-between {
+                flex-wrap: wrap; 
+                row-gap: 0.5rem; 
+                justify-content: flex-start;
+            }
+            .max-w-sm.mx-auto.space-y-3 > .flex.justify-between > span[id$="-total"] {
+                margin-right: auto;
+                padding-left: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-amber-400 min-h-screen">
 
@@ -294,7 +289,7 @@
         <!-- Adventure Notes -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Adventure Notes</h3>
-            <textarea id="adventureNotes" class="w-full h-40 bg-gray-900 text-amber-100 p-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Catat petunjuk, nama NPC, atau detail penting lainnya di sini..."></textarea>
+            <textarea id="adventureNotes" class="w-full h-40 bg-gray-900 text-amber-100 p-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Jot down clues, NPC names, or other important details here..."></textarea>
         </div>
 
         <!-- Settings and Reset Buttons -->
@@ -399,7 +394,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="autoCopyHpSetting" class="w-4 h-4 accent-amber-500">
-                        <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change (for solo play)</label>
+                        <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change</label>
                     </div>
                 </div>
 
@@ -419,7 +414,7 @@
                 </div>
 
                 <div class="text-center pt-2">
-                    <button id="toggleJsonViewBtn" class="text-sm text-blue-400 hover:text-blue-300 underline">Edit Character with JSON</button>
+                    <button id="toggleJsonViewBtn" class="text-sm text-blue-400 hover:text-blue-300 underline">Edit with JSON</button>
                 </div>
             </div>
             <div class="flex justify-end gap-4 mt-6">
@@ -438,13 +433,25 @@
             </div>
         </div>
     </div>
-    <div id="defeatModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 modal-backdrop hidden">
+    <div id="deathSaveModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 modal-backdrop hidden">
         <div class="bg-gray-800 border-4 border-red-700 rounded-xl shadow-lg p-8 w-full max-w-md text-center modal-content">
-            <h2 class="font-cinzel text-4xl font-bold text-red-400 mb-4">You Have Been Defeated</h2>
-            <p class="text-amber-300 mb-8 text-lg">Your journey doesn't have to end here. Choose your path:</p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                 <button id="reviveCharacterBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg transition-colors">Revive Character</button>
-                 <button id="createNewCharacterBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">Create New Character</button>
+            <h2 id="deathSaveTitle" class="font-cinzel text-4xl font-bold text-red-400 mb-4">DYING</h2>
+            <div class="space-y-3 my-6">
+                <div class="flex items-center justify-center space-x-4">
+                    <span class="font-bold text-lg text-green-300">Successes:</span>
+                    <div id="deathSaveSuccesses" class="flex space-x-2"></div>
+                </div>
+                <div class="flex items-center justify-center space-x-4">
+                    <span class="font-bold text-lg text-red-300">Failures:</span>
+                    <div id="deathSaveFailures" class="flex space-x-2"></div>
+                </div>
+            </div>
+            <p id="deathSaveStatus" class="text-amber-300 mb-6 text-lg">You are unconscious and must make a death saving throw on your turn.</p>
+            <div id="deathSaveResult" class="min-h-[3rem] text-3xl font-bold text-white mb-4"></div>
+            <div id="deathSaveActions" class="flex flex-col sm:flex-row justify-center gap-4">
+                 <button id="makeDeathSaveBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">Make Death Saving Throw</button>
+                 <button id="closeDeathSaveModalBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg transition-colors hidden">Close</button>
+                 <button id="createNewCharacterBtn" class="bg-red-800 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors hidden">Start New Character</button>
             </div>
         </div>
     </div>
@@ -462,34 +469,22 @@
             
             const defaultCharacterTemplate = {
                 name: "New Adventurer",
-                level: 1,
-                race: "Human",
-                class: "Fighter",
-                background: "Acolyte",
-                alignment: "Neutral Good",
-                maxHp: 10,
-                armorClass: 10,
-                speed: 30,
-                abilities: {
-                    strength: 10, dexterity: 10, constitution: 10,
-                    intelligence: 10, wisdom: 10, charisma: 10
-                },
+                level: 1, race: "Human", class: "Fighter", background: "Acolyte", alignment: "Neutral Good",
+                maxHp: 10, armorClass: 10, speed: 30,
+                status: 'conscious', // conscious, unconscious, stable, dead
+                deathSaves: { successes: 0, failures: 0 },
+                abilities: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
                 notes: "",
                 skills: {
-                    "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0,
-                    "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
-                    "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0,
-                    "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
+                    "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
+                    "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
                     "Stealth": 0, "Survival": 0
                 },
                 spells: [],
                 coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
             };
 
-            const defaultSettings = {
-                autoCopyRoll: true,
-                autoCopyHp: false,
-            };
+            const defaultSettings = { autoCopyRoll: true, autoCopyHp: false };
 
             // --- DOM ELEMENT REFERENCES ---
             const dom = {
@@ -514,8 +509,14 @@
                 settingsModal: document.getElementById('settingsModal'),
                 settingsModalContent: document.getElementById('settingsModalContent'),
                 resetModal: document.getElementById('resetModal'),
-                defeatModal: document.getElementById('defeatModal'), 
-                reviveCharacterBtn: document.getElementById('reviveCharacterBtn'),
+                deathSaveModal: document.getElementById('deathSaveModal'),
+                deathSaveTitle: document.getElementById('deathSaveTitle'),
+                deathSaveSuccesses: document.getElementById('deathSaveSuccesses'),
+                deathSaveFailures: document.getElementById('deathSaveFailures'),
+                deathSaveStatus: document.getElementById('deathSaveStatus'),
+                deathSaveResult: document.getElementById('deathSaveResult'),
+                makeDeathSaveBtn: document.getElementById('makeDeathSaveBtn'),
+                closeDeathSaveModalBtn: document.getElementById('closeDeathSaveModalBtn'),
                 createNewCharacterBtn: document.getElementById('createNewCharacterBtn'),
                 createCharacterBtn: document.getElementById('createCharacterBtn'),
                 openSettingsBtn: document.getElementById('openSettingsBtn'),
@@ -524,7 +525,6 @@
                 openResetBtn: document.getElementById('openResetBtn'),
                 confirmResetBtn: document.getElementById('confirmResetBtn'),
                 cancelResetBtn: document.getElementById('cancelResetBtn'),
-                // Settings inputs
                 charNameInput: document.getElementById('charNameInput'),
                 raceInput: document.getElementById('raceInput'),
                 classInput: document.getElementById('classInput'),
@@ -547,7 +547,6 @@
                 modifierOptions: document.getElementById('modifierOptions'),
                 rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
                 toast: document.getElementById('toast-notification'),
-                // Currency transaction elements
                 mainPpTotal: document.getElementById('main-pp-total'),
                 mainPpTransaction: document.getElementById('main-pp-transaction'),
                 mainPpApply: document.getElementById('main-pp-apply'),
@@ -564,7 +563,7 @@
                 mainCpTransaction: document.getElementById('main-cp-transaction'),
                 mainCpApply: document.getElementById('main-cp-apply'),
             };
-            const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.defeatModal];
+            const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
 
             // --- UTILITY FUNCTIONS ---
             const getAbilityModifier = (score) => Math.floor((score - 10) / 2);
@@ -617,7 +616,7 @@
                 // Skills
                 if (dom.skillsList && characterData.skills) {
                     const activeSkills = Object.entries(characterData.skills)
-                        .filter(([skill, value]) => value > 0)
+                        .filter(([skill, value]) => value !== 0)
                         .map(([skill, value]) => `<span><strong>${skill}</strong> (${formatModifier(value)})</span>`)
                         .join('');
                     dom.skillsList.innerHTML = activeSkills || '<span class="italic text-gray-400">No proficient skills</span>';
@@ -711,86 +710,73 @@
 
             const copyToClipboard = (text, message) => navigator.clipboard.writeText(text).then(() => showToast(message)).catch(err => console.error(err));
 
-            // --- ANIMATION FUNCTIONS ---
             const animateCount = (element, start, end, duration, onComplete) => {
-                if (start === end) {
-                    if(onComplete) onComplete();
-                    return;
-                }
+                if (start === end) { if(onComplete) onComplete(); return; }
                 const range = end - start;
                 const increment = end > start ? 1 : -1;
                 const stepTime = Math.max(10, Math.abs(Math.floor(duration / range)));
                 let current = start;
-
                 const timer = setInterval(() => {
                     current += increment;
                     element.textContent = current;
-                    if (current == end) {
-                        clearInterval(timer);
-                        if(onComplete) onComplete();
-                    }
+                    if (current == end) { clearInterval(timer); if(onComplete) onComplete(); }
                 }, stepTime);
             };
 
             const animateAndShowResult = (sides, finalRoll, modifier, total, skillName) => {
                 if (isAnimating) return;
                 isAnimating = true;
-
-                const scrambleDuration = 2000;
-                const pauseAfterScramble = 400; 
-                const modifierVisibleDuration = 1000; 
-                const countDuration = 350;
-                
+                const scrambleDuration = 1500, pauseAfterScramble = 300, modifierVisibleDuration = 800, countDuration = 350;
                 dom.rollResultDisplay.innerHTML = `
                     <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Rolling d${sides}...</span>
                     <div id="dice-result-wrapper" class="relative">
                         <span id="animated-dice-number" class="block text-6xl text-amber-100 font-bold">--</span>
                         <span id="modifier-flyout" class="absolute text-2xl font-bold ml-2"></span>
                     </div>
-                    <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>
-                `;
-
-                const animatedNumberEl = document.getElementById('animated-dice-number');
-                const modifierFlyoutEl = document.getElementById('modifier-flyout');
-                const diceTypeTextEl = document.getElementById('dice-type-text');
-                const rollDetailsTextEl = document.getElementById('roll-details-text');
-                
-                const scrambleInterval = setInterval(() => {
-                    animatedNumberEl.textContent = Math.floor(Math.random() * sides) + 1;
-                }, 30); 
-
+                    <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>`;
+                const animatedNumberEl = document.getElementById('animated-dice-number'), modifierFlyoutEl = document.getElementById('modifier-flyout'),
+                    diceTypeTextEl = document.getElementById('dice-type-text'), rollDetailsTextEl = document.getElementById('roll-details-text');
+                const scrambleInterval = setInterval(() => { animatedNumberEl.textContent = Math.floor(Math.random() * sides) + 1; }, 40);
                 setTimeout(() => {
                     clearInterval(scrambleInterval);
                     animatedNumberEl.textContent = finalRoll;
-                    
                     setTimeout(() => {
                         diceTypeTextEl.textContent = `d${sides} (${skillName})`;
-
                         if (sides === 100 || modifier === 0) {
-                             rollDetailsTextEl.innerHTML = sides === 100 ? "No Modifier" : `Modifier: +0 | Total: <span class="font-bold">${total}</span>`;
-                             rollDetailsTextEl.classList.add('show');
-                             isAnimating = false;
-                             return;
+                            rollDetailsTextEl.innerHTML = `Total: <span class="font-bold">${total}</span>`;
+                            rollDetailsTextEl.classList.add('show'); isAnimating = false; return;
                         }
-
-                        modifierFlyoutEl.textContent = `${modifier >= 0 ? '+' : ''}${modifier}`;
-                        modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400');
-                        modifierFlyoutEl.classList.add('show');
-
+                        modifierFlyoutEl.textContent = formatModifier(modifier);
+                        modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400', 'show');
                         setTimeout(() => {
                             modifierFlyoutEl.classList.remove('show');
-                            
                             animateCount(animatedNumberEl, finalRoll, total, countDuration, () => {
-                                rollDetailsTextEl.innerHTML = `Modifier: ${modifier >= 0 ? '+' : ''}${modifier} | Total: <span class="font-bold">${total}</span>`;
-                                rollDetailsTextEl.classList.add('show');
-                                isAnimating = false;
+                                rollDetailsTextEl.innerHTML = `Modifier: ${formatModifier(modifier)} | Total: <span class="font-bold">${total}</span>`;
+                                rollDetailsTextEl.classList.add('show'); isAnimating = false;
                             });
-
                         }, modifierVisibleDuration);
-
                     }, pauseAfterScramble);
-
                 }, scrambleDuration);
+            };
+
+             // --- DEATH SAVE FUNCTIONS ---
+            const updateDeathSaveDisplay = () => {
+                const { successes, failures } = characterData.deathSaves;
+                const successPips = Array(3).fill(0).map((_, i) => `<span class="h-4 w-4 rounded-full ${i < successes ? 'bg-green-500' : 'border-2 border-gray-500'}"></span>`).join('');
+                const failurePips = Array(3).fill(0).map((_, i) => `<span class="h-4 w-4 rounded-full ${i < failures ? 'bg-red-500' : 'border-2 border-gray-500'}"></span>`).join('');
+                dom.deathSaveSuccesses.innerHTML = successPips;
+                dom.deathSaveFailures.innerHTML = failurePips;
+            };
+
+            const showDeathSaveModal = () => {
+                dom.deathSaveResult.textContent = '';
+                dom.deathSaveTitle.textContent = "DYING";
+                dom.deathSaveStatus.textContent = "You are unconscious and in peril.";
+                dom.makeDeathSaveBtn.classList.remove('hidden');
+                dom.closeDeathSaveModalBtn.classList.add('hidden');
+                dom.createNewCharacterBtn.classList.add('hidden');
+                updateDeathSaveDisplay();
+                toggleModal(dom.deathSaveModal, true);
             };
 
             // --- EVENT HANDLERS ---
@@ -826,13 +812,11 @@
                 animateAndShowResult(currentDiceSides, roll, modifier, total, skillName);
                 if(appSettings.autoCopyRoll) {
                     let clipboardText = '';
-                    
                     if (skillName === 'No Modifier' || skillName === 'Manual') {
                          clipboardText = `d${currentDiceSides} Roll: ${total}`;
                     } else {
                          clipboardText = `d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Modifier: ${modifier})`;
                     }
-                    
                     const hpStatus = ` | HP: ${characterData.currentHp}/${characterData.maxHp}`;
                     copyToClipboard(clipboardText + hpStatus, 'Dice roll copied!');
                 }
@@ -844,17 +828,9 @@
                 if (isJsonMode) {
                     try {
                         const newData = JSON.parse(dom.jsonEditor.value);
-                        // A simple validation
-                        if (!newData.name || !newData.abilities) {
-                           throw new Error("Invalid structure. Must include at least name and abilities.");
-                        }
-                        
+                        if (!newData.name || !newData.abilities) { throw new Error("Invalid structure. Must include name and abilities."); }
                         characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
-
-                        if (characterData.maxHp !== newData.maxHp) {
-                            characterData.currentHp = newData.maxHp;
-                        }
-                        
+                        if (characterData.maxHp !== newData.maxHp) { characterData.currentHp = newData.maxHp; }
                         dom.jsonFeedback.textContent = "Character data applied successfully!";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-green-400";
                     } catch (error) {
@@ -871,32 +847,25 @@
                     characterData.level = parseInt(dom.levelInput.value, 10) || 1;
                     characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
                     characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
-                    
                     const newMaxHp = parseInt(dom.maxHpInput.value, 10) || 1;
                     if (newMaxHp !== characterData.maxHp) {
                         characterData.maxHp = newMaxHp;
                         characterData.currentHp = newMaxHp;
                     }
-
                     Object.keys(characterData.abilities).forEach(key => {
                         const input = document.getElementById(`${key}-input`);
                         if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
                     });
-                    
                     characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
-
                     Object.keys(characterData.skills).forEach(skill => {
                         const inputElement = document.getElementById(`skill-input-${skill.replace(/\s+/g, '-')}`);
                         if (inputElement) characterData.skills[skill] = parseInt(inputElement.value, 10) || 0;
                     });
                 }
-                
                 saveData('dndCharacterData', characterData);
-                
                 appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
                 appSettings.autoCopyHp = dom.autoCopyHpSetting.checked;
                 saveData('dndAppSettings', appSettings);
-
                 updateUI();
                 toggleModal(dom.settingsModal, false);
             };
@@ -910,32 +879,17 @@
                 init();
             };
 
-            const reviveCharacter = () => {
-                if (!characterData) return;
-                characterData.currentHp = characterData.maxHp; // Restore to full health
-                saveData('dndCharacterData', characterData);
-                updateUI();
-                toggleModal(dom.defeatModal, false);
-            };
-
             const init = () => {
                 const loadedCharacter = loadData('dndCharacterData');
-                // Merge loaded data with defaults to ensure all new fields exist
                 characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
-                 // Deep merge for nested objects if they exist, otherwise use default
-                if (loadedCharacter && loadedCharacter.abilities) {
+                if (loadedCharacter) {
                     characterData.abilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
-                }
-                if (loadedCharacter && loadedCharacter.skills) {
                     characterData.skills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
-                }
-                if (loadedCharacter && loadedCharacter.coins) {
                     characterData.coins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
+                    characterData.deathSaves = loadedCharacter.deathSaves || { successes: 0, failures: 0 };
+                    characterData.status = loadedCharacter.status || 'conscious';
                 }
-
-
                 appSettings = loadData('dndAppSettings') || { ...defaultSettings };
-                
                 if (!loadedCharacter) {
                     toggleModal(dom.onboardingModal, true);
                 } else {
@@ -956,20 +910,17 @@
                 dom.rollWithoutModifierBtn.addEventListener('click', () => handleModifierSelection(0, 'No Modifier'));
 
                 dom.hpChangeInput.addEventListener('input', () => {
-                    const value = dom.hpChangeInput.value;
+                    const value = dom.hpChangeInput.value.trim();
                     const number = parseInt(value, 10);
                     const btn = dom.hpChangeBtn;
                     btn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
-                    if (isNaN(number) || value.trim() === '' || number === 0) {
-                        btn.textContent = 'Apply';
-                        btn.disabled = true;
+                    if (isNaN(number) || value === '' || number === 0) {
+                        btn.textContent = 'Apply'; btn.disabled = true;
                     } else if (number < 0) {
-                        btn.textContent = 'Set Damage';
-                        btn.disabled = false;
+                        btn.textContent = 'Damage'; btn.disabled = false;
                         btn.classList.add('bg-red-800', 'hover:bg-red-700');
                     } else {
-                        btn.textContent = 'Heal';
-                        btn.disabled = false;
+                        btn.textContent = 'Heal'; btn.disabled = false;
                         btn.classList.add('bg-green-800', 'hover:bg-green-700');
                     }
                 });
@@ -977,9 +928,17 @@
                 dom.hpChangeBtn.addEventListener('click', () => {
                     const value = parseInt(dom.hpChangeInput.value, 10);
                     if (isNaN(value)) return;
-                    
+
+                    const previousHp = characterData.currentHp;
                     const newHp = characterData.currentHp + value;
                     characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, newHp));
+                    
+                    if (previousHp <= 0 && characterData.currentHp > 0) {
+                        characterData.status = 'conscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        toggleModal(dom.deathSaveModal, false);
+                    }
+                    
                     saveData('dndCharacterData', characterData);
                     updateUI();
                     
@@ -987,8 +946,11 @@
                         copyToClipboard(`Character HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Current HP copied!');
                     }
                     
-                    if (characterData.currentHp <= 0) {
-                        toggleModal(dom.defeatModal, true);
+                    if (characterData.currentHp <= 0 && previousHp > 0) {
+                        characterData.status = 'unconscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        saveData('dndCharacterData', characterData);
+                        showDeathSaveModal();
                     }
 
                     dom.hpChangeInput.value = '';
@@ -996,8 +958,63 @@
                     dom.hpChangeBtn.disabled = true;
                     dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
                 });
+
+                dom.makeDeathSaveBtn.addEventListener('click', () => {
+                    const roll = Math.floor(Math.random() * 20) + 1;
+                    dom.deathSaveResult.textContent = roll;
+                    let clipboardText = '';
+                    
+                    if (roll === 20) {
+                        characterData.currentHp = 1;
+                        characterData.status = 'conscious';
+                        dom.deathSaveTitle.textContent = "REVIVED!";
+                        dom.deathSaveStatus.textContent = "Critical success! You regain consciousness with 1 HP.";
+                        dom.makeDeathSaveBtn.classList.add('hidden');
+                        dom.closeDeathSaveModalBtn.classList.remove('hidden');
+                        clipboardText = `Death Save (Critical Success!): Rolled a 20. Character is back up with 1 HP.`;
+                    } else if (roll >= 10) {
+                        characterData.deathSaves.successes++;
+                        dom.deathSaveStatus.textContent = "Successful roll!";
+                        clipboardText = `Death Save (Success): Rolled a ${roll}. ${characterData.deathSaves.successes} successes, ${characterData.deathSaves.failures} failures. | HP: 0/${characterData.maxHp}`;
+                        if (characterData.deathSaves.successes >= 3) {
+                            characterData.status = 'stable';
+                            dom.deathSaveTitle.textContent = "STABLE";
+                            dom.deathSaveStatus.textContent = "You are stable, but still unconscious.";
+                            dom.makeDeathSaveBtn.classList.add('hidden');
+                            dom.closeDeathSaveModalBtn.classList.remove('hidden');
+                            clipboardText = `Death Save (Success): Rolled a ${roll}. Character is now stable. | HP: 0/${characterData.maxHp}`;
+                        }
+                    } else { // roll < 10
+                        const isCritFail = roll === 1;
+                        characterData.deathSaves.failures += (isCritFail ? 2 : 1);
+                        dom.deathSaveStatus.textContent = (isCritFail) ? "Critical failure! (2 failures)" : "Failed roll.";
+                        
+                        if (isCritFail) {
+                             clipboardText = `Death Save (Critical Failure!): Rolled a 1. Gained 2 failures. ${characterData.deathSaves.successes} successes, ${characterData.deathSaves.failures} failures. | HP: 0/${characterData.maxHp}`;
+                        } else {
+                             clipboardText = `Death Save (Failure): Rolled a ${roll}. ${characterData.deathSaves.successes} successes, ${characterData.deathSaves.failures} failures. | HP: 0/${characterData.maxHp}`;
+                        }
+                        if (characterData.deathSaves.failures >= 3) {
+                            characterData.status = 'dead';
+                            dom.deathSaveTitle.textContent = "DEAD";
+                            dom.deathSaveStatus.textContent = "Your adventure has come to an end.";
+                            dom.makeDeathSaveBtn.classList.add('hidden');
+                            dom.createNewCharacterBtn.classList.remove('hidden');
+                             clipboardText = `Death Save (${isCritFail ? 'Critical Failure!' : 'Failure'}): Rolled a ${roll}. Character has died.`;
+                        }
+                    }
+
+                    if(appSettings.autoCopyRoll) {
+                        copyToClipboard(clipboardText, 'Death save result copied!');
+                    }
+
+                    updateDeathSaveDisplay();
+                    saveData('dndCharacterData', characterData);
+                    updateUI();
+                });
                 
-                // Event listener for adventure notes
+                dom.closeDeathSaveModalBtn.addEventListener('click', () => toggleModal(dom.deathSaveModal, false));
+                
                 dom.adventureNotes.addEventListener('blur', () => {
                     const newNotes = dom.adventureNotes.value;
                     if (characterData.notes !== newNotes) {
@@ -1007,39 +1024,23 @@
                     }
                 });
 
-                // Function to set up transaction handlers to avoid repetition
                 const setupTransactionHandler = (inputEl, buttonEl, coinKey) => {
                     const processTransaction = () => {
                         const value = parseInt(inputEl.value, 10);
-                        if (isNaN(value) || value === 0) {
-                            inputEl.value = '';
-                            return;
-                        }
-                        
+                        if (isNaN(value) || value === 0) { inputEl.value = ''; return; }
                         const currentAmount = characterData.coins[coinKey] || 0;
                         characterData.coins[coinKey] = Math.max(0, currentAmount + value);
-                        
                         saveData('dndCharacterData', characterData);
-                        updateUI();
-                        inputEl.value = '';
+                        updateUI(); inputEl.value = '';
                     };
-
                     buttonEl.addEventListener('click', processTransaction);
-                    inputEl.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            processTransaction();
-                        }
-                    });
+                    inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); processTransaction(); } });
                 };
-
-                // Set up handlers for all currencies
                 setupTransactionHandler(dom.mainPpTransaction, dom.mainPpApply, 'pp');
                 setupTransactionHandler(dom.mainGpTransaction, dom.mainGpApply, 'gp');
                 setupTransactionHandler(dom.mainEpTransaction, dom.mainEpApply, 'ep');
                 setupTransactionHandler(dom.mainSpTransaction, dom.mainSpApply, 'sp');
                 setupTransactionHandler(dom.mainCpTransaction, dom.mainCpApply, 'cp');
-
 
                 dom.createCharacterBtn.addEventListener('click', () => {
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
@@ -1080,7 +1081,6 @@
                 dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
                 dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
                 dom.confirmResetBtn.addEventListener('click', resetCharacter);
-                dom.reviveCharacterBtn.addEventListener('click', reviveCharacter);
                 dom.createNewCharacterBtn.addEventListener('click', resetCharacter);
                 dom.cancelResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, false));
                 
@@ -1095,4 +1095,3 @@
     </script>
 </body>
 </html>
-
