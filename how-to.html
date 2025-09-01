@@ -289,9 +289,9 @@ Deck of DM Things (Cole Porter)</textarea>
         </main>
         
         <footer class="text-center mt-12">
-            <a href="./index.html" class="back-link">
+            <button id="back-to-app-button" class="back-link">
                 &larr; Back to the App
-            </a>
+            </button>
         </footer>
     </div>
 
@@ -322,6 +322,16 @@ Deck of DM Things (Cole Porter)</textarea>
                     });
                 }
             });
+        });
+
+        // Handle the "Back to App" button click
+        document.getElementById('back-to-app-button').addEventListener('click', function() {
+            // This is a placeholder for navigation logic.
+            // In a full application, this would redirect the user.
+            // For now, it will simply log a message to the console.
+            console.log('Navigating back to the main app...');
+            // You can replace the console.log with window.location.href = 'index.html';
+            // if you are sure the file path is correct in your local environment.
         });
     </script>
 </body>
