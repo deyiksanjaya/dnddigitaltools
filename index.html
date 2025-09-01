@@ -97,19 +97,38 @@
         #roll-details-text { opacity: 0; transition: opacity 0.4s ease-in; }
         #roll-details-text.show { opacity: 1; }
         
-        .transaction-input {
-            -moz-appearance: textfield;
-            background-color: #374151;
-            border: 1px solid #4b5563;
-            text-align: center;
-            color: white;
-            border-radius: 0.375rem; /* rounded-md */
+        /* Custom styles for details/summary dropdown */
+        details summary {
+            list-style: none; /* Hide default marker */
         }
-        .transaction-input:focus {
-            outline: none;
+        details summary::-webkit-details-marker {
+            display: none; /* Hide default marker for Chrome/Safari */
+        }
+        details summary .arrow {
+            transition: transform 0.2s ease-in-out;
+        }
+        details[open] summary .arrow {
+            transform: rotate(180deg);
+        }
+        
+        .currency-input {
+            background-color: transparent;
+            border: 1px solid transparent; /* Add transparent border to prevent layout shift on focus */
+            -moz-appearance: textfield;
+        }
+        .currency-input::-webkit-outer-spin-button,
+        .currency-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .currency-input:focus {
+            background-color: #374151;
             border-color: #d4a76c;
             box-shadow: 0 0 0 2px rgba(212, 167, 108, 0.5);
+            outline: none;
+            border-radius: 0.375rem; /* rounded-md */
         }
+
          @media (max-width: 420px) {
             .max-w-sm.mx-auto.space-y-3 > .flex.justify-between {
                 flex-wrap: wrap; 
@@ -128,7 +147,7 @@
     <!-- Main App Container -->
     <div id="app-container" class="w-full max-w-3xl mx-auto p-6 md:p-8 flex flex-col items-center space-y-6">
 
-        <!-- Character Info Header -->
+        <!-- 1. Character Info Header -->
         <header class="w-full flex flex-col items-center space-y-4 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <div class="w-full flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <div class="text-center md:text-left">
@@ -150,43 +169,7 @@
             </div>
         </header>
         
-        <!-- Core Stats -->
-        <div class="w-full grid grid-cols-4 gap-4 text-center bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700">
-            <div>
-                <span class="font-bold text-amber-300">Armor Class</span>
-                <p id="armorClassDisplay" class="text-2xl font-bold text-white">10</p>
-            </div>
-            <div>
-                <span class="font-bold text-amber-300">Initiative</span>
-                <p id="initiativeDisplay" class="text-2xl font-bold text-white">+0</p>
-            </div>
-            <div>
-                <span class="font-bold text-amber-300">Speed</span>
-                <p id="speedDisplay" class="text-2xl font-bold text-white">30 ft</p>
-            </div>
-             <div>
-                <span class="font-bold text-amber-300">Prof. Bonus</span>
-                <p id="proficiencyBonusDisplay" class="text-2xl font-bold text-white">+2</p>
-            </div>
-        </div>
-
-        <!-- Ability Scores -->
-        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Ability Scores</h3>
-            <div id="abilityScoresContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
-                <!-- Abilities will be populated by JS -->
-            </div>
-        </div>
-        
-        <!-- Saving Throws -->
-        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Saving Throws</h3>
-            <div id="savingThrowsContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
-                <!-- Saving Throws will be populated by JS -->
-            </div>
-        </div>
-
-        <!-- Dice Display Area -->
+        <!-- 2. Dice Display Area -->
         <div class="w-full bg-gray-900 border-4 border-amber-800 rounded-xl p-4 shadow-inner min-h-[120px] flex items-center justify-center">
             <div id="roll-result-display" class="text-center">
                 <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Ready to Roll</span>
@@ -197,7 +180,7 @@
             </div>
         </div>
 
-        <!-- Dice Button Grid -->
+        <!-- 3. Dice Button Grid -->
         <div class="w-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="4">d4</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="6">d6</button>
@@ -207,86 +190,103 @@
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="20">d20</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="100">d100</button>
         </div>
-        
-        <!-- Character Skills Display -->
-        <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Skills</h3>
-            <div id="skills-list" class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-amber-200"></div>
-        </div>
 
-        <!-- Spells Display -->
-        <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-            <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells & Features</h3>
-            <div id="spellsList" class="text-amber-200 space-y-2"></div>
-        </div>
-        
-        <!-- Coin Inventory -->
+        <!-- 4. Currency -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Currency</h3>
             <div class="max-w-sm mx-auto space-y-3">
                 <!-- Platinum -->
-                <div class="flex justify-between items-center">
-                    <label class="font-bold text-amber-100 w-28">Platinum (pp)</label>
-                    <span id="main-pp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="main-pp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
-                        <button id="main-pp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
+                <div class="flex justify-between items-center gap-2">
+                    <label for="main-pp-input" class="font-bold text-amber-100 w-28">Platinum (pp)</label>
+                    <input type="number" id="main-pp-input" class="currency-input w-24 py-1 text-lg font-bold text-white text-right" value="0" min="0">
                 </div>
                 <!-- Gold -->
-                 <div class="flex justify-between items-center">
-                    <label class="font-bold text-amber-200 w-28">Gold (gp)</label>
-                    <span id="main-gp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="main-gp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
-                         <button id="main-gp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
+                <div class="flex justify-between items-center gap-2">
+                    <label for="main-gp-input" class="font-bold text-amber-200 w-28">Gold (gp)</label>
+                    <input type="number" id="main-gp-input" class="currency-input w-24 py-1 text-lg font-bold text-white text-right" value="0" min="0">
                 </div>
-                 <!-- Electrum -->
-                <div class="flex justify-between items-center">
-                    <label class="font-bold text-gray-300 w-28">Electrum (ep)</label>
-                    <span id="main-ep-total" class="font-bold text-white text-lg w-16 text-right">0</span>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="main-ep-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
-                         <button id="main-ep-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
+                <!-- Electrum -->
+                <div class="flex justify-between items-center gap-2">
+                    <label for="main-ep-input" class="font-bold text-gray-300 w-28">Electrum (ep)</label>
+                    <input type="number" id="main-ep-input" class="currency-input w-24 py-1 text-lg font-bold text-white text-right" value="0" min="0">
                 </div>
                 <!-- Silver -->
-                <div class="flex justify-between items-center">
-                    <label class="font-bold text-gray-400 w-28">Silver (sp)</label>
-                    <span id="main-sp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="main-sp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
-                         <button id="main-sp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
+                <div class="flex justify-between items-center gap-2">
+                    <label for="main-sp-input" class="font-bold text-gray-400 w-28">Silver (sp)</label>
+                    <input type="number" id="main-sp-input" class="currency-input w-24 py-1 text-lg font-bold text-white text-right" value="0" min="0">
                 </div>
-                 <!-- Copper -->
-                <div class="flex justify-between items-center">
-                    <label class="font-bold text-orange-400 w-28">Copper (cp)</label>
-                    <span id="main-cp-total" class="font-bold text-white text-lg w-16 text-right">0</span>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="main-cp-transaction" class="transaction-input w-24 py-1" placeholder="+/-">
-                         <button id="main-cp-apply" class="p-1 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
+                <!-- Copper -->
+                <div class="flex justify-between items-center gap-2">
+                    <label for="main-cp-input" class="font-bold text-orange-400 w-28">Copper (cp)</label>
+                    <input type="number" id="main-cp-input" class="currency-input w-24 py-1 text-lg font-bold text-white text-right" value="0" min="0">
                 </div>
             </div>
         </div>
-        
-        <!-- Adventure Notes -->
+
+        <!-- 5. Adventure Notes -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
             <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Adventure Notes</h3>
             <textarea id="adventureNotes" class="w-full h-40 bg-gray-900 text-amber-100 p-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Jot down clues, NPC names, or other important details here..."></textarea>
         </div>
+
+        <!-- 6. More Info Dropdown -->
+        <details class="w-full bg-gray-800 rounded-xl shadow-lg border border-gray-700">
+            <summary class="font-cinzel text-xl text-amber-300 p-6 cursor-pointer flex justify-between items-center">
+                <span>More Character Info</span>
+                <svg class="arrow w-6 h-6 text-amber-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </summary>
+            <div class="px-6 pb-6 space-y-6">
+                <!-- Core Stats -->
+                <div class="w-full grid grid-cols-4 gap-4 text-center bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-700">
+                    <div>
+                        <span class="font-bold text-amber-300">Armor Class</span>
+                        <p id="armorClassDisplay" class="text-2xl font-bold text-white">10</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-amber-300">Initiative</span>
+                        <p id="initiativeDisplay" class="text-2xl font-bold text-white">+0</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-amber-300">Speed</span>
+                        <p id="speedDisplay" class="text-2xl font-bold text-white">30 ft</p>
+                    </div>
+                     <div>
+                        <span class="font-bold text-amber-300">Prof. Bonus</span>
+                        <p id="proficiencyBonusDisplay" class="text-2xl font-bold text-white">+2</p>
+                    </div>
+                </div>
+
+                <!-- Ability Scores -->
+                <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Ability Scores</h3>
+                    <div id="abilityScoresContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
+                        <!-- Abilities will be populated by JS -->
+                    </div>
+                </div>
+                
+                <!-- Saving Throws -->
+                <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Saving Throws</h3>
+                    <div id="savingThrowsContainer" class="grid grid-cols-3 md:grid-cols-6 gap-4 text-center">
+                        <!-- Saving Throws will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Character Skills Display -->
+                <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Skills</h3>
+                    <div id="skills-list" class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-amber-200"></div>
+                </div>
+
+                <!-- Spells Display -->
+                <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells & Features</h3>
+                    <div id="spellsList" class="text-amber-200 space-y-2"></div>
+                </div>
+            </div>
+        </details>
 
         <!-- Settings and Reset Buttons -->
         <footer class="w-full flex justify-center gap-4 bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
@@ -341,7 +341,7 @@
                     </div>
                 </div>
 
-                 <!-- Core Stats -->
+                <!-- Core Stats -->
                 <div class="space-y-4 py-4 border-b border-gray-600">
                      <h4 class="text-amber-300 font-bold">Core Stats</h4>
                      <div class="grid grid-cols-3 gap-4">
@@ -367,7 +367,7 @@
                 <!-- Ability Scores -->
                  <div class="space-y-2 py-4 border-b border-gray-600">
                     <h4 class="text-amber-300 font-bold">Ability Scores</h4>
-                    <div id="abilityInputsContainer" class="grid grid-cols-3 gap-x-4 gap-y-2">
+                    <div id="abilityInputsContainer" class="flex flex-col space-y-2 max-w-xs mx-auto">
                         <!-- Ability inputs will be generated by JS -->
                     </div>
                 </div>
@@ -404,19 +404,15 @@
                         <input type="checkbox" id="autoCopyRollSetting" class="w-4 h-4 accent-amber-500">
                         <label for="autoCopyRollSetting" class="text-amber-300 text-sm">Auto-copy dice rolls</label>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="autoCopyHpSetting" class="w-4 h-4 accent-amber-500">
-                        <label for="autoCopyHpSetting" class="text-amber-300 text-sm">Auto-copy HP on change</label>
-                    </div>
                 </div>
                 
                 <!-- JSON Editor -->
-                <div id="jsonEditorContainer" class="hidden pt-4 border-t border-gray-600">
+                <div id="jsonEditorContainer" class="hidden pt-4">
                     <label for="jsonEditor" class="block text-amber-300 mb-1">Character Data (JSON)</label>
                     <textarea id="jsonEditor" rows="10" class="w-full px-3 py-2 rounded-lg bg-gray-900 text-green-400 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
                     <div id="jsonFeedback" class="text-center text-sm font-bold mt-2 h-4"></div>
                     <div class="flex gap-2 mt-2">
-                        <button id="copyJsonTemplateBtn" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Copy Character Template</button>
+                        <button id="copyJsonBtn" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Copy Current JSON</button>
                     </div>
                 </div>
 
@@ -424,7 +420,7 @@
                     <button id="toggleJsonViewBtn" class="text-sm text-blue-400 hover:text-blue-300 underline">Edit with JSON</button>
                 </div>
             </div>
-            <div class="flex justify-end gap-4 mt-6">
+            <div class="flex justify-end gap-4 mt-6 p-6 pt-0">
                 <button id="cancelSettingsBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">Cancel</button>
                 <button id="saveSettingsBtn" class="bg-amber-600 hover:bg-amber-500 text-gray-900 font-bold py-2 px-6 rounded-lg transition-colors">Save</button>
             </div>
@@ -503,7 +499,7 @@
                 coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
             };
 
-            const defaultSettings = { autoCopyRoll: true, autoCopyHp: false };
+            const defaultSettings = { autoCopyRoll: true };
 
             // --- DOM ELEMENT REFERENCES ---
             const dom = {
@@ -525,15 +521,15 @@
                 maxHpInput: document.getElementById('maxHpInput'), armorClassInput: document.getElementById('armorClassInput'), speedInput: document.getElementById('speedInput'),
                 abilityInputsContainer: document.getElementById('abilityInputsContainer'), savingThrowProficienciesContainer: document.getElementById('savingThrowProficienciesContainer'),
                 skillProficienciesContainer: document.getElementById('skillProficienciesContainer'), spellsInput: document.getElementById('spellsInput'), autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
-                autoCopyHpSetting: document.getElementById('autoCopyHpSetting'), jsonEditorContainer: document.getElementById('jsonEditorContainer'),
-                toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'), jsonEditor: document.getElementById('jsonEditor'), copyJsonTemplateBtn: document.getElementById('copyJsonTemplateBtn'),
+                jsonEditorContainer: document.getElementById('jsonEditorContainer'),
+                toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'), jsonEditor: document.getElementById('jsonEditor'), copyJsonBtn: document.getElementById('copyJsonBtn'),
                 jsonFeedback: document.getElementById('jsonFeedback'), modifierOptions: document.getElementById('modifierOptions'), rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
-                toast: document.getElementById('toast-notification'), mainPpTotal: document.getElementById('main-pp-total'), mainPpTransaction: document.getElementById('main-pp-transaction'),
-                mainPpApply: document.getElementById('main-pp-apply'), mainGpTotal: document.getElementById('main-gp-total'), mainGpTransaction: document.getElementById('main-gp-transaction'),
-                mainGpApply: document.getElementById('main-gp-apply'), mainEpTotal: document.getElementById('main-ep-total'), mainEpTransaction: document.getElementById('main-ep-transaction'),
-                mainEpApply: document.getElementById('main-ep-apply'), mainSpTotal: document.getElementById('main-sp-total'), mainSpTransaction: document.getElementById('main-sp-transaction'),
-                mainSpApply: document.getElementById('main-sp-apply'), mainCpTotal: document.getElementById('main-cp-total'), mainCpTransaction: document.getElementById('main-cp-transaction'),
-                mainCpApply: document.getElementById('main-cp-apply'),
+                toast: document.getElementById('toast-notification'), 
+                mainPpInput: document.getElementById('main-pp-input'),
+                mainGpInput: document.getElementById('main-gp-input'),
+                mainEpInput: document.getElementById('main-ep-input'),
+                mainSpInput: document.getElementById('main-sp-input'),
+                mainCpInput: document.getElementById('main-cp-input'),
             };
             const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
 
@@ -600,7 +596,7 @@
                 
                 // Spells, Currency, Notes
                 dom.spellsList.innerHTML = characterData.spells.length > 0 ? characterData.spells.map(spell => `<div>${spell}</div>`).join('') : '<span class="italic text-gray-400">No spells known</span>';
-                Object.keys(characterData.coins).forEach(coin => { dom[`main${coin.charAt(0).toUpperCase() + coin.slice(1)}Total`].textContent = characterData.coins[coin] || 0; });
+                Object.keys(characterData.coins).forEach(coin => { dom[`main${coin.charAt(0).toUpperCase() + coin.slice(1)}Input`].value = characterData.coins[coin] || 0; });
                 dom.adventureNotes.value = characterData.notes || "";
             };
 
@@ -611,7 +607,7 @@
                 dom.maxHpInput.value = characterData.maxHp; dom.armorClassInput.value = characterData.armorClass; dom.speedInput.value = characterData.speed;
                 
                 // Abilities
-                dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-16 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></div>`).join('');
+                dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></div>`).join('');
                 
                 // Proficiencies
                 dom.savingThrowProficienciesContainer.innerHTML = Object.keys(characterData.savingThrows).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key}-prof" ${characterData.proficiencies.savingThrows.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key}-prof" class="text-amber-300 text-sm capitalize">${key}</label></div>`).join('');
@@ -620,7 +616,6 @@
                 // Spells & App Settings
                 dom.spellsInput.value = characterData.spells.join('\n');
                 dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
-                dom.autoCopyHpSetting.checked = appSettings.autoCopyHp;
 
                 // JSON Editor
                 dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
@@ -635,14 +630,14 @@
             };
 
             const toggleJsonView = (showJson) => {
-                 const settingsContent = dom.settingsModalContent.querySelector('.space-y-4');
-                 Array.from(settingsContent.children).forEach(child => {
+                const settingsContent = dom.settingsModalContent.querySelector('.space-y-4');
+                Array.from(settingsContent.children).forEach(child => {
                     if (!child.id.includes('jsonEditorContainer') && !child.classList.contains('text-center')) {
                         child.classList.toggle('hidden', showJson);
                     }
-                 });
-                 dom.jsonEditorContainer.classList.toggle('hidden', !showJson);
-                 dom.toggleJsonViewBtn.textContent = showJson ? 'Edit with Form' : 'Edit with JSON';
+                });
+                dom.jsonEditorContainer.classList.toggle('hidden', !showJson);
+                dom.toggleJsonViewBtn.textContent = showJson ? 'Edit with Form' : 'Edit with JSON';
             };
 
             const showToast = (message) => {
@@ -776,87 +771,83 @@
             };
             
             const applySettingsChanges = () => {
-    let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
+                let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
 
-    if (isJsonMode) {
-        try {
-            let newData = JSON.parse(dom.jsonEditor.value);
+                if (isJsonMode) {
+                    try {
+                        let newData = JSON.parse(dom.jsonEditor.value);
 
-            if (!newData.name || !newData.abilities) {
-                dom.jsonFeedback.textContent = "Error: Invalid JSON structure.";
-                dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
-                return;
-            }
+                        if (!newData.name || !newData.abilities) {
+                            dom.jsonFeedback.textContent = "Error: Invalid JSON structure.";
+                            dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
+                            return;
+                        }
 
-            // Memeriksa dan menyesuaikan HP
-            if (newData.maxHp !== undefined && newData.currentHp !== undefined) {
-                if (newData.maxHp < newData.currentHp) {
-                    newData.currentHp = newData.maxHp;
-                    showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
-                } else if (newData.currentHp < 0) {
-                    newData.currentHp = 0;
-                    showToast("Current HP Auto-adjusted because it cannot be less than 0.");
+                        if (newData.maxHp !== undefined && newData.currentHp !== undefined) {
+                            if (newData.maxHp < newData.currentHp) {
+                                newData.currentHp = newData.maxHp;
+                                showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
+                            } else if (newData.currentHp < 0) {
+                                newData.currentHp = 0;
+                                showToast("Current HP Auto-adjusted because it cannot be less than 0.");
+                            }
+                        }
+
+                        characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
+                    } catch (error) {
+                        dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
+                        dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
+                        return;
+                    }
+                } else {
+                    const oldConMod = getAbilityModifier(characterData.abilities.constitution);
+
+                    characterData.name = dom.charNameInput.value || "Nameless";
+                    characterData.race = dom.raceInput.value;
+                    characterData.class = dom.classInput.value;
+                    characterData.background = dom.backgroundInput.value;
+                    characterData.alignment = dom.alignmentInput.value;
+                    characterData.level = parseInt(dom.levelInput.value, 10) || 1;
+                    characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
+                    characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
+
+                    Object.keys(characterData.abilities).forEach(key => {
+                        const input = document.getElementById(`${key}-input`);
+                        if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
+                    });
+
+                    const newConMod = getAbilityModifier(characterData.abilities.constitution);
+                    const hpChange = (newConMod - oldConMod) * characterData.level;
+                    const newMaxHp = (parseInt(dom.maxHpInput.value, 10) || 1) + hpChange;
+
+                    if (characterData.currentHp > newMaxHp) {
+                        characterData.currentHp = newMaxHp;
+                        showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
+                    } else if (characterData.currentHp < 0) {
+                        characterData.currentHp = 0;
+                        showToast("Current HP Auto-adjusted because it cannot be less than 0.");
+                    }
+
+                    characterData.maxHp = newMaxHp;
+
+                    characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
+                    characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
+                    characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
                 }
-            }
 
-            characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
-        } catch (error) {
-            dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
-            dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
-            return;
-        }
-    } else {
-        const oldConMod = getAbilityModifier(characterData.abilities.constitution);
+                characterData = calculateAllModifiers(characterData);
+                saveData('dndCharacterData', characterData);
 
-        characterData.name = dom.charNameInput.value || "Nameless";
-        characterData.race = dom.raceInput.value;
-        characterData.class = dom.classInput.value;
-        characterData.background = dom.backgroundInput.value;
-        characterData.alignment = dom.alignmentInput.value;
-        characterData.level = parseInt(dom.levelInput.value, 10) || 1;
-        characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
-        characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
+                appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
+                saveData('dndAppSettings', appSettings);
 
-        Object.keys(characterData.abilities).forEach(key => {
-            const input = document.getElementById(`${key}-input`);
-            if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
-        });
-
-        const newConMod = getAbilityModifier(characterData.abilities.constitution);
-        const hpChange = (newConMod - oldConMod) * characterData.level;
-        const newMaxHp = (parseInt(dom.maxHpInput.value, 10) || 1) + hpChange;
-
-        // Memeriksa dan menyesuaikan HP
-        if (characterData.currentHp > newMaxHp) {
-            characterData.currentHp = newMaxHp;
-            showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
-        } else if (characterData.currentHp < 0) {
-            characterData.currentHp = 0;
-            showToast("Current HP Auto-adjusted because it cannot be less than 0.");
-        }
-
-        characterData.maxHp = newMaxHp;
-
-        characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
-        characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
-        characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
-    }
-
-    characterData = calculateAllModifiers(characterData);
-    saveData('dndCharacterData', characterData);
-
-    appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
-    appSettings.autoCopyHp = dom.autoCopyHpSetting.checked;
-    saveData('dndAppSettings', appSettings);
-
-    updateUI();
-    toggleModal(dom.settingsModal, false);
-};
+                updateUI();
+                toggleModal(dom.settingsModal, false);
+            };
 
             const init = () => {
                 let loadedCharacter = loadData('dndCharacterData');
                 if (loadedCharacter) {
-                    // Deep merge to ensure new data structure is applied to old saves
                     let mergedAbilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
                     let mergedSkills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
                     let mergedCoins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
@@ -885,11 +876,22 @@
             
             function setupEventListeners() {
                 dom.diceButtons.forEach(button => button.addEventListener('click', () => handleDiceClick(parseInt(button.dataset.sides, 10))));
+                
                 dom.modifierOptions.addEventListener('click', (e) => {
                     const button = e.target.closest('button');
                     if(button) handleModifierSelection(parseInt(button.dataset.modifier, 10), button.dataset.skill);
                 });
+                
                 dom.rollWithoutModifierBtn.addEventListener('click', () => handleModifierSelection(0, 'No Modifier'));
+
+                dom.hpChangeInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (!dom.hpChangeBtn.disabled) {
+                            dom.hpChangeBtn.click();
+                        }
+                    }
+                });
 
                 dom.hpChangeInput.addEventListener('input', () => {
                     const value = dom.hpChangeInput.value.trim();
@@ -908,64 +910,53 @@
                 });
 
                 dom.hpChangeBtn.addEventListener('click', () => {
-                    const value = parseInt(dom.hpChangeInput.value, 10);
-                    if (isNaN(value)) return;
+                    const value = parseInt(dom.hpChangeInput.value, 10);
+                    if (isNaN(value)) return;
 
-                    const previousHp = characterData.currentHp;
-                    const newHp = characterData.currentHp + value;
-                    characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, newHp));
+                    const previousHp = characterData.currentHp;
+                    characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, characterData.currentHp + value));
 
-                    // --- LOGIKA BARU DIMULAI DI SINI ---
+                    if (previousHp <= 0 && value < 0 && characterData.status === 'stable') {
+                        characterData.status = 'unconscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        saveData('dndCharacterData', characterData);
+                        showToast('Damage saat stabil! Kamu sekarat lagi.');
+                        showDeathSaveModal();
+                    }
+                    else if (previousHp <= 0 && value < 0 && (characterData.status === 'unconscious' || characterData.status !== 'dead')) {
+                        characterData.deathSaves.failures++;
+                        showToast('Damage saat pingsan! Satu kegagalan death save ditambahkan.');
+                        
+                        if (characterData.deathSaves.failures >= 3) {
+                            characterData.status = 'dead';
+                            dom.deathSaveTitle.textContent = "DEAD";
+                            dom.deathSaveStatus.textContent = "Petualanganmu telah berakhir.";
+                            dom.makeDeathSaveBtn.classList.add('hidden');
+                            dom.restartSameCharacterBtn.classList.remove('hidden');
+                            dom.createNewCharacterBtn.classList.remove('hidden');
+                        }
+                        updateDeathSaveDisplay();
+                    }
+                    else if (previousHp <= 0 && characterData.currentHp > 0) {
+                        characterData.status = 'conscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        toggleModal(dom.deathSaveModal, false);
+                    }
+                    else if (previousHp > 0 && characterData.currentHp <= 0) {
+                        characterData.status = 'unconscious';
+                        characterData.deathSaves = { successes: 0, failures: 0 };
+                        saveData('dndCharacterData', characterData);
+                        showDeathSaveModal();
+                    }
 
-                    // Case 1: Karakter STABIL dan menerima damage. Proses death save di-reset.
-                    if (previousHp <= 0 && value < 0 && characterData.status === 'stable') {
-                        characterData.status = 'unconscious'; // Kembali ke kondisi sekarat
-                        characterData.deathSaves = { successes: 0, failures: 0 }; // **RESET HITUNGAN**
-                        saveData('dndCharacterData', characterData);
-                        showToast('Damage saat stabil! Kamu sekarat lagi.');
-                        showDeathSaveModal(); // Tampilkan kembali modal death save dari awal
-                    }
-                    // Case 2: Karakter sudah SEKARAT (unconscious) dan menerima damage. Tambah satu kegagalan.
-                    else if (previousHp <= 0 && value < 0 && (characterData.status === 'unconscious' || characterData.status !== 'dead')) {
-                        characterData.deathSaves.failures++;
-                        showToast('Damage saat pingsan! Satu kegagalan death save ditambahkan.');
-                        
-                        if (characterData.deathSaves.failures >= 3) {
-                            characterData.status = 'dead';
-                            dom.deathSaveTitle.textContent = "DEAD";
-                            dom.deathSaveStatus.textContent = "Petualanganmu telah berakhir.";
-                            dom.makeDeathSaveBtn.classList.add('hidden');
-                            dom.restartSameCharacterBtn.classList.remove('hidden');
-                            dom.createNewCharacterBtn.classList.remove('hidden');
-                        }
-                        updateDeathSaveDisplay();
-                    }
-                    // Case 3: Disembuhkan dari 0 HP (dari kondisi apapun)
-                    else if (previousHp <= 0 && characterData.currentHp > 0) {
-                        characterData.status = 'conscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        toggleModal(dom.deathSaveModal, false);
-                    }
-                    // Case 4: Turun ke 0 HP untuk pertama kali
-                    else if (previousHp > 0 && characterData.currentHp <= 0) {
-                        characterData.status = 'unconscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        saveData('dndCharacterData', characterData);
-                        showDeathSaveModal();
-                    }
-
-                    saveData('dndCharacterData', characterData);
-                    updateUI();
-                    
-                    if (appSettings.autoCopyHp) {
-                        copyToClipboard(`Character HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Current HP copied!');
-                    }
-
-                    dom.hpChangeInput.value = '';
-                    dom.hpChangeBtn.textContent = 'Apply';
-                    dom.hpChangeBtn.disabled = true;
-                    dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
-                });
+                    saveData('dndCharacterData', characterData);
+                    updateUI();
+                    
+                    dom.hpChangeInput.value = '';
+                    dom.hpChangeBtn.textContent = 'Apply';
+                    dom.hpChangeBtn.disabled = true;
+                    dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+                });
 
                 dom.makeDeathSaveBtn.addEventListener('click', () => {
                     const roll = Math.floor(Math.random() * 20) + 1;
@@ -994,7 +985,7 @@
                             clipboardText = `Death Save sequence ended. Final roll was ${roll} (Success). Character is now stable with ${characterData.deathSaves.successes} successes and ${characterData.deathSaves.failures} failures.`;
                             shouldCopyToClipboard = true;
                         }
-                    } else { // roll < 10
+                    } else {
                         const isCritFail = roll === 1;
                         characterData.deathSaves.failures += (isCritFail ? 2 : 1);
                         dom.deathSaveStatus.textContent = (isCritFail) ? "Critical failure! (2 failures)" : "Failed roll.";
@@ -1023,18 +1014,18 @@
                 dom.closeDeathSaveModalBtn.addEventListener('click', () => toggleModal(dom.deathSaveModal, false));
                 
                 dom.adventureNotes.addEventListener('blur', () => {
-                    const newNotes = dom.adventureNotes.value;
-                    if (characterData.notes !== newNotes) {
-                        characterData.notes = newNotes;
+                    if (characterData.notes !== dom.adventureNotes.value) {
+                        characterData.notes = dom.adventureNotes.value;
                         saveData('dndCharacterData', characterData);
                         showToast('Notes saved!');
                     }
                 });
+                
                 const resetCharacter = () => {
-                localStorage.removeItem('dndCharacterData');
-                localStorage.removeItem('dndAppSettings');
-                toggleModal(dom.resetModal, false);
-                toggleModal(dom.onboardingModal, true);
+                    localStorage.removeItem('dndCharacterData');
+                    localStorage.removeItem('dndAppSettings');
+                    toggleModal(dom.resetModal, false);
+                    toggleModal(dom.onboardingModal, true);
                 };
 
                 const restartSameCharacter = () => {
@@ -1045,23 +1036,33 @@
                     updateUI();
                     toggleModal(dom.deathSaveModal, false);
                 };
-                const setupTransactionHandler = (inputEl, buttonEl, coinKey) => {
-                    const processTransaction = () => {
+                
+                const setupCurrencyInputHandler = (inputEl, coinKey) => {
+                    const saveChange = () => {
                         const value = parseInt(inputEl.value, 10);
-                        if (isNaN(value) || value === 0) { inputEl.value = ''; return; }
-                        const currentAmount = characterData.coins[coinKey] || 0;
-                        characterData.coins[coinKey] = Math.max(0, currentAmount + value);
-                        saveData('dndCharacterData', characterData);
-                        updateUI(); inputEl.value = '';
+                        const newAmount = isNaN(value) ? 0 : Math.max(0, value);
+                        if (characterData.coins[coinKey] !== newAmount) {
+                            characterData.coins[coinKey] = newAmount;
+                            saveData('dndCharacterData', characterData);
+                            showToast('Currency updated!');
+                        }
+                        inputEl.value = newAmount; 
                     };
-                    buttonEl.addEventListener('click', processTransaction);
-                    inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); processTransaction(); } });
+
+                    inputEl.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            inputEl.blur();
+                        }
+                    });
+                    inputEl.addEventListener('blur', saveChange);
                 };
-                setupTransactionHandler(dom.mainPpTransaction, dom.mainPpApply, 'pp');
-                setupTransactionHandler(dom.mainGpTransaction, dom.mainGpApply, 'gp');
-                setupTransactionHandler(dom.mainEpTransaction, dom.mainEpApply, 'ep');
-                setupTransactionHandler(dom.mainSpTransaction, dom.mainSpApply, 'sp');
-                setupTransactionHandler(dom.mainCpTransaction, dom.mainCpApply, 'cp');
+
+                setupCurrencyInputHandler(dom.mainPpInput, 'pp');
+                setupCurrencyInputHandler(dom.mainGpInput, 'gp');
+                setupCurrencyInputHandler(dom.mainEpInput, 'ep');
+                setupCurrencyInputHandler(dom.mainSpInput, 'sp');
+                setupCurrencyInputHandler(dom.mainCpInput, 'cp');
 
                 dom.createCharacterBtn.addEventListener('click', () => {
                     characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
@@ -1084,12 +1085,20 @@
                     dom.cancelSettingsBtn.classList.remove('hidden');
                 });
                 
+                dom.settingsModalContent.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+                        e.preventDefault();
+                        applySettingsChanges();
+                    }
+                });
+                
                 dom.settingsModalContent.addEventListener('focusin', (e) => {
                     if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
                         e.target.dataset.originalValue = e.target.value;
                         e.target.select();
                     }
                 });
+
                 dom.settingsModalContent.addEventListener('focusout', (e) => {
                      if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
                          if (e.target.value === '') e.target.value = e.target.dataset.originalValue;
@@ -1097,8 +1106,9 @@
                 });
                 
                 dom.toggleJsonViewBtn.addEventListener('click', () => toggleJsonView(dom.jsonEditorContainer.classList.contains('hidden')));
-                dom.copyJsonTemplateBtn.addEventListener('click', () => {
-                    copyToClipboard(JSON.stringify(defaultCharacterTemplate, null, 2), 'Character template copied!');
+                
+                dom.copyJsonBtn.addEventListener('click', () => {
+                    copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!');
                 });
                 
                 dom.saveSettingsBtn.addEventListener('click', applySettingsChanges);
