@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dnd-dashboard-v2'; // Versi cache diperbarui untuk memicu pembaruan
+const CACHE_NAME = 'dnd-dashboard-v3'; // Versi cache diperbarui untuk memicu pembaruan
 const urlsToCache = [
   // Aset Inti Aplikasi
   './',
@@ -8,12 +8,6 @@ const urlsToCache = [
   // Ikon (sesuaikan dengan path di manifest.json)
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
-
-  // Aset Eksternal (CDN)
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500&display=swap',
-  // Google Fonts juga mengambil file font lain, tetapi caching URL CSS utama sudah sangat membantu
-];
 
 // Install a service worker
 self.addEventListener('install', event => {
