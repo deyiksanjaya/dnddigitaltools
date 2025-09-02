@@ -466,7 +466,7 @@
         Text copied to clipboard!
     </div>
 
-  <script>
+ <script>
     window.onerror = function(message, source, lineno, colno, error) {
         alert("JS Error: " + message + "\nLine: " + lineno);
         return false;
@@ -484,124 +484,89 @@
             "Performance": "charisma", "Persuasion": "charisma", "Religion": "intelligence", "Sleight of Hand": "dexterity", "Stealth": "dexterity", "Survival": "wisdom"
         };
         
+        // **UPDATED**: Default template now only contains user-configurable data.
         const defaultCharacterTemplate = {
-    name: "New Rogue", // Generate a fitting character name.
-    level: 1, // Set the character's starting level (e.g., 1 or 3).
-    race: "Lightfoot Halfling", // Generate a character race.
-    class: "Rogue", // Generate a character class.
-    background: "Urchin", // Generate a background that fits the class/race.
-    alignment: "Chaotic Neutral", // Generate a suitable alignment based on the character concept.
-    maxHp: 8, // Calculate max HP based on class, level, and Constitution modifier.
-    armorClass: 13, // Calculate Armor Class based on starting gear and Dexterity modifier.
-    speed: 25, // Set movement speed based on the generated race.
-    hitDie: 8, // Set the hit die type based on the generated class (e.g., 8 for d8, 10 for d10).
-    status: 'conscious', // Set to 'conscious' for a new character.
-    deathSaves: { successes: 0, failures: 0, rolls: [] }, // Leave at default values; this is managed by the app.
-    abilities: {
-        strength: 8, // Generate base ability scores using Standard Array (15,14,13,12,10,8) and apply racial bonuses.
-        dexterity: 15,
-        constitution: 10,
-        intelligence: 12,
-        wisdom: 14,
-        charisma: 13
-    },
-    // DO NOT FILL. This object is calculated automatically by the application.
-    savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-    proficiencies: {
-        savingThrows: ["dexterity", "intelligence"], // List the two saving throw proficiencies from the generated class as an array of strings.
-        skills: ["Stealth", "Sleight of Hand", "Acrobatics", "Investigation"] // List all skill proficiencies from race, class, and background as an array of strings.
-    },
-    notes: "", // This field is for user notes during gameplay. Leave it empty.
-    // DO NOT FILL. This object is calculated automatically by the application.
-    skills: {
-        "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0,
-        "History": 0, "Insight": 0, "Intimidation": 0, "Investigation": 0, "Medicine": 0,
-        "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0,
-        "Sleight of Hand": 0, "Stealth": 0, "Survival": 0
-    },
-    // Populate with spells and features based on class and level. Use an empty object {} if none.
-    spellsAndSlots: {}, 
-    coins: { pp: 0, gp: 10, ep: 0, sp: 0, cp: 0 } // Set starting coins based on the generated background.
-};
+            name: "New Adventurer",
+            level: 1,
+            race: "Human",
+            class: "Fighter",
+            background: "Soldier",
+            alignment: "Neutral Good",
+            maxHp: 10,
+            currentHp: 10,
+            armorClass: 16,
+            speed: 30,
+            status: 'conscious',
+            deathSaves: { successes: 0, failures: 0, rolls: [] },
+            abilities: {
+                strength: 15, dexterity: 14, constitution: 13,
+                intelligence: 12, wisdom: 10, charisma: 8
+            },
+            proficiencies: {
+                savingThrows: ["strength", "constitution"],
+                skills: ["Acrobatics", "Athletics", "Intimidation", "Perception"]
+            },
+            notes: "",
+            spellsAndSlots: {},
+            coins: { pp: 0, gp: 10, ep: 0, sp: 0, cp: 0 }
+        };
 
-const aiPromptTemplate = `Generate a DnD character according to template bellow. (insert your character details here)
+        // **UPDATED**: AI prompt template now reflects the new, cleaner data structure.
+        const aiPromptTemplate = `Generate a DnD character according to the JSON template below. Please only fill in the user-configurable fields. The application will automatically calculate the final modifiers. (insert your character details here, e.g., "Generate a level 3 Dragonborn Paladin")
 {
-  "name": "Archeanor", // Generate a fitting character name.
-  "level": 1, // Set the character's level.
-  "race": "Lightfoot Halfling", // Generate a character race.
-  "class": "Rogue", // Generate a character class.
-  "background": "Criminal", // Generate a background that fits the class/race.
-  "alignment": "Chaotic Neutral", // Generate a suitable alignment based on the character concept.
-  "maxHp": 8, // Calculate max HP based on class, level, and Constitution modifier.
-  "armorClass": 13, // Calculate Armor Class based on armor, shield, and Dexterity modifier.
-  "speed": 25, // Set movement speed based on race.
-  "hitDie": 8, // Set the hit die type based on class (e.g., 8 for d8).
-  "status": "conscious", // Set to 'conscious' for a new character.
-  "deathSaves": { // Leave at default values.
-    "successes": 0,
-    "failures": 0,
-    "rolls": []
-  },
-  "abilities": { // Generate base ability scores and apply racial bonuses.
-    "strength": 8,
-    "dexterity": 17,
-    "constitution": 10,
-    "intelligence": 12,
-    "wisdom": 14,
-    "charisma": 14
-  },
-  "savingThrows": { // Calculate and fill in the final saving throw modifiers (Ability Mod + Proficiency if proficient).
-    "strength": -1,
-    "dexterity": 5,
-    "constitution": 0,
-    "intelligence": 3,
-    "wisdom": 2,
-    "charisma": 2
+  "name": "Kriv Oathkeeper", // Generate a fitting character name.
+  "level": 3, // Set the character's level.
+  "race": "Dragonborn (Gold)", // Generate a character race.
+  "class": "Paladin", // Generate a character class.
+  "background": "Noble", // Generate a background that fits the class/race.
+  "alignment": "Lawful Good", // Generate a suitable alignment.
+  "maxHp": 28, // Calculate max HP (Class Hit Die + CON modifier, plus additional HP from levels).
+  "armorClass": 18, // Calculate Armor Class based on typical starting gear (e.g., Chain Mail + Shield).
+  "speed": 30, // Set movement speed based on race.
+  "abilities": { // Generate base ability scores (e.g., using Standard Array or Point Buy) and apply racial bonuses.
+    "strength": 17,
+    "dexterity": 10,
+    "constitution": 14,
+    "intelligence": 8,
+    "wisdom": 12,
+    "charisma": 15
   },
   "proficiencies": {
-    "savingThrows": [ // List the saving throw proficiencies from the class.
-      "dexterity",
-      "intelligence"
+    "savingThrows": [ // List the two saving throw proficiencies from the generated class.
+      "wisdom",
+      "charisma"
     ],
-    "skills": [ // List all skill proficiencies from race, class, and background.
-      "Deception",
-      "Persuasion",
-      "Sleight of Hand",
-      "Stealth"
+    "skills": [ // List all skill proficiencies from class and background.
+      "Athletics",
+      "Insight",
+      "Medicine",
+      "Persuasion"
     ]
   },
-  "notes": "", // This field is for user notes during gameplay. Leave it empty.
-  "skills": { // Calculate and fill in the final skill modifiers (Ability Mod + Proficiency if proficient).
-    "Acrobatics": 3,
-    "Animal Handling": 2,
-    "Arcana": 1,
-    "Athletics": -1,
-    "Deception": 4,
-    "History": 1,
-    "Insight": 2,
-    "Intimidation": 2,
-    "Investigation": 1,
-    "Medicine": 2,
-    "Nature": 1,
-    "Perception": 2,
-    "Performance": 2,
-    "Persuasion": 4,
-    "Religion": 1,
-    "Sleight of Hand": 5,
-    "Stealth": 5,
-    "Survival": 2
+  "spellsAndSlots": { // Populate with spells and features based on class and level. List features under the "feature" key.
+    "1": {
+        "slots": 3,
+        "spells": [
+            { "name": "Bless", "description": "Buff allies' attack rolls and saving throws." },
+            { "name": "Cure Wounds", "description": "Heal a creature you touch." }
+        ]
+    },
+    "feature": {
+        "spells": [
+            { "name": "Divine Smite", "description": "Expend a spell slot to deal extra radiant damage on a melee weapon hit." },
+            { "name": "Lay on Hands", "description": "Heal creatures with a pool of healing power." }
+        ]
+    }
   },
-  "spellsAndSlots": {}, // Populate with spells and features. Use an empty object {} if none.
-  "coins": { // Set starting coins based on background.
+  "coins": { // Set starting coins based on the generated background.
     "pp": 0,
-    "gp": 15,
+    "gp": 25,
     "ep": 0,
     "sp": 0,
     "cp": 0
   },
-  "currentHp": 8, // Set current HP. For a new character, this is the same as maxHp.
-  "proficiencyBonus": 2 // Calculate and set the proficiency bonus based on the character's level.
-    }`;
+  "notes": "" // This field is for user notes. Leave it empty.
+}`;
         const defaultSettings = { autoCopyRoll: true };
 
         // --- DOM ELEMENT REFERENCES ---
@@ -629,9 +594,7 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
             jsonFeedback: document.getElementById('jsonFeedback'), modifierOptions: document.getElementById('modifierOptions'), rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
             toast: document.getElementById('toast-notification'), 
             mainPpInput: document.getElementById('main-pp-input'), mainGpInput: document.getElementById('main-gp-input'), mainEpInput: document.getElementById('main-ep-input'), mainSpInput: document.getElementById('main-sp-input'), mainCpInput: document.getElementById('main-cp-input'),
-            jsonFeedback: document.getElementById('jsonFeedback'),
-            copyAiTemplateBtn: document.getElementById('copyAiTemplateBtn'), // TAMBAHKAN BARIS INI
-            modifierOptions: document.getElementById('modifierOptions'),
+            copyAiTemplateBtn: document.getElementById('copyAiTemplateBtn'),
         };
         const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
 
@@ -642,19 +605,38 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
 
         const calculateAllModifiers = (charData) => {
             const proficiencyBonus = getProficiencyBonus(charData.level);
-            charData.proficiencyBonus = proficiencyBonus;
-            for (const ability in charData.savingThrows) {
+            charData.proficiencyBonus = proficiencyBonus; // Calculated property
+            charData.savingThrows = {}; // Calculated property
+            charData.skills = {}; // Calculated property
+
+            const abilityKeys = Object.keys(defaultCharacterTemplate.abilities);
+            for (const ability of abilityKeys) {
                 const abilityMod = getAbilityModifier(charData.abilities[ability]);
                 const isProficient = charData.proficiencies.savingThrows.includes(ability);
                 charData.savingThrows[ability] = abilityMod + (isProficient ? proficiencyBonus : 0);
             }
-            for (const skill in charData.skills) {
+            
+            const skillKeys = Object.keys(SKILL_ABILITY_MAP);
+            for (const skill of skillKeys) {
                 const ability = SKILL_ABILITY_MAP[skill];
                 const abilityMod = getAbilityModifier(charData.abilities[ability]);
                 const isProficient = charData.proficiencies.skills.includes(skill);
                 charData.skills[skill] = abilityMod + (isProficient ? proficiencyBonus : 0);
             }
             return charData;
+        };
+        
+        // **NEW**: Creates the clean, user-configurable-only object for saving/displaying in JSON editor.
+        const createCleanCharacterObject = (fullCharData) => {
+            const cleanObject = {};
+            // Iterate over the keys in the default template to ensure structure and order
+            Object.keys(defaultCharacterTemplate).forEach(key => {
+                if (fullCharData.hasOwnProperty(key)) {
+                    // Deep copy for nested objects to prevent reference issues
+                    cleanObject[key] = JSON.parse(JSON.stringify(fullCharData[key]));
+                }
+            });
+            return cleanObject;
         };
 
         // --- DATA PERSISTENCE FUNCTIONS ---
@@ -664,7 +646,15 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
             catch (e) { localStorage.removeItem(key); return null; }
         };
         const saveData = (key, data) => {
-            try { localStorage.setItem(key, JSON.stringify(data)); } 
+            try { 
+                if (key === 'dndCharacterData') {
+                    // **MODIFIED**: Always save the clean version of character data.
+                    const cleanData = createCleanCharacterObject(data);
+                    localStorage.setItem(key, JSON.stringify(cleanData));
+                } else {
+                    localStorage.setItem(key, JSON.stringify(data));
+                }
+            } 
             catch (e) { console.error(`Failed to save data for ${key}.`, e); }
         };
 
@@ -687,7 +677,7 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
             dom.proficiencyBonusDisplay.textContent = formatModifier(characterData.proficiencyBonus);
             dom.abilityScoresContainer.innerHTML = Object.entries(characterData.abilities).map(([key, score]) => `<div><span class="font-bold text-amber-300 uppercase">${key.substring(0,3)}</span><p class="text-xl font-bold text-white">${score}</p><p class="text-sm font-bold bg-gray-700 rounded-full">${formatModifier(getAbilityModifier(score))}</p></div>`).join('');
             dom.savingThrowsContainer.innerHTML = Object.entries(characterData.savingThrows).map(([key, score]) => `<div><span class="font-bold text-amber-300 capitalize">${key.substring(0,3)}</span><p class="text-2xl font-bold text-white">${formatModifier(score)}</p></div>`).join('');
-            dom.skillsList.innerHTML = Object.entries(characterData.skills).map(([skill, mod]) => `<div class="flex justify-between"><span class="${characterData.proficiencies.skills.includes(skill) ? 'text-amber-100' : 'text-gray-400'}">${skill}</span><span class="font-bold text-white">${formatModifier(mod)}</span></div>`).join('');
+            dom.skillsList.innerHTML = Object.entries(characterData.skills).sort((a, b) => a[0].localeCompare(b[0])).map(([skill, mod]) => `<div class="flex justify-between"><span class="${characterData.proficiencies.skills.includes(skill) ? 'text-amber-100' : 'text-gray-400'}">${skill}</span><span class="font-bold text-white">${formatModifier(mod)}</span></div>`).join('');
             
             let spellsHtml = '';
             const spellsData = characterData.spellsAndSlots || {};
@@ -749,16 +739,16 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
             dom.charNameInput.value = characterData.name; dom.raceInput.value = characterData.race; dom.classInput.value = characterData.class;
             dom.backgroundInput.value = characterData.background; dom.alignmentInput.value = characterData.alignment; dom.levelInput.value = characterData.level;
             dom.maxHpInput.value = characterData.maxHp; dom.armorClassInput.value = characterData.armorClass; dom.speedInput.value = characterData.speed;
-            dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100"></div>`).join('');
-            dom.savingThrowProficienciesContainer.innerHTML = Object.keys(characterData.savingThrows).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key}-prof" ${characterData.proficiencies.savingThrows.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key}-prof" class="text-amber-300 text-sm capitalize">${key}</label></div>`).join('');
-            dom.skillProficienciesContainer.innerHTML = Object.keys(characterData.skills).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key.replace(/\s+/g, '-')}-prof" ${characterData.proficiencies.skills.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key.replace(/\s+/g, '-')}-prof" class="text-amber-300 text-sm">${key}</label></div>`).join('');
+            dom.abilityInputsContainer.innerHTML = Object.keys(defaultCharacterTemplate.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 settings-form-input"></div>`).join('');
+            dom.savingThrowProficienciesContainer.innerHTML = Object.keys(defaultCharacterTemplate.abilities).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key}-prof" ${characterData.proficiencies.savingThrows.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500 settings-form-input"><label for="${key}-prof" class="text-amber-300 text-sm capitalize">${key}</label></div>`).join('');
+            dom.skillProficienciesContainer.innerHTML = Object.keys(SKILL_ABILITY_MAP).sort().map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key.replace(/\s+/g, '-')}-prof" ${characterData.proficiencies.skills.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500 settings-form-input"><label for="${key.replace(/\s+/g, '-')}-prof" class="text-amber-300 text-sm">${key}</label></div>`).join('');
             
             const allSpells = [];
             const spellsData = characterData.spellsAndSlots || {};
             for (const level in spellsData) {
                 if (spellsData[level] && spellsData[level].spells) {
                     spellsData[level].spells.forEach(spell => {
-                        allSpells.push(`${spell.name} | ${level} | ${spell.description}`);
+                        allSpells.push(`${spell.name} / ${level} / ${spell.description}`);
                     });
                 }
             }
@@ -772,7 +762,7 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
                     slotsHtml += `
                         <div class="flex flex-col items-center">
                             <label for="slot-remaining-${i}" class="text-amber-300 text-sm font-bold">Level ${i} Slots</label>
-                            <input type="number" id="slot-remaining-${i}" value="${slots}" class="w-20 text-center py-1 rounded bg-gray-700 text-amber-100">
+                            <input type="number" id="slot-remaining-${i}" value="${slots}" class="w-20 text-center py-1 rounded bg-gray-700 text-amber-100 settings-form-input">
                         </div>
                     `;
                 }
@@ -780,69 +770,107 @@ const aiPromptTemplate = `Generate a DnD character according to template bellow.
             }
 
             dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
-            dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
+            // **MODIFIED**: Always show the clean version in the JSON editor.
+            updateJsonEditorFromForm();
             dom.jsonFeedback.textContent = '';
         };
         
+        // **NEW**: Function to read form state and update the JSON editor.
+        const updateJsonEditorFromForm = () => {
+            if (!dom.settingsModal.classList.contains('hidden')) {
+                const tempCharData = getCharacterDataFromForm();
+                const cleanData = createCleanCharacterObject(tempCharData);
+                dom.jsonEditor.value = JSON.stringify(cleanData, null, 2);
+            }
+        };
+        
+        // **NEW**: Helper function to read all values from the settings form.
+        const getCharacterDataFromForm = () => {
+            const data = {
+                name: dom.charNameInput.value || "Nameless",
+                race: dom.raceInput.value,
+                class: dom.classInput.value,
+                background: dom.backgroundInput.value,
+                alignment: dom.alignmentInput.value,
+                level: parseInt(dom.levelInput.value, 10) || 1,
+                maxHp: parseInt(dom.maxHpInput.value, 10) || 1,
+                armorClass: parseInt(dom.armorClassInput.value, 10) || 10,
+                speed: parseInt(dom.speedInput.value, 10) || 30,
+                abilities: {},
+                proficiencies: {
+                    savingThrows: [],
+                    skills: []
+                },
+                spellsAndSlots: {},
+                // Carry over values not in the form
+                currentHp: characterData.currentHp,
+                status: characterData.status,
+                deathSaves: characterData.deathSaves,
+                notes: characterData.notes,
+                coins: characterData.coins
+            };
+
+            Object.keys(defaultCharacterTemplate.abilities).forEach(key => {
+                const input = document.getElementById(`${key}-input`);
+                if (input) data.abilities[key] = parseInt(input.value, 10) || 10;
+            });
+            
+            data.proficiencies.savingThrows = Object.keys(defaultCharacterTemplate.abilities)
+                .filter(key => document.getElementById(`${key}-prof`).checked);
+                
+            data.proficiencies.skills = Object.keys(SKILL_ABILITY_MAP)
+                .filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
+
+            const spellLines = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
+            spellLines.forEach(line => {
+                const parts = line.split('/').map(p => p.trim());
+                if (parts.length === 3) {
+                    const [name, level, description] = parts;
+                    if (!data.spellsAndSlots[level]) data.spellsAndSlots[level] = { spells: [] };
+                    data.spellsAndSlots[level].spells.push({ name, description });
+                }
+            });
+            for (let i = 1; i <= 9; i++) {
+                const slotInput = document.getElementById(`slot-remaining-${i}`);
+                if (slotInput) {
+                    const slots = parseInt(slotInput.value, 10) || 0;
+                    if (!data.spellsAndSlots[i] && slots > 0) {
+                        data.spellsAndSlots[i] = { spells: [], slots: slots };
+                    } else if (data.spellsAndSlots[i]) {
+                        data.spellsAndSlots[i].slots = slots;
+                    }
+                }
+            }
+            return data;
+        };
+        
         const applySettingsChanges = () => {
+            let newData;
             let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
             if (isJsonMode) {
                 try {
-                    let newData = JSON.parse(dom.jsonEditor.value);
+                    newData = JSON.parse(dom.jsonEditor.value);
                     if (!newData.name || !newData.abilities) {
                         dom.jsonFeedback.textContent = "Error: Invalid JSON structure.";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
                         return;
                     }
-                    characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
+                    // **MODIFIED**: Merge with existing data to preserve calculated fields temporarily
+                    characterData = { ...characterData, ...newData };
                 } catch (error) {
                     dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
                     dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
                     return;
                 }
             } else {
-                characterData.name = dom.charNameInput.value || "Nameless";
-                characterData.race = dom.raceInput.value;
-                characterData.class = dom.classInput.value;
-                characterData.background = dom.backgroundInput.value;
-                characterData.alignment = dom.alignmentInput.value;
-                characterData.level = parseInt(dom.levelInput.value, 10) || 1;
-                if (characterData.currentHp > characterData.maxHp) {
-    characterData.currentHp = characterData.maxHp;
-}
-characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
-                characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
-                characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
-                Object.keys(characterData.abilities).forEach(key => {
-                    const input = document.getElementById(`${key}-input`);
-                    if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
-                });
-                characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
-                characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
-                
-                const newSpellsAndSlots = {};
-                const spellLines = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
-                spellLines.forEach(line => {
-                    const parts = line.split('/').map(p => p.trim());
-                    if (parts.length === 3) {
-                        const [name, level, description] = parts;
-                        if (!newSpellsAndSlots[level]) newSpellsAndSlots[level] = { spells: [] };
-                        newSpellsAndSlots[level].spells.push({ name, description });
-                    }
-                });
-                for (let i = 1; i <= 9; i++) {
-                    const slotInput = document.getElementById(`slot-remaining-${i}`);
-                    if (slotInput) {
-                        const slots = parseInt(slotInput.value, 10) || 0;
-                        if (!newSpellsAndSlots[i]) {
-                           if (slots > 0) newSpellsAndSlots[i] = { spells: [], slots: slots };
-                        } else {
-                            newSpellsAndSlots[i].slots = slots;
-                        }
-                    }
-                }
-                characterData.spellsAndSlots = newSpellsAndSlots;
+                newData = getCharacterDataFromForm();
+                characterData = { ...characterData, ...newData };
             }
+
+            // Ensure current HP is not higher than new max HP
+            const newMaxHp = parseInt(characterData.maxHp, 10) || 1;
+            characterData.currentHp = newMaxHp;
+            
             characterData = calculateAllModifiers(characterData);
             saveData('dndCharacterData', characterData);
             appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
@@ -853,24 +881,23 @@ characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
         
         const init = () => {
             let loadedCharacter = loadData('dndCharacterData');
+            appSettings = loadData('dndAppSettings') || { ...defaultSettings };
+
             if (loadedCharacter) {
-                characterData = {
-                    ...JSON.parse(JSON.stringify(defaultCharacterTemplate)),
-                    ...loadedCharacter,
-                    abilities: { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities },
-                    skills: { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills },
-                    coins: { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins },
-                    spellsAndSlots: { ...defaultCharacterTemplate.spellsAndSlots, ...loadedCharacter.spellsAndSlots }
-                };
-                if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
-                    characterData.currentHp = characterData.maxHp;
-                }
+                // If loaded data exists, merge it with the default template to ensure all keys are present
+                characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
             } else {
+                // If no data, use a fresh copy of the default template
                 characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+            }
+            
+            // Ensure currentHp is valid
+            if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
                 characterData.currentHp = characterData.maxHp;
             }
+
             characterData = calculateAllModifiers(characterData);
-            appSettings = loadData('dndAppSettings') || { ...defaultSettings };
+            
             if (!loadedCharacter) {
                 toggleModal(dom.onboardingModal, true);
             } else {
@@ -1005,7 +1032,7 @@ characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
                     </div>
                     <div>
                         <h4 class="font-cinzel text-lg text-amber-200 mt-4 mb-2">Skills</h4>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.skills).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key}" data-modifier="${mod}">${key} ${formatModifier(mod)}</button>`).join('')}</div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.skills).sort((a, b) => a[0].localeCompare(b[0])).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key}" data-modifier="${mod}">${key} ${formatModifier(mod)}</button>`).join('')}</div>
                     </div>`;
                 toggleModal(dom.modifierModal, true);
             }
@@ -1059,12 +1086,12 @@ characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
                 const previousHp = characterData.currentHp;
                 characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, characterData.currentHp + value));
                 if (previousHp > 0 && characterData.currentHp <= 0) {
-                characterData.status = 'unconscious';
-                characterData.deathSaves = { successes: 0, failures: 0, rolls: [] };
-                showDeathSaveModal();
+                    characterData.status = 'unconscious';
+                    characterData.deathSaves = { successes: 0, failures: 0, rolls: [] };
+                    showDeathSaveModal();
                 } else if (characterData.currentHp > 0 && characterData.status !== 'conscious') {
                     characterData.status = 'conscious';
-                    characterData.deathSaves = { successes: 0, failures: 0 };
+                    characterData.deathSaves = { successes: 0, failures: 0, rolls: [] };
                     toggleModal(dom.deathSaveModal, false);
                 }
                 saveData('dndCharacterData', characterData);
@@ -1075,66 +1102,60 @@ characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
                 dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
             });
            dom.makeDeathSaveBtn.addEventListener('click', () => {
-    const roll = Math.floor(Math.random() * 20) + 1;
-    if (characterData.deathSaves && Array.isArray(characterData.deathSaves.rolls)) {
-        characterData.deathSaves.rolls.push(roll);
-    } else {
-        // Fallback untuk data lama yang mungkin belum punya array rolls
-        characterData.deathSaves.rolls = [roll];
-    }
-    dom.deathSaveResult.textContent = roll;
+                const roll = Math.floor(Math.random() * 20) + 1;
+                if (!characterData.deathSaves.rolls) {
+                    characterData.deathSaves.rolls = [];
+                }
+                characterData.deathSaves.rolls.push(roll);
+                dom.deathSaveResult.textContent = roll;
 
-    let isFinished = false;
-    let finalOutcome = "";
+                let isFinished = false;
+                let finalOutcome = "";
 
-    if (roll === 20) {
-        characterData.currentHp = 1;
-        characterData.status = 'conscious';
-        dom.deathSaveTitle.textContent = "REVIVED!";
-        dom.deathSaveStatus.textContent = "Critical success! You regain 1 HP.";
-        dom.makeDeathSaveBtn.classList.add('hidden');
-        dom.closeDeathSaveModalBtn.classList.remove('hidden');
-        isFinished = true;
-        finalOutcome = "Revived (Critical Success)";
-    } else if (roll >= 10) {
-        characterData.deathSaves.successes++;
-        if (characterData.deathSaves.successes >= 3) {
-            characterData.status = 'stable';
-            dom.deathSaveTitle.textContent = "STABLE";
-            dom.deathSaveStatus.textContent = "You are stable, but unconscious.";
-            dom.makeDeathSaveBtn.classList.add('hidden');
-            dom.closeDeathSaveModalBtn.classList.remove('hidden');
-            isFinished = true;
-            finalOutcome = "Stable";
-        }
-    } else {
-        characterData.deathSaves.failures += (roll === 1 ? 2 : 1);
-        if (characterData.deathSaves.failures >= 3) {
-            characterData.status = 'dead';
-            dom.deathSaveTitle.textContent = "DEAD";
-            dom.deathSaveStatus.textContent = "Your adventure has ended.";
-            dom.makeDeathSaveBtn.classList.add('hidden');
-            dom.restartSameCharacterBtn.classList.remove('hidden');
-            dom.createNewCharacterBtn.classList.remove('hidden');
-            isFinished = true;
-            finalOutcome = "Dead";
-        }
-    }
+                if (roll === 20) {
+                    characterData.currentHp = 1;
+                    characterData.status = 'conscious';
+                    dom.deathSaveTitle.textContent = "REVIVED!";
+                    dom.deathSaveStatus.textContent = "Critical success! You regain 1 HP.";
+                    dom.makeDeathSaveBtn.classList.add('hidden');
+                    dom.closeDeathSaveModalBtn.classList.remove('hidden');
+                    isFinished = true;
+                    finalOutcome = "Revived (Critical Success)";
+                } else if (roll >= 10) {
+                    characterData.deathSaves.successes++;
+                    if (characterData.deathSaves.successes >= 3) {
+                        characterData.status = 'stable';
+                        dom.deathSaveTitle.textContent = "STABLE";
+                        dom.deathSaveStatus.textContent = "You are stable, but unconscious.";
+                        dom.makeDeathSaveBtn.classList.add('hidden');
+                        dom.closeDeathSaveModalBtn.classList.remove('hidden');
+                        isFinished = true;
+                        finalOutcome = "Stable";
+                    }
+                } else {
+                    characterData.deathSaves.failures += (roll === 1 ? 2 : 1);
+                    if (characterData.deathSaves.failures >= 3) {
+                        characterData.status = 'dead';
+                        dom.deathSaveTitle.textContent = "DEAD";
+                        dom.deathSaveStatus.textContent = "Your adventure has ended.";
+                        dom.makeDeathSaveBtn.classList.add('hidden');
+                        dom.restartSameCharacterBtn.classList.remove('hidden');
+                        dom.createNewCharacterBtn.classList.remove('hidden');
+                        isFinished = true;
+                        finalOutcome = "Dead";
+                    }
+                }
 
-    // Hanya buat dan salin rangkuman jika proses death save sudah selesai
-    if (isFinished && appSettings.autoCopyRoll) {
-        const rollsHistory = characterData.deathSaves.rolls.join(', ');
-        const summary = `${characterData.name} - Death Saving Throw Summary
-Rolls: ${rollsHistory}
-Final Outcome: ${finalOutcome}`;
-        
-        copyToClipboard(summary, 'Death save summary copied!');
-    }
+                if (isFinished && appSettings.autoCopyRoll) {
+                    const rollsHistory = characterData.deathSaves.rolls.join(', ');
+                    const summary = `${characterData.name} - Death Saving Throw Summary\nRolls: ${rollsHistory}\nFinal Outcome: ${finalOutcome}`;
+                    copyToClipboard(summary, 'Death save summary copied!');
+                }
 
-    updateDeathSaveDisplay();
-    saveData('dndCharacterData', characterData);
-    updateUI();
-});
+                updateDeathSaveDisplay();
+                saveData('dndCharacterData', characterData);
+                updateUI();
+            });
             dom.closeDeathSaveModalBtn.addEventListener('click', () => toggleModal(dom.deathSaveModal, false));
             dom.adventureNotes.addEventListener('blur', () => {
                 if (characterData.notes !== dom.adventureNotes.value) {
@@ -1153,7 +1174,7 @@ Final Outcome: ${finalOutcome}`;
             const restartSameCharacter = () => {
                 characterData.currentHp = characterData.maxHp;
                 characterData.status = 'conscious';
-                characterData.deathSaves = { successes: 0, failures: 0 };
+                characterData.deathSaves = { successes: 0, failures: 0, rolls: [] };
                 saveData('dndCharacterData', characterData);
                 updateUI();
                 toggleModal(dom.deathSaveModal, false);
@@ -1179,7 +1200,6 @@ Final Outcome: ${finalOutcome}`;
             setupCurrencyInputHandler(dom.mainCpInput, 'cp');
             dom.createCharacterBtn.addEventListener('click', () => {
                 characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
-                characterData.currentHp = characterData.maxHp;
                 characterData = calculateAllModifiers(characterData);
                 appSettings = JSON.parse(JSON.stringify(defaultSettings));
                 toggleModal(dom.onboardingModal, false);
@@ -1195,12 +1215,11 @@ Final Outcome: ${finalOutcome}`;
                 dom.cancelSettingsBtn.classList.remove('hidden');
             });
             dom.copyAiTemplateBtn.addEventListener('click', () => {
-    copyToClipboard(aiPromptTemplate, 'AI prompt template copied!');
-});
+                copyToClipboard(aiPromptTemplate, 'AI prompt template copied!');
+            });
 
             dom.copyJsonBtn.addEventListener('click', () => copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!'));
             dom.toggleJsonViewBtn.addEventListener('click', () => toggleJsonView(dom.jsonEditorContainer.classList.contains('hidden')));
-            dom.copyJsonBtn.addEventListener('click', () => copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!'));
             dom.saveSettingsBtn.addEventListener('click', applySettingsChanges);
             dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
             dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
@@ -1226,6 +1245,14 @@ Final Outcome: ${finalOutcome}`;
                     }
                 } else if (action === 'log-use') {
                     showToast(`Used '${name}'!`);
+                }
+            });
+            
+            // **NEW**: Add event listener to the settings modal content to catch events from form inputs.
+            dom.settingsModalContent.addEventListener('input', (e) => {
+                // Check if the event target has the class for form inputs and if we are not in JSON view.
+                if (e.target.classList.contains('settings-form-input') && dom.jsonEditorContainer.classList.contains('hidden')) {
+                    updateJsonEditorFromForm();
                 }
             });
         }
