@@ -876,11 +876,11 @@
                     toggleModal(dom.onboardingModal, true);
                 } else {
                     if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
-                        characterData.currentHp = characterData.maxHp;
-                    }
-                    updateUI();
+        characterData.currentHp = characterData.maxHp;
+    }
+    updateUI();
+    toggleModal(dom.onboardingModal, false);
                 }
-                setupEventListeners();
             };
             
             function setupEventListeners() {
@@ -1100,7 +1100,7 @@
                         applySettingsChanges();
                     }
                 });
-                
+
                 dom.settingsModalContent.addEventListener('focusin', (e) => {
                     if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
                         e.target.dataset.originalValue = e.target.value;
