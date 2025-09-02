@@ -1134,34 +1134,7 @@
             }
 
             // --- KICKSTART APP ---
-            function init() {
-    let loadedCharacter = loadData('dndCharacterData');
-
-    // cek validitas data
-    if (loadedCharacter && loadedCharacter.name && loadedCharacter.abilities) {
-        // merge dengan template biar field baru tetap ada
-        let mergedAbilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
-        let mergedSkills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
-        let mergedCoins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
-
-        characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
-        characterData.abilities = mergedAbilities;
-        characterData.skills = mergedSkills;
-        characterData.coins = mergedCoins;
-
-        if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
-            characterData.currentHp = characterData.maxHp;
-        }
-
-        characterData = calculateAllModifiers(characterData);
-        appSettings = loadData('dndAppSettings') || { ...defaultSettings };
-        updateUI();
-    } else {
-        // kalau kosong / invalid → mulai dari template baru & tampilkan onboarding
-        characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
-        toggleModal(dom.onboardingModal, true);
-    }
-}
+            init();
         })
     </script>
 </body>
