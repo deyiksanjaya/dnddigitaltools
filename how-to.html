@@ -25,7 +25,7 @@
             margin-bottom: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .guide-section p, .guide-section ul {
+        .guide-section p, .guide-section ul, .guide-section ol {
             text-align: justify;
         }
         .guide-section h2 {
@@ -83,14 +83,10 @@
             font-family: 'Roboto', sans-serif;
             font-weight: 400;
         }
-        @media (max-width: 640px) {
-            .guide-section {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
+        @media (max-width: 768px) {
             .navbar ul {
                 flex-direction: column;
+                gap: 0.5rem;
             }
             .navbar ul li + li:before {
                 content: none;
@@ -106,16 +102,14 @@
             <p class="text-xl text-amber-400 mt-2">Your Adventure Companion</p>
         </header>
         
-        <nav class="navbar">
+        <nav class="navbar sticky top-0">
             <ul class="list-none p-0 m-0">
                 <li><a href="#getting-started">Getting Started</a></li>
                 <li><a href="#main-dashboard">Dashboard</a></li>
                 <li><a href="#rolling-dice">Rolling Dice</a></li>
-                <li><a href="#wealth-wisdom">Wealth & Wisdom</a></li>
-                <li><a href="#diving-deeper">More Info</a></li>
+                <li><a href="#character-sheet">Character Sheet</a></li>
                 <li><a href="#health-death">Health & Death</a></li>
-                <li><a href="#advanced-customization">Settings</a></li>
-                <li><a href="#add-to-homescreen">Add to Homescreen</a></li>
+                <li><a href="#settings">Settings</a></li>
                 <li><a href="#solo-dnd">Solo D&D with AI</a></li>
             </ul>
         </nav>
@@ -125,7 +119,7 @@
             <section id="getting-started" class="guide-section">
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Getting Started</h2>
-                    <p class="text-lg">Welcome to your digital D&D tool, designed for seamless gameplay. This app saves everything directly in your browser, so there's no need for an account. If this is your first time, you'll be prompted to <strong>create a character</strong>. This will open the <strong>Settings</strong> modal where you can fill in your hero's details. Let's dive into the features.</p>
+                    <p class="text-lg">Welcome to your digital D&D tool, designed for seamless gameplay. This app saves everything directly in your browser, so there's no need for an account. If this is your first time, you'll be prompted to <strong>create a character</strong>. This will open the <strong>Settings</strong> modal where you can fill in your hero's details. For an app-like experience, you can also add this page to your phone's homescreen.</p>
                 </div>
             </section>
 
@@ -134,11 +128,12 @@
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">The Main Dashboard</h2>
                     <div class="space-y-4">
-                        <p>The main screen gives you immediate access to your most-used stats.</p>
+                        <p>The main screen gives you immediate access to your most-used stats and tools.</p>
                         <ul class="list-disc list-inside space-y-2 pl-4">
                             <li><strong>Character Header:</strong> At a glance, see your character's name, level, race, class, and current/max HP. The health bar provides a quick visual cue of your status.</li>
                             <li><strong>HP Management:</strong> Use the input field below the health bar to quickly apply healing or damage. Enter a positive number (e.g., <code>10</code>) to heal or a negative number (e.g., <code>-10</code>) to take damage. Press the <strong>Apply</strong> button or hit <strong>Enter</strong> to confirm.</li>
                             <li><strong>Dice Display:</strong> This central area shows the result of your most recent roll with a cinematic animation.</li>
+                            <li><strong>Dice Grid:</strong> All standard D&D dice (d4 to d100) are ready for a quick click.</li>
                         </ul>
                     </div>
                 </div>
@@ -149,40 +144,37 @@
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Rolling the Dice</h2>
                     <div class="space-y-4">
-                        <p>The dice grid contains all standard D&D dice. Rolling is simple:</p>
+                        <p>Rolling is designed to be fast and intuitive:</p>
                         <ul class="list-disc list-inside space-y-2 pl-4">
-                            <li><strong>Simple Rolls (d4-d12, d100):</strong> Just click the die you want to roll. The result appears instantly in the display area.</li>
+                            <li><strong>Simple Rolls (d4-d12, d100):</strong> Just click the die you want to roll. The result appears instantly.</li>
                             <li><strong>Smart Rolls (d20):</strong> Clicking the <strong>d20</strong> opens a "smart roll" modal. Here, you can select a <strong>Saving Throw</strong> or a <strong>Skill</strong>. The app automatically fetches the correct modifier from your character sheet and adds it to the roll, saving you time and mental math. You can also choose to roll a plain d20 without any modifiers.</li>
                             <li><strong>Auto-Copy:</strong> If enabled in settings, the complete roll result (e.g., "d20 (Stealth) Roll: 18 (Dice: 15, Modifier: +3) | HP: 20/20") is automatically copied to your clipboard, perfect for pasting into a chat or virtual tabletop.</li>
                         </ul>
                     </div>
                 </div>
             </section>
-
-            <!-- Currency and Notes -->
-            <section id="wealth-wisdom" class="guide-section">
+            
+            <!-- Character Sheet Details Section -->
+            <section id="character-sheet" class="guide-section">
                 <div>
-                    <h2 class="font-cinzel text-3xl font-bold mb-4">Wealth & Wisdom</h2>
-                    <div class="space-y-4">
-                        <p>Managing your inventory and story notes is crucial for any adventurer.</p>
-                        <ul class="list-disc list-inside space-y-2 pl-4">
-                            <li><strong>Currency:</strong> The currency section is interactive. Simply <strong>click on the number</strong> for any coin type (PP, GP, EP, SP, CP) to edit it directly. Press <strong>Enter</strong> or click away to save the new total. It's fast, simple, and requires no extra buttons.</li>
-                            <li><strong>Adventure Notes:</strong> This is a free-form text area for all your campaign journaling. Jot down NPC names, quest details, or suspicious-looking statues. Your notes are automatically saved when you click away from the text box.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Character Sheet Details</h2>
+                    <p class="mb-4">All your character's information is organized and automatically calculated for you.</p>
 
-            <!-- More Info Section -->
-            <section id="diving-deeper" class="guide-section">
-                <div>
-                    <h2 class="font-cinzel text-3xl font-bold mb-4">Diving Deeper</h2>
-                    <p class="text-lg">The <strong>"More Character Info"</strong> section is a collapsible dropdown that contains the heart of your character sheet. Here you'll find:</p>
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-2">Spells & Features</h3>
+                    <p class="mb-4">This section lists your cantrips, spells, and class features. For leveled spells, it tracks remaining slots and provides a <strong>Use</strong> button to expend a slot. For features and cantrips, a <strong>Log Use</strong> button is available to announce the action without consuming resources.</p>
+                    
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-2">Wealth & Wisdom</h3>
+                     <ul class="list-disc list-inside space-y-2 pl-4 mb-4">
+                        <li><strong>Currency:</strong> The currency section is interactive. Simply type in the fields for any coin type (PP, GP, EP, SP, CP). Press <strong>Enter</strong> or click away to save the new total.</li>
+                        <li><strong>Adventure Notes:</strong> This is a free-form text area for all your campaign journaling. Your notes are automatically saved when you click away from the text box.</li>
+                    </ul>
+
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-2">More Character Info</h3>
+                    <p>This collapsible section contains the core of your character sheet, including:</p>
                     <ul class="list-disc list-inside space-y-2 pl-4 mt-2">
                         <li><strong>Core Combat Stats:</strong> Armor Class, Initiative, Speed, and your Proficiency Bonus.</li>
                         <li><strong>Ability Scores:</strong> Your six core abilities (STR, DEX, CON, INT, WIS, CHA) and their calculated modifiers.</li>
-                        <li><strong>Saving Throws & Skills:</strong> A complete list of all saving throws and skills. The final modifier for each is automatically calculated based on your ability scores and proficiencies.</li>
-                        <li><strong>Spells & Features:</strong> A list of your known spells, class features, and racial traits.</li>
+                        <li><strong>Saving Throws & Skills:</strong> A complete list where final modifiers are automatically calculated based on your ability scores and proficiencies. Proficient skills are highlighted for clarity.</li>
                     </ul>
                 </div>
             </section>
@@ -192,121 +184,68 @@
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Health & Death's Door</h2>
                     <div class="space-y-4">
-                        <p>The app includes a fully automated Death Saving Throw system.</p>
+                        <p>The app includes a fully automated Death Saving Throw system to manage those critical moments.</p>
                         <ul class="list-disc list-inside space-y-2 pl-4">
-                            <li><strong>Triggering Death Saves:</strong> When your HP drops to 0, the Death Save modal automatically appears.</li>
-                            <li><strong>Making Saves:</strong> Click the button to make a Death Saving Throw (a d20 roll). The result determines your fate: <strong>20</strong> revives you with 1 HP, <strong>10-19</strong> is one success, <strong>2-9</strong> is one failure, and a <strong>1</strong> is two failures.</li>
+                            <li><strong>Automatic Trigger:</strong> When your HP drops to 0, the Death Save modal immediately appears.</li>
+                            <li><strong>Making Saves:</strong> Click the button to make a Death Saving Throw (a d20 roll). Successes and failures are tracked automatically.</li>
+                            <li><strong>Outcomes:</strong> The system handles all results: a <strong>Natural 20</strong> revives you with 1 HP; <strong>3 successes</strong> make you stable; and <strong>3 failures</strong> result in character death.</li>
+                            <li><strong>After Death:</strong> If the worst happens, you are given the option to <strong>Restart Same Character</strong> (restoring them to full health) or <strong>Start New Character</strong> (resetting the app).</li>
+                             <li><strong>Auto-Summary:</strong> When the death save sequence concludes, a summary of all rolls and the final outcome is copied to your clipboard (if auto-copy is enabled).</li>
                         </ul>
                     </div>
                 </div>
             </section>
             
             <!-- Settings & JSON Section -->
-            <section id="advanced-customization" class="guide-section">
+            <section id="settings" class="guide-section">
                 <div>
-                    <h2 class="font-cinzel text-3xl font-bold mb-4">Advanced Customization</h2>
+                    <h2 class="font-cinzel text-3xl font-bold mb-4">Settings & Data Management</h2>
                     <div class="space-y-4">
-                        <p>The <strong>Settings</strong> button gives you full control. Here you can edit every aspect of your character, from their name and level to their ability scores and skill proficiencies.</p>
-                        <p>For power users, clicking <strong>"Edit with JSON"</strong> reveals the raw data for your character. You can copy this text to back up your character, share it with a friend, or import a character someone else has shared with you by pasting their data in and hitting Save.</p>
+                        <p>The <strong>Settings</strong> button gives you full control over your character and the app.</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Form Editor:</strong> Edit every aspect of your character, from their name and level to their ability scores, skill proficiencies, and spell slots.</li>
+                            <li><strong>Spells & Features Editor:</strong> Add or edit spells and features using a simple format in the text area: <code>Name / Level / Description</code>. Use <code>0</code> for cantrips, <code>1-9</code> for spell levels, and <code>feature</code> for class features.</li>
+                            <li><strong>JSON Editor:</strong> For power users, clicking <strong>"Edit with JSON"</strong> reveals the raw data for your character. You can copy this text to back it up, share it with a friend, or import a new character by pasting their data in and hitting Save.</li>
+                            <li><strong>AI Prompt Template:</strong> A dedicated button to copy a detailed prompt for playing solo D&D with an AI Dungeon Master (like ChatGPT).</li>
+                        </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Add to Homescreen Section -->
-            <section id="add-to-homescreen" class="guide-section">
-                <div>
-                    <h2 class="font-cinzel text-3xl font-bold mb-4">Add to Homescreen</h2>
-                    <p class="text-lg">Turn this web tool into a full-fledged app on your mobile device for offline use and quick access. Follow the steps for your device:</p>
-                    <div class="space-y-6 mt-4">
-                        <div>
-                            <h3 class="font-bold text-xl text-yellow-300 mb-2">iOS (iPhone/iPad)</h3>
-                            <ol class="list-decimal list-inside space-y-2 pl-4">
-                                <li>Launch <strong>Safari</strong> on your device.</li>
-                                <li>Navigate to this page.</li>
-                                <li>Tap the <strong>Share</strong> button at the bottom of the screen. </li>
-                                <li>Scroll down and select <strong>"Add to Home Screen."</strong> </li>
-                                <li>Tap <strong>"Add"</strong> in the top-right corner to finish.</li>
-                            </ol>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-xl text-yellow-300 mb-2">Android (Chrome)</h3>
-                            <ol class="list-decimal list-inside space-y-2 pl-4">
-                                <li>Launch <strong>Chrome</strong> on your Android device.</li>
-                                <li>Navigate to this page.</li>
-                                <li>Tap the <strong>three vertical dots</strong> in the top-right corner of the browser.</li>
-                                <li>Select <strong>"Add to Home screen."</strong></li>
-                                <li>Follow the on-screen prompts and tap <strong>"Add."</strong></li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
             <!-- Solo D&D Section -->
             <section id="solo-dnd" class="guide-section">
                 <div>
                     <h2 class="font-cinzel text-3xl font-bold mb-4">Solo D&D with an AI Dungeon Master</h2>
-                    <p class="text-lg mb-4">Want to play D&D but don't have a group? Use this AI Dungeon Master prompt to play a solo campaign, with the AI controlling the world and NPCs.</p>
-                    <div class="bg-gray-800 p-6 rounded-lg text-gray-200 shadow-inner">
-                        <textarea id="dnd-prompt" readonly rows="20" class="w-full bg-transparent text-sm font-mono resize-none outline-none">Act as though we are playing a Game of Dungeons and Dragons 5th edition. Act as though you are the dungeon master and I am the player. We will be creating a narrative together, where I make decisions for my character, and you make decisions for all other characters (NPCs) and creatures in the world.
-Your responsibilities as dungeon master are to describe the setting, environment, Non-player characters (NPCs) and their actions, as well as explain the consequences of my actions on all of the above. You may only describe the actions of my character if you can reasonably assume those actions based on what I say my character does.
-It is also your responsibility to determine whether my character’s actions succeed. Simple, easily accomplished actions may succeed automatically. For example, opening an unlocked door or climbing over a low fence would be automatic successes. Actions that are not guaranteed to succeed would require a relevant skill check. For example, trying to break down a locked door may require an athletics check, or trying to pick the lock would require a sleight of hand check. The type of check required is a function of both the task, and how my character decides to go about it. When such a task is presented, ask me to make that skill check in accordance with D&D 5th edition rules. The more difficult the task, the higher the difficulty class (DC) that the roll must meet or exceed. Actions that are impossible are just that: impossible. For example, trying to pick up a building.
-Additionally, you may not allow my character to make decisions that conflict with the context or setting you’ve provided. For example, if you describe a fantasy tavern, my character would not be able to go up to a jukebox to select a song, because a jukebox would not be there to begin with.
-Try to make the setting consistent with previous descriptions of it. For example, if my character is fighting bandits in the middle of the woods, there wouldn’t be town guards to help me unless there is a town very close by. Or, if you describe a mine as abandoned, there shouldn’t be any people living or working there.
-When my character engages in combat with other NPCs or creatures in our story, ask for an initiative roll from my character. You can also generate a roll for the other creatures involved in combat. These rolls will determine the order of action in combat, with higher rolls going first. Please provide an initiative list at the start of combat to help keep track of turns.
-For each creature in combat, keep track of their health points (HP). Damage dealt to them should reduce their HP by the amount of the damage dealt. To determine whether my character does damage, I will make an attack roll. This attack roll must meet or exceed the armor class (AC) of the creature. If it does not, then it does not hit.
-On the turn of any other creature besides my character, you will decide their action. For example, you may decide that they attack my character, run away, or make some other decision, keeping in mind that a round of combat is 6 seconds.
-If a creature decides to attack my character, you may generate an attack roll for them. If the roll meets or exceeds my own AC, then the attack is successful and you can now generate a damage roll. That damage roll will be subtracted from my own hp. If the hp of a creature reaches 0, that creature dies. Participants in combat are unable to take actions outside of their own turn.
-Before we begin playing, I would like you to provide my three adventure options. Each should be a short description of the kind of adventure we will play, and what the tone of the adventure will be. Once I decide on the adventure, you may provide a brief setting description and begin the game. I would also like an opportunity to provide the details of my character for your reference, specifically my class, race, AC, and HP.
-Deck of DM Things (Cole Porter)</textarea>
-                    </div>
-                    <button id="copy-button" class="mt-4 px-6 py-3 bg-yellow-500 text-gray-900 rounded-full font-bold shadow-lg hover:bg-yellow-400 transition-colors">
-                        Copy Prompt
-                    </button>
+                    <p class="text-lg mb-4">Want to play D&D but don't have a group? Use this tool in conjunction with an AI Dungeon Master. The app provides a pre-built, detailed prompt to get you started.</p>
+                    <ol class="list-decimal list-inside space-y-2 pl-4">
+                        <li>Click the <strong>Settings</strong> button at the bottom of the main page.</li>
+                        <li>Inside the settings modal, click the <strong>"Copy AI Prompt Template"</strong> button.</li>
+                        <li>Paste the copied prompt into your favorite AI chatbot (e.g., ChatGPT, Gemini, Claude).</li>
+                        <li>The AI will now act as your Dungeon Master! Use this app to manage your character and roll dice as you play through your solo adventure.</li>
+                    </ol>
                 </div>
             </section>
         </main>
         
         <footer class="text-center mt-12">
-            <button id="back-to-app-button" class="back-link">
+            <a href="index.html" class="back-link">
                 Back to the App
-            </button>
+            </a>
         </footer>
     </div>
 
     <script>
-        document.getElementById('copy-button').addEventListener('click', function() {
-            const promptText = document.getElementById('dnd-prompt');
-            promptText.select();
-            document.execCommand('copy');
-            
-            const originalText = this.textContent;
-            this.textContent = 'Copied!';
-            setTimeout(() => {
-                this.textContent = originalText;
-            }, 2000);
-        });
-
-        // Add smooth scrolling functionality for navigation links
+        // Smooth scrolling for navigation links
         document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
-
                 if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
                 }
             });
         });
-
-       // Handle the "Back to App" button click
-document.getElementById('back-to-app-button').addEventListener('click', function() {
-    window.location.href = 'index.html';
-});
     </script>
 </body>
 </html>
