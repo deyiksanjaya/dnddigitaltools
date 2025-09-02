@@ -418,10 +418,12 @@
                     </div>
                 </div>
 
-                <div class="text-center pt-2 flex flex-col items-center gap-2">
+                <div class="text-center pt-2 flex flex-row flex-wrap justify-center items-center gap-x-4 gap-y-2">
     <button id="toggleJsonViewBtn" class="text-sm text-blue-400 hover:text-blue-300 underline">Edit with JSON</button>
     <button id="copyAiTemplateBtn" class="text-sm text-green-400 hover:text-green-300 underline">Copy AI Prompt Template</button>
+    <button id="copyCharacterInfoBtn" class="text-sm text-amber-400 hover:text-amber-300 underline">Copy Character's Info</button>
 </div>
+
             </div>
             <div class="flex justify-end gap-4 mt-6 p-6 pt-0">
                 <button id="cancelSettingsBtn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">Cancel</button>
@@ -585,6 +587,7 @@
             toast: document.getElementById('toast-notification'), 
             mainPpInput: document.getElementById('main-pp-input'), mainGpInput: document.getElementById('main-gp-input'), mainEpInput: document.getElementById('main-ep-input'), mainSpInput: document.getElementById('main-sp-input'), mainCpInput: document.getElementById('main-cp-input'),
             copyAiTemplateBtn: document.getElementById('copyAiTemplateBtn'),
+            copyCharacterInfoBtn: document.getElementById('copyCharacterInfoBtn'),
         };
         const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
 
@@ -1154,6 +1157,79 @@
                     showToast('Notes saved!');
                 }
             });
+            dom.copyCharacterInfoBtn.addEventListener('click', () => {
+    if (!characterData || !characterData.abilities) return;
+
+    // Destructure semua data yang kita butuhkan dari characterData
+    const { 
+        name, level, race, class: className, background, alignment,
+        currentHp, maxHp, armorClass, speed, abilities, 
+        proficiencyBonus, savingThrows, skills, 
+        proficiencies, spellsAndSlots, coins 
+    } = characterData;
+
+    // --- 1. Header ---
+    const header = `${name}\nLevel ${level} ${race} ${className} (${background})\n${alignment}`;
+
+    // --- 2. Core Stats ---
+    const initiative = formatModifier(getAbilityModifier(abilities.dexterity));
+    const coreStats = `--- CORE STATS ---\nHP: ${currentHp}/${maxHp} | AC: ${armorClass} | Speed: ${speed}ft | Initiative: ${initiative} | Prof. Bonus: ${formatModifier(proficiencyBonus)}`;
+
+    // --- 3. Abilities ---
+    const abilitiesText = "--- ABILITIES (Score/Mod) ---\n" + Object.entries(abilities)
+        .map(([stat, score]) => {
+            const mod = formatModifier(getAbilityModifier(score));
+            return `${stat.substring(0, 3).toUpperCase()}: ${score} (${mod})`;
+        })
+        .join(' | ');
+
+    // --- 4. Saving Throws (Menandai yang Proficient) ---
+    const savingThrowsText = "--- SAVING THROWS ---\n(* denotes proficiency)\n" + Object.entries(savingThrows)
+        .map(([stat, bonus]) => {
+            const isProficient = proficiencies.savingThrows.includes(stat);
+            return `${isProficient ? '*' : ' '}${stat.charAt(0).toUpperCase() + stat.slice(1)}: ${formatModifier(bonus)}`;
+        })
+        .join(', ');
+
+    // --- 5. Skills (Menandai yang Proficient) ---
+    const skillsText = "--- SKILLS ---\n" + Object.entries(skills)
+        .sort((a, b) => a[0].localeCompare(b[0])) // Urutkan skill berdasarkan abjad
+        .map(([skill, bonus]) => {
+            const isProficient = proficiencies.skills.includes(skill);
+            return `${isProficient ? '*' : ' '}${skill}: ${formatModifier(bonus)}`;
+        })
+        .join('\n');
+
+    // --- 6. Features & Spells ---
+    let allAbilitiesList = [];
+    if (spellsAndSlots) {
+        Object.values(spellsAndSlots).forEach(levelData => {
+            if (levelData.spells) {
+                levelData.spells.forEach(spell => allAbilitiesList.push(spell.name));
+            }
+        });
+    }
+    const featuresText = "--- FEATURES & SPELLS ---\n" + (allAbilitiesList.length > 0 ? allAbilitiesList.join(', ') : 'None');
+
+    // --- 7. Currency ---
+    const currencyText = "--- CURRENCY ---\n" + Object.entries(coins)
+        .map(([type, amount]) => `${type.toUpperCase()}: ${amount}`)
+        .join(' | ');
+
+    // --- Gabungkan Semua Bagian ---
+    const fullSummary = [
+        header,
+        coreStats,
+        abilitiesText,
+        savingThrowsText,
+        skillsText,
+        featuresText,
+        currencyText
+    ].join('\n\n');
+    
+    copyToClipboard(fullSummary, 'Full character sheet copied!');
+});
+
             const resetCharacter = () => {
                 localStorage.removeItem('dndCharacterData');
                 localStorage.removeItem('dndAppSettings');
