@@ -590,6 +590,9 @@ const aiPromptTemplate = `const defaultCharacterTemplate = {
             jsonFeedback: document.getElementById('jsonFeedback'), modifierOptions: document.getElementById('modifierOptions'), rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
             toast: document.getElementById('toast-notification'), 
             mainPpInput: document.getElementById('main-pp-input'), mainGpInput: document.getElementById('main-gp-input'), mainEpInput: document.getElementById('main-ep-input'), mainSpInput: document.getElementById('main-sp-input'), mainCpInput: document.getElementById('main-cp-input'),
+            jsonFeedback: document.getElementById('jsonFeedback'),
+            copyAiTemplateBtn: document.getElementById('copyAiTemplateBtn'), // TAMBAHKAN BARIS INI
+            modifierOptions: document.getElementById('modifierOptions'),
         };
         const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
 
@@ -1152,6 +1155,11 @@ Final Outcome: ${finalOutcome}`;
                 toggleModal(dom.settingsModal, true);
                 dom.cancelSettingsBtn.classList.remove('hidden');
             });
+            dom.copyAiTemplateBtn.addEventListener('click', () => {
+    copyToClipboard(aiPromptTemplate, 'AI prompt template copied!');
+});
+
+            dom.copyJsonBtn.addEventListener('click', () => copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!'));
             dom.toggleJsonViewBtn.addEventListener('click', () => toggleJsonView(dom.jsonEditorContainer.classList.contains('hidden')));
             dom.copyJsonBtn.addEventListener('click', () => copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!'));
             dom.saveSettingsBtn.addEventListener('click', applySettingsChanges);
