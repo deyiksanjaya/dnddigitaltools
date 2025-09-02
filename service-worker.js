@@ -7,7 +7,7 @@ const urlsToCache = [
   
   // Ikon (sesuaikan dengan path di manifest.json)
   './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
+  './icons/icon-512x512.png'
 
 // Install a service worker
 self.addEventListener('install', event => {
