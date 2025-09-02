@@ -479,26 +479,34 @@
             };
             
             const defaultCharacterTemplate = {
-                name: "New Adventurer",
-                level: 1, race: "Human", class: "Fighter", background: "Acolyte", alignment: "Neutral Good",
-                maxHp: 10, armorClass: 10, speed: 30, hitDie: 10,
-                status: 'conscious',
-                deathSaves: { successes: 0, failures: 0 },
-                abilities: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
-                savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-                proficiencies: {
-                    savingThrows: [],
-                    skills: []
-                },
-                notes: "",
-                skills: {
-                    "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
-                    "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
-                    "Stealth": 0, "Survival": 0
-                },
-                spells: [],
-                coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
-            };
+    name: "New Adventurer",
+    level: 1, race: "Human", class: "Fighter", background: "Acolyte", alignment: "Neutral Good",
+    maxHp: 10, armorClass: 10, speed: 30, hitDie: 10,
+    status: 'conscious',
+    deathSaves: { successes: 0, failures: 0 },
+    abilities: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+    savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
+    proficiencies: {
+        savingThrows: [],
+        skills: []
+    },
+    notes: "put your inventories or important things during your adventure",
+    skills: {
+        "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
+        "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
+        "Stealth": 0, "Survival": 0
+    },
+    spells: [
+        "Mage Armor (Level 1) - AC becomes 13 + Dex modifier",
+        "Magic Missile (Level 1) - 3 darts that always hit",
+        "Shield (Level 1, Reaction) - AC +5 for 1 turn",
+        "Burning Hands (Level 1) - 3d6 fire damage cone",
+        "Sleep (Level 1) - Puts creatures to sleep, no saving throw",
+        "Fire Bolt (Cantrip) - 1d10 ranged fire damage",
+        "Minor Illusion (Cantrip) - Creates a visual or auditory illusion"
+    ],
+    coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
+};
 
             const defaultSettings = { autoCopyRoll: true };
 
