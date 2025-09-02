@@ -784,7 +784,7 @@ characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
                 const newSpellsAndSlots = {};
                 const spellLines = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
                 spellLines.forEach(line => {
-                    const parts = line.split('|').map(p => p.trim());
+                    const parts = line.split('/').map(p => p.trim());
                     if (parts.length === 3) {
                         const [name, level, description] = parts;
                         if (!newSpellsAndSlots[level]) newSpellsAndSlots[level] = { spells: [] };
