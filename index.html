@@ -514,55 +514,38 @@
         // **UPDATED**: AI prompt template now reflects the new, cleaner data structure.
         const aiPromptTemplate = `Generate a DnD character according to the JSON template below. Don't change the name of any key. The application will automatically calculate the final modifiers.
 {
-  "name": "Kriv Oathkeeper", // Generate and replace with a fitting and unique character name.
-  "level": 3, // Set the character's level as an integer and replace this value.
-  "race": "Dragonborn (Gold)", // Choose a race from the D&D 5e Player's Handbook and replace this value.
-  "class": "Paladin", // Choose a class from the D&D 5e Player's Handbook and replace this value.
-  "background": "Noble", // Choose a background that aligns with the character's story and replace this value.
-  "alignment": "Lawful Good", // Set the character's moral and ethical alignment and replace this value.
-  "maxHp": 28, // Calculate max HP based on class hit die and Constitution modifier, then replace this value.
-  "armorClass": 18, // Calculate AC based on typical starting gear (e.g., Chain Mail + Shield) and replace this value.
-  "speed": 30, // Set the character's movement speed in feet and replace this value.
+  "name": "", // Generate and replace with a fitting and unique character name.
+  "level": 0, // Set the character's level as an integer and replace this value.
+  "race": "", // Choose a race from the D&D 5e Player's Handbook and replace this value.
+  "class": "", // Choose a class from the D&D 5e Player's Handbook and replace this value.
+  "background": "", // Choose a background that aligns with the character's story and replace this value.
+  "alignment": "", // Set the character's moral and ethical alignment and replace this value.
+  "maxHp": 0, // Calculate max HP based on class hit die and Constitution modifier, then replace this value.
+  "armorClass": 0, // Calculate AC based on typical starting gear (e.g., Chain Mail + Shield) and replace this value.
+  "speed": 0, // Set the character's movement speed in feet and replace this value.
   "abilities": { // Generate a set of ability scores (e.g., using Standard Array: 15, 14, 13, 12, 10, 8) and apply racial bonuses. Replace all values within this object.
-    "strength": 17, // Strength score. Replace this value.
-    "dexterity": 10, // Dexterity score. Replace this value.
-    "constitution": 14, // Constitution score. Replace this value.
-    "intelligence": 8, // Intelligence score. Replace this value.
-    "wisdom": 12, // Wisdom score. Replace this value.
-    "charisma": 15 // Charisma score. Replace this value.
+    "strength": 0, // Strength score. Replace this value.
+    "dexterity": 0, // Dexterity score. Replace this value.
+    "constitution": 0, // Constitution score. Replace this value.
+    "intelligence": 0, // Intelligence score. Replace this value.
+    "wisdom": 0, // Wisdom score. Replace this value.
+    "charisma": 0 // Charisma score. Replace this value.
   },
   "proficiencies": {
-    "savingThrows": [ // List the two saving throw proficiencies granted by the chosen class. Replace with appropriate items.
-      "wisdom",
-      "charisma"
-    ],
-    "skills": [ // List all skill proficiencies from the chosen class and background. Replace with appropriate items.
-      "Athletics",
-      "Insight",
-      "Medicine",
-      "Persuasion"
-    ]
+    "savingThrows": [], // List the two saving throw proficiencies granted by the chosen class. Replace with appropriate items.
+    "skills": [] // List all skill proficiencies from the chosen class and background. Replace with appropriate items.
   },
   "spellsAndSlots": { // Populate with spells and features based on class and level.
     "0": { // This is for cantrips (level 0 spells). Replace the spells within this list.
       "slots": 0, // Cantrips do not use spell slots. Always set to 0. Do not change.
-      "spells": [ // List the cantrips the character knows. Include name and a brief description.
-        { "name": "Sacred Flame", "description": "A holy fire that engulfs a target." },
-        { "name": "Light", "description": "Illuminates an object to provide light." }
-      ]
+      "spells": [] // List the cantrips the character knows. Include name and a brief description.
     },
     "1": { // This is for 1st-level spells. Add more levels as needed (e.g., "2", "3", etc.).
-        "slots": 3, // Set the number of spell slots available for this level and replace this value.
-        "spells": [ // List the spells the character has access to. Replace with your spells.
-            { "name": "Bless", "description": "Buffs allies' attack rolls and saving throws." },
-            { "name": "Cure Wounds", "description": "Heal a creature you touch." }
-        ]
+        "slots": 0, // Set the number of spell slots available for this level and replace this value.
+        "spells": [] // List the spells the character has access to. Replace with your spells.
     },
     "feature": { // This key is for class features that function like spells, or other non-spell abilities.
-        "spells": [ // List the features. Replace with appropriate features and description.
-            { "name": "Divine Smite", "description": "Expend a spell slot to deal extra radiant damage on a melee weapon hit." },
-            { "name": "Lay on Hands", "description": "Heal creatures with a pool of healing power." }
-        ]
+        "spells": [] // List the features. Replace with appropriate features and description.
     }
   },
   "coins": { // Set the starting currency based on the chosen background. Replace all values within this object according to the character background.
