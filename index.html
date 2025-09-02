@@ -115,6 +115,7 @@
             background-color: transparent;
             border: 1px solid transparent; /* Add transparent border to prevent layout shift on focus */
             -moz-appearance: textfield;
+            appearance: textfield; /* Add standard property for compatibility */
         }
         .currency-input::-webkit-outer-spin-button,
         .currency-input::-webkit-inner-spin-button {
@@ -130,12 +131,7 @@
         }
 
          @media (max-width: 420px) {
-            .max-w-sm.mx-auto.space-y-3 > .flex.justify-between {
-                flex-wrap: wrap; 
-                row-gap: 0.5rem; 
-                justify-content: flex-start;
-            }
-            .max-w-sm.mx-auto.space-y-3 > .flex.justify-between > span[id$="-total"] {
+                .max-w-sm.mx-auto.space-y-3 > .flex.justify-between > span[id$="-total"] {
                 margin-right: auto;
                 padding-left: 0.5rem;
             }
@@ -190,6 +186,12 @@
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="20">d20</button>
             <button class="dice-button p-4 rounded-xl font-bold text-xl text-amber-200" data-sides="100">d100</button>
         </div>
+
+        <!-- Spells Display -->
+                <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+                    <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells & Features</h3>
+                    <div id="spellsList" class="text-amber-200 space-y-2"></div>
+                </div>
 
         <!-- 4. Currency -->
         <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
@@ -278,12 +280,6 @@
                 <div id="characterSkills" class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
                     <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Skills</h3>
                     <div id="skills-list" class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-amber-200"></div>
-                </div>
-
-                <!-- Spells Display -->
-                <div class="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-                    <h3 class="font-cinzel text-xl text-amber-300 mb-4 text-center">Spells & Features</h3>
-                    <div id="spellsList" class="text-amber-200 space-y-2"></div>
                 </div>
             </div>
         </details>
@@ -397,7 +393,12 @@
                         <textarea id="spellsInput" rows="5" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
                     </div>
                 </div>
-                
+                <div class="space-y-2 py-4 border-b border-gray-600">
+                    <h4 class="text-amber-300 font-bold">Remaining Spell Slots</h4>
+                    <div id="spellSlotsContainer" class="grid grid-cols-3 gap-x-4 gap-y-3">
+                </div>
+</div>
+              
                 <!-- App Settings -->
                 <div class="pt-4 pb-2 border-b border-gray-600 space-y-2">
                     <h4 class="text-amber-300 font-bold">App Settings</h4>
@@ -464,691 +465,679 @@
         Text copied to clipboard!
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- STATE MANAGEMENT ---
-            let characterData = {};
-            let appSettings = {};
-            let currentDiceSides = 0;
-            let isAnimating = false;
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+        alert("JS Error: " + message + "\nLine: " + lineno);
+        return false;
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- STATE MANAGEMENT ---
+        let characterData = {};
+        let appSettings = {};
+        let currentDiceSides = 0;
+        let isAnimating = false;
 
-            const SKILL_ABILITY_MAP = {
-                "Acrobatics": "dexterity", "Animal Handling": "wisdom", "Arcana": "intelligence", "Athletics": "strength", "Deception": "charisma", "History": "intelligence",
-                "Insight": "wisdom", "Intimidation": "charisma", "Investigation": "intelligence", "Medicine": "wisdom", "Nature": "intelligence", "Perception": "wisdom",
-                "Performance": "charisma", "Persuasion": "charisma", "Religion": "intelligence", "Sleight of Hand": "dexterity", "Stealth": "dexterity", "Survival": "wisdom"
-            };
+        const SKILL_ABILITY_MAP = {
+            "Acrobatics": "dexterity", "Animal Handling": "wisdom", "Arcana": "intelligence", "Athletics": "strength", "Deception": "charisma", "History": "intelligence",
+            "Insight": "wisdom", "Intimidation": "charisma", "Investigation": "intelligence", "Medicine": "wisdom", "Nature": "intelligence", "Perception": "wisdom",
+            "Performance": "charisma", "Persuasion": "charisma", "Religion": "intelligence", "Sleight of Hand": "dexterity", "Stealth": "dexterity", "Survival": "wisdom"
+        };
+        
+        const defaultCharacterTemplate = {
+            name: "New Adventurer",
+            level: 1, race: "Human", class: "Fighter", background: "Acolyte", alignment: "Neutral Good",
+            maxHp: 10, armorClass: 10, speed: 30, hitDie: 10,
+            status: 'conscious',
+            deathSaves: { successes: 0, failures: 0 },
+            abilities: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+            savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
+            proficiencies: { savingThrows: [], skills: [] },
+            notes: "Jot down your adventure notes, clues, or inventory here.",
+            skills: {
+                "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
+                "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
+                "Stealth": 0, "Survival": 0
+            },
+            spellsAndSlots: {
+                "0": { spells: [] },
+                "1": { slots: 0, spells: [] },
+                "feature": { spells: [{ name: "Second Wind", description: "Heal 1d10 + Fighter level." }] }
+            },
+            coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
+        };
+
+        const defaultSettings = { autoCopyRoll: true };
+
+        // --- DOM ELEMENT REFERENCES ---
+        const dom = {
+            body: document.body, characterName: document.getElementById('characterName'), characterInfo: document.getElementById('characterInfo'), characterHP: document.getElementById('characterHP'),
+            healthBar: document.getElementById('health-bar-inner'), armorClassDisplay: document.getElementById('armorClassDisplay'), initiativeDisplay: document.getElementById('initiativeDisplay'),
+            speedDisplay: document.getElementById('speedDisplay'), proficiencyBonusDisplay: document.getElementById('proficiencyBonusDisplay'), abilityScoresContainer: document.getElementById('abilityScoresContainer'),
+            savingThrowsContainer: document.getElementById('savingThrowsContainer'), rollResultDisplay: document.getElementById('roll-result-display'), diceButtons: document.querySelectorAll('.dice-button'),
+            hpChangeInput: document.getElementById('hp-change-input'), hpChangeBtn: document.getElementById('hp-change-btn'), skillsList: document.getElementById('skills-list'),
+            spellsList: document.getElementById('spellsList'), adventureNotes: document.getElementById('adventureNotes'), onboardingModal: document.getElementById('onboardingModal'),
+            modifierModal: document.getElementById('modifierModal'), settingsModal: document.getElementById('settingsModal'), settingsModalContent: document.getElementById('settingsModalContent'),
+            resetModal: document.getElementById('resetModal'), deathSaveModal: document.getElementById('deathSaveModal'), deathSaveTitle: document.getElementById('deathSaveTitle'),
+            deathSaveSuccesses: document.getElementById('deathSaveSuccesses'), deathSaveFailures: document.getElementById('deathSaveFailures'), deathSaveStatus: document.getElementById('deathSaveStatus'),
+            deathSaveResult: document.getElementById('deathSaveResult'), makeDeathSaveBtn: document.getElementById('makeDeathSaveBtn'), closeDeathSaveModalBtn: document.getElementById('closeDeathSaveModalBtn'),
+            restartSameCharacterBtn: document.getElementById('restartSameCharacterBtn'), createNewCharacterBtn: document.getElementById('createNewCharacterBtn'), createCharacterBtn: document.getElementById('createCharacterBtn'),
+            openSettingsBtn: document.getElementById('openSettingsBtn'), saveSettingsBtn: document.getElementById('saveSettingsBtn'), cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
+            openResetBtn: document.getElementById('openResetBtn'), confirmResetBtn: document.getElementById('confirmResetBtn'), cancelResetBtn: document.getElementById('cancelResetBtn'),
+            charNameInput: document.getElementById('charNameInput'), raceInput: document.getElementById('raceInput'), classInput: document.getElementById('classInput'),
+            backgroundInput: document.getElementById('backgroundInput'), alignmentInput: document.getElementById('alignmentInput'), levelInput: document.getElementById('levelInput'),
+            maxHpInput: document.getElementById('maxHpInput'), armorClassInput: document.getElementById('armorClassInput'), speedInput: document.getElementById('speedInput'),
+            abilityInputsContainer: document.getElementById('abilityInputsContainer'), savingThrowProficienciesContainer: document.getElementById('savingThrowProficienciesContainer'),
+            skillProficienciesContainer: document.getElementById('skillProficienciesContainer'), spellsInput: document.getElementById('spellsInput'), autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
+            jsonEditorContainer: document.getElementById('jsonEditorContainer'),
+            toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'), jsonEditor: document.getElementById('jsonEditor'), copyJsonBtn: document.getElementById('copyJsonBtn'),
+            jsonFeedback: document.getElementById('jsonFeedback'), modifierOptions: document.getElementById('modifierOptions'), rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
+            toast: document.getElementById('toast-notification'), 
+            mainPpInput: document.getElementById('main-pp-input'), mainGpInput: document.getElementById('main-gp-input'), mainEpInput: document.getElementById('main-ep-input'), mainSpInput: document.getElementById('main-sp-input'), mainCpInput: document.getElementById('main-cp-input'),
+        };
+        const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
+
+        // --- UTILITY & CALCULATION FUNCTIONS ---
+        const getAbilityModifier = (score) => Math.floor((score - 10) / 2);
+        const formatModifier = (mod) => mod >= 0 ? `+${mod}` : `${mod}`;
+        const getProficiencyBonus = (level) => Math.ceil(level / 4) + 1;
+
+        const calculateAllModifiers = (charData) => {
+            const proficiencyBonus = getProficiencyBonus(charData.level);
+            charData.proficiencyBonus = proficiencyBonus;
+            for (const ability in charData.savingThrows) {
+                const abilityMod = getAbilityModifier(charData.abilities[ability]);
+                const isProficient = charData.proficiencies.savingThrows.includes(ability);
+                charData.savingThrows[ability] = abilityMod + (isProficient ? proficiencyBonus : 0);
+            }
+            for (const skill in charData.skills) {
+                const ability = SKILL_ABILITY_MAP[skill];
+                const abilityMod = getAbilityModifier(charData.abilities[ability]);
+                const isProficient = charData.proficiencies.skills.includes(skill);
+                charData.skills[skill] = abilityMod + (isProficient ? proficiencyBonus : 0);
+            }
+            return charData;
+        };
+
+        // --- DATA PERSISTENCE FUNCTIONS ---
+        const loadData = (key) => {
+            const savedData = localStorage.getItem(key);
+            try { return savedData ? JSON.parse(savedData) : null; } 
+            catch (e) { localStorage.removeItem(key); return null; }
+        };
+        const saveData = (key, data) => {
+            try { localStorage.setItem(key, JSON.stringify(data)); } 
+            catch (e) { console.error(`Failed to save data for ${key}.`, e); }
+        };
+
+        // --- CORE UI FUNCTIONS ---
+        const updateUI = () => {
+            if (!characterData || !characterData.abilities) return;
             
-            const defaultCharacterTemplate = {
-    name: "New Adventurer",
-    level: 1, race: "Human", class: "Fighter", background: "Acolyte", alignment: "Neutral Good",
-    maxHp: 10, armorClass: 10, speed: 30, hitDie: 10,
-    status: 'conscious',
-    deathSaves: { successes: 0, failures: 0 },
-    abilities: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
-    savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-    proficiencies: {
-        savingThrows: [],
-        skills: []
-    },
-    notes: "put your inventories or important things during your adventure",
-    skills: {
-        "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0, "History": 0, "Insight": 0, "Intimidation": 0,
-        "Investigation": 0, "Medicine": 0, "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0, "Sleight of Hand": 0,
-        "Stealth": 0, "Survival": 0
-    },
-    spells: [
-        "Mage Armor (Level 1) - AC becomes 13 + Dex modifier",
-        "Magic Missile (Level 1) - 3 darts that always hit",
-        "Shield (Level 1, Reaction) - AC +5 for 1 turn",
-        "Burning Hands (Level 1) - 3d6 fire damage cone",
-        "Sleep (Level 1) - Puts creatures to sleep, no saving throw",
-        "Fire Bolt (Cantrip) - 1d10 ranged fire damage",
-        "Minor Illusion (Cantrip) - Creates a visual or auditory illusion"
-    ],
-    coins: { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 }
-};
-
-            const defaultSettings = { autoCopyRoll: true };
-
-            // --- DOM ELEMENT REFERENCES ---
-            const dom = {
-                body: document.body, characterName: document.getElementById('characterName'), characterInfo: document.getElementById('characterInfo'), characterHP: document.getElementById('characterHP'),
-                healthBar: document.getElementById('health-bar-inner'), armorClassDisplay: document.getElementById('armorClassDisplay'), initiativeDisplay: document.getElementById('initiativeDisplay'),
-                speedDisplay: document.getElementById('speedDisplay'), proficiencyBonusDisplay: document.getElementById('proficiencyBonusDisplay'), abilityScoresContainer: document.getElementById('abilityScoresContainer'),
-                savingThrowsContainer: document.getElementById('savingThrowsContainer'), rollResultDisplay: document.getElementById('roll-result-display'), diceButtons: document.querySelectorAll('.dice-button'),
-                hpChangeInput: document.getElementById('hp-change-input'), hpChangeBtn: document.getElementById('hp-change-btn'), skillsList: document.getElementById('skills-list'),
-                spellsList: document.getElementById('spellsList'), adventureNotes: document.getElementById('adventureNotes'), onboardingModal: document.getElementById('onboardingModal'),
-                modifierModal: document.getElementById('modifierModal'), settingsModal: document.getElementById('settingsModal'), settingsModalContent: document.getElementById('settingsModalContent'),
-                resetModal: document.getElementById('resetModal'), deathSaveModal: document.getElementById('deathSaveModal'), deathSaveTitle: document.getElementById('deathSaveTitle'),
-                deathSaveSuccesses: document.getElementById('deathSaveSuccesses'), deathSaveFailures: document.getElementById('deathSaveFailures'), deathSaveStatus: document.getElementById('deathSaveStatus'),
-                deathSaveResult: document.getElementById('deathSaveResult'), makeDeathSaveBtn: document.getElementById('makeDeathSaveBtn'), closeDeathSaveModalBtn: document.getElementById('closeDeathSaveModalBtn'),
-                restartSameCharacterBtn: document.getElementById('restartSameCharacterBtn'), createNewCharacterBtn: document.getElementById('createNewCharacterBtn'), createCharacterBtn: document.getElementById('createCharacterBtn'),
-                openSettingsBtn: document.getElementById('openSettingsBtn'), saveSettingsBtn: document.getElementById('saveSettingsBtn'), cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
-                openResetBtn: document.getElementById('openResetBtn'), confirmResetBtn: document.getElementById('confirmResetBtn'), cancelResetBtn: document.getElementById('cancelResetBtn'),
-                charNameInput: document.getElementById('charNameInput'), raceInput: document.getElementById('raceInput'), classInput: document.getElementById('classInput'),
-                backgroundInput: document.getElementById('backgroundInput'), alignmentInput: document.getElementById('alignmentInput'), levelInput: document.getElementById('levelInput'),
-                maxHpInput: document.getElementById('maxHpInput'), armorClassInput: document.getElementById('armorClassInput'), speedInput: document.getElementById('speedInput'),
-                abilityInputsContainer: document.getElementById('abilityInputsContainer'), savingThrowProficienciesContainer: document.getElementById('savingThrowProficienciesContainer'),
-                skillProficienciesContainer: document.getElementById('skillProficienciesContainer'), spellsInput: document.getElementById('spellsInput'), autoCopyRollSetting: document.getElementById('autoCopyRollSetting'),
-                jsonEditorContainer: document.getElementById('jsonEditorContainer'),
-                toggleJsonViewBtn: document.getElementById('toggleJsonViewBtn'), jsonEditor: document.getElementById('jsonEditor'), copyJsonBtn: document.getElementById('copyJsonBtn'),
-                jsonFeedback: document.getElementById('jsonFeedback'), modifierOptions: document.getElementById('modifierOptions'), rollWithoutModifierBtn: document.getElementById('rollWithoutModifierBtn'),
-                toast: document.getElementById('toast-notification'), 
-                mainPpInput: document.getElementById('main-pp-input'),
-                mainGpInput: document.getElementById('main-gp-input'),
-                mainEpInput: document.getElementById('main-ep-input'),
-                mainSpInput: document.getElementById('main-sp-input'),
-                mainCpInput: document.getElementById('main-cp-input'),
-            };
-            const allModals = [dom.onboardingModal, dom.modifierModal, dom.settingsModal, dom.resetModal, dom.deathSaveModal];
-
-            // --- UTILITY & CALCULATION FUNCTIONS ---
-            const getAbilityModifier = (score) => Math.floor((score - 10) / 2);
-            const formatModifier = (mod) => mod >= 0 ? `+${mod}` : `${mod}`;
-            const getProficiencyBonus = (level) => Math.ceil(level / 4) + 1;
-
-            const calculateAllModifiers = (charData) => {
-                const proficiencyBonus = getProficiencyBonus(charData.level);
-                charData.proficiencyBonus = proficiencyBonus;
-
-                // Calculate Saving Throws
-                for (const ability in charData.savingThrows) {
-                    const abilityMod = getAbilityModifier(charData.abilities[ability]);
-                    const isProficient = charData.proficiencies.savingThrows.includes(ability);
-                    charData.savingThrows[ability] = abilityMod + (isProficient ? proficiencyBonus : 0);
-                }
-
-                // Calculate Skills
-                for (const skill in charData.skills) {
-                    const ability = SKILL_ABILITY_MAP[skill];
-                    const abilityMod = getAbilityModifier(charData.abilities[ability]);
-                    const isProficient = charData.proficiencies.skills.includes(skill);
-                    charData.skills[skill] = abilityMod + (isProficient ? proficiencyBonus : 0);
-                }
-                return charData;
-            };
-
-            // --- DATA PERSISTENCE FUNCTIONS ---
-            const loadData = (key) => {
-                const savedData = localStorage.getItem(key);
-                try { return savedData ? JSON.parse(savedData) : null; } 
-                catch (e) { localStorage.removeItem(key); return null; }
-            };
-            const saveData = (key, data) => {
-                try { localStorage.setItem(key, JSON.stringify(data)); } 
-                catch (e) { console.error(`Failed to save data for ${key}.`, e); }
-            };
-
-            // --- CORE UI FUNCTIONS ---
-            const updateUI = () => {
-                if (!characterData || !characterData.abilities) return;
-                
-                // Header & Core Stats
-                dom.characterName.textContent = characterData.name;
-                dom.characterInfo.textContent = `Level ${characterData.level} ${characterData.race} ${characterData.class}`;
-                dom.characterHP.textContent = `HP: ${characterData.currentHp} / ${characterData.maxHp}`;
-                const hpPercentage = (characterData.currentHp / characterData.maxHp) * 100;
-                dom.healthBar.style.width = `${Math.max(0, hpPercentage)}%`;
-                dom.healthBar.className = 'h-full rounded-full ';
-                if (hpPercentage > 50) dom.healthBar.classList.add('bg-green-500');
-                else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
-                else dom.healthBar.classList.add('bg-red-600');
-                dom.armorClassDisplay.textContent = characterData.armorClass;
-                dom.speedDisplay.textContent = `${characterData.speed} ft`;
-                dom.initiativeDisplay.textContent = formatModifier(getAbilityModifier(characterData.abilities.dexterity));
-                dom.proficiencyBonusDisplay.textContent = formatModifier(characterData.proficiencyBonus);
-
-                // Ability Scores, Saving Throws, Skills
-                dom.abilityScoresContainer.innerHTML = Object.entries(characterData.abilities).map(([key, score]) => `<div><span class="font-bold text-amber-300 uppercase">${key.substring(0,3)}</span><p class="text-xl font-bold text-white">${score}</p><p class="text-sm font-bold bg-gray-700 rounded-full">${formatModifier(getAbilityModifier(score))}</p></div>`).join('');
-                dom.savingThrowsContainer.innerHTML = Object.entries(characterData.savingThrows).map(([key, score]) => `<div><span class="font-bold text-amber-300 capitalize">${key.substring(0,3)}</span><p class="text-2xl font-bold text-white">${formatModifier(score)}</p></div>`).join('');
-                dom.skillsList.innerHTML = Object.entries(characterData.skills).map(([skill, mod]) => `<div class="flex justify-between"><span class="${characterData.proficiencies.skills.includes(skill) ? 'text-amber-100' : 'text-gray-400'}">${skill}</span><span class="font-bold text-white">${formatModifier(mod)}</span></div>`).join('');
-                
-                // Spells, Currency, Notes
-                dom.spellsList.innerHTML = characterData.spells.length > 0 ? characterData.spells.map(spell => `<div class="border-b border-gray-700 pb-2 mb-2 last:border-b-0 last:mb-0">${spell}</div>`).join('') : '<span class="italic text-gray-400">No spells known</span>';
-                Object.keys(characterData.coins).forEach(coin => { dom[`main${coin.charAt(0).toUpperCase() + coin.slice(1)}Input`].value = characterData.coins[coin] || 0; });
-                dom.adventureNotes.value = characterData.notes || "";
-            };
-
-            const populateSettingsModal = () => {
-                // Details & Stats
-                dom.charNameInput.value = characterData.name; dom.raceInput.value = characterData.race; dom.classInput.value = characterData.class;
-                dom.backgroundInput.value = characterData.background; dom.alignmentInput.value = characterData.alignment; dom.levelInput.value = characterData.level;
-                dom.maxHpInput.value = characterData.maxHp; dom.armorClassInput.value = characterData.armorClass; dom.speedInput.value = characterData.speed;
-                
-                // Abilities
-                dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500"></div>`).join('');
-                
-                // Proficiencies
-                dom.savingThrowProficienciesContainer.innerHTML = Object.keys(characterData.savingThrows).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key}-prof" ${characterData.proficiencies.savingThrows.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key}-prof" class="text-amber-300 text-sm capitalize">${key}</label></div>`).join('');
-                dom.skillProficienciesContainer.innerHTML = Object.keys(characterData.skills).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key.replace(/\s+/g, '-')}-prof" ${characterData.proficiencies.skills.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key.replace(/\s+/g, '-')}-prof" class="text-amber-300 text-sm">${key}</label></div>`).join('');
-                
-                // Spells & App Settings
-                dom.spellsInput.value = characterData.spells.join('\n');
-                dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
-
-                // JSON Editor
-                dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
-                dom.jsonFeedback.textContent = '';
-            };
+            dom.characterName.textContent = characterData.name;
+            dom.characterInfo.textContent = `Level ${characterData.level} ${characterData.race} ${characterData.class}`;
+            dom.characterHP.textContent = `HP: ${characterData.currentHp} / ${characterData.maxHp}`;
+            const hpPercentage = (characterData.currentHp / characterData.maxHp) * 100;
+            dom.healthBar.style.width = `${Math.max(0, hpPercentage)}%`;
+            dom.healthBar.className = 'h-full rounded-full ';
+            if (hpPercentage > 50) dom.healthBar.classList.add('bg-green-500');
+            else if (hpPercentage > 25) dom.healthBar.classList.add('bg-yellow-500');
+            else dom.healthBar.classList.add('bg-red-600');
+            dom.armorClassDisplay.textContent = characterData.armorClass;
+            dom.speedDisplay.textContent = `${characterData.speed} ft`;
+            dom.initiativeDisplay.textContent = formatModifier(getAbilityModifier(characterData.abilities.dexterity));
+            dom.proficiencyBonusDisplay.textContent = formatModifier(characterData.proficiencyBonus);
+            dom.abilityScoresContainer.innerHTML = Object.entries(characterData.abilities).map(([key, score]) => `<div><span class="font-bold text-amber-300 uppercase">${key.substring(0,3)}</span><p class="text-xl font-bold text-white">${score}</p><p class="text-sm font-bold bg-gray-700 rounded-full">${formatModifier(getAbilityModifier(score))}</p></div>`).join('');
+            dom.savingThrowsContainer.innerHTML = Object.entries(characterData.savingThrows).map(([key, score]) => `<div><span class="font-bold text-amber-300 capitalize">${key.substring(0,3)}</span><p class="text-2xl font-bold text-white">${formatModifier(score)}</p></div>`).join('');
+            dom.skillsList.innerHTML = Object.entries(characterData.skills).map(([skill, mod]) => `<div class="flex justify-between"><span class="${characterData.proficiencies.skills.includes(skill) ? 'text-amber-100' : 'text-gray-400'}">${skill}</span><span class="font-bold text-white">${formatModifier(mod)}</span></div>`).join('');
             
-            // --- MODAL & ANIMATION ---
-            const toggleModal = (modalElement, show) => {
-                if (show) allModals.forEach(modal => modal.classList.add('hidden'));
-                modalElement.classList.toggle('hidden', !show);
-                dom.body.classList.toggle('modal-open', show);
-            };
-
-            const toggleJsonView = (showJson) => {
-                const settingsContent = dom.settingsModalContent.querySelector('.space-y-4');
-                Array.from(settingsContent.children).forEach(child => {
-                    if (!child.id.includes('jsonEditorContainer') && !child.classList.contains('text-center')) {
-                        child.classList.toggle('hidden', showJson);
-                    }
-                });
-                dom.jsonEditorContainer.classList.toggle('hidden', !showJson);
-                dom.toggleJsonViewBtn.textContent = showJson ? 'Edit with Form' : 'Edit with JSON';
-            };
-
-            const showToast = (message) => {
-                dom.toast.textContent = message;
-                dom.toast.classList.add('show');
-                setTimeout(() => dom.toast.classList.remove('show'), 2000);
-            };
-
-            const copyToClipboard = (text, message) => navigator.clipboard.writeText(text).then(() => showToast(message)).catch(err => console.error(err));
-
-            const animateCount = (element, start, end, duration, onComplete) => {
-                if (start === end) {
-                    if(onComplete) onComplete();
-                    return;
-                }
-                const range = end - start;
-                const increment = end > start ? 1 : -1;
-                const stepTime = Math.max(10, Math.abs(Math.floor(duration / range)));
-                let current = start;
-
-                const timer = setInterval(() => {
-                    current += increment;
-                    element.textContent = current;
-                    if (current == end) {
-                        clearInterval(timer);
-                        if(onComplete) onComplete();
-                    }
-                }, stepTime);
-            };
-
-            const animateAndShowResult = (sides, finalRoll, modifier, total, skillName) => {
-                if (isAnimating) return;
-                isAnimating = true;
-                const scrambleDuration = 1500, pauseAfterScramble = 300, modifierVisibleDuration = 800, countDuration = 350;
-                dom.rollResultDisplay.innerHTML = `
-                    <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Rolling d${sides}...</span>
-                    <div id="dice-result-wrapper" class="relative">
-                        <span id="animated-dice-number" class="block text-6xl text-amber-100 font-bold">--</span>
-                        <span id="modifier-flyout" class="absolute text-2xl font-bold ml-2"></span>
-                    </div>
-                    <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>`;
-                const animatedNumberEl = document.getElementById('animated-dice-number'), modifierFlyoutEl = document.getElementById('modifier-flyout'),
-                    diceTypeTextEl = document.getElementById('dice-type-text'), rollDetailsTextEl = document.getElementById('roll-details-text');
-                const scrambleInterval = setInterval(() => { animatedNumberEl.textContent = Math.floor(Math.random() * sides) + 1; }, 40);
-                setTimeout(() => {
-                    clearInterval(scrambleInterval);
-                    animatedNumberEl.textContent = finalRoll;
-                    setTimeout(() => {
-                        diceTypeTextEl.textContent = `${skillName}`;
-                        if (sides === 100 || modifier === 0) {
-                            rollDetailsTextEl.innerHTML = `Total: <span class="font-bold">${total}</span>`;
-                            rollDetailsTextEl.classList.add('show');
-                            isAnimating = false;
-                            return;
-                        }
-                        modifierFlyoutEl.textContent = formatModifier(modifier);
-                        modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400', 'show');
-                        setTimeout(() => {
-                            modifierFlyoutEl.classList.remove('show');
-                            animateCount(animatedNumberEl, finalRoll, total, countDuration, () => {
-                                rollDetailsTextEl.innerHTML = `Modifier: ${formatModifier(modifier)} | Total: <span class="font-bold">${total}</span>`;
-                                rollDetailsTextEl.classList.add('show');
-                                isAnimating = false;
-                            });
-                        }, modifierVisibleDuration);
-                    }, pauseAfterScramble);
-                }, scrambleDuration);
-            };
-
-             // --- DEATH SAVE FUNCTIONS ---
-            const updateDeathSaveDisplay = () => {
-                const { successes, failures } = characterData.deathSaves;
-                const successPips = Array(3).fill(0).map((_, i) => `<span class="h-4 w-4 rounded-full ${i < successes ? 'bg-green-500' : 'border-2 border-gray-500'}"></span>`).join('');
-                const failurePips = Array(3).fill(0).map((_, i) => `<span class="h-4 w-4 rounded-full ${i < failures ? 'bg-red-500' : 'border-2 border-gray-500'}"></span>`).join('');
-                dom.deathSaveSuccesses.innerHTML = successPips;
-                dom.deathSaveFailures.innerHTML = failurePips;
-            };
-
-            const showDeathSaveModal = () => {
-                dom.deathSaveResult.textContent = '';
-                dom.deathSaveTitle.textContent = "DYING";
-                dom.deathSaveStatus.textContent = "You are unconscious and in peril.";
-                dom.makeDeathSaveBtn.classList.remove('hidden');
-                dom.closeDeathSaveModalBtn.classList.add('hidden');
-                dom.restartSameCharacterBtn.classList.add('hidden');
-                dom.createNewCharacterBtn.classList.add('hidden');
-                updateDeathSaveDisplay();
-                toggleModal(dom.deathSaveModal, true);
-            };
-            
-            // --- EVENT HANDLERS ---
-            const handleDiceClick = (sides) => {
-                if (isAnimating) return;
-                if (sides !== 20) { // For simple dice rolls
-                    const roll = Math.floor(Math.random() * sides) + 1;
-                    animateAndShowResult(sides, roll, 0, roll, `d${sides}`);
-                    if(appSettings.autoCopyRoll) {
-                        copyToClipboard(`d${sides} Roll: ${roll} | HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Dice roll copied!');
-                    }
-                } else { // For d20 rolls, show the smart modal
-                    currentDiceSides = 20;
-                    dom.modifierOptions.innerHTML = `
-                        <div>
-                            <h4 class="font-cinzel text-lg text-amber-200 mb-2">Saving Throws</h4>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.savingThrows).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key} Save" data-modifier="${mod}">${key.substring(0,3)} ${formatModifier(mod)}</button>`).join('')}</div>
-                        </div>
-                        <div>
-                            <h4 class="font-cinzel text-lg text-amber-200 mt-4 mb-2">Skills</h4>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.skills).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key}" data-modifier="${mod}">${key} ${formatModifier(mod)}</button>`).join('')}</div>
-                        </div>`;
-                    toggleModal(dom.modifierModal, true);
-                }
-            };
-
-            const handleModifierSelection = (modifier = 0, skillName = 'Manual') => {
-                if (isAnimating) return;
-                toggleModal(dom.modifierModal, false);
-                const roll = Math.floor(Math.random() * currentDiceSides) + 1;
-                const total = roll + modifier;
-                animateAndShowResult(currentDiceSides, roll, modifier, total, skillName);
-                if(appSettings.autoCopyRoll) {
-                    let clipboardText = '';
-                    if (skillName === 'No Modifier' || skillName === 'Manual') {
-                         clipboardText = `d${currentDiceSides} Roll: ${total}`;
+            let spellsHtml = '';
+            const spellsData = characterData.spellsAndSlots || {};
+            const displayOrder = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'feature'];
+            displayOrder.forEach(level => {
+                const levelData = spellsData[level];
+                if (levelData && levelData.spells && levelData.spells.length > 0) {
+                    let title = '';
+                    let headerInfo = '';
+                    if (level === '0') {
+                        title = 'Cantrips';
+                    } else if (level === 'feature') {
+                        title = 'Features';
                     } else {
-                         clipboardText = `d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Modifier: ${modifier})`;
+                        title = `Level ${level} Spells`;
+                        headerInfo = `<span class="text-base">Slots Remaining: ${levelData.slots || 0}</span>`;
                     }
-                    const hpStatus = ` | HP: ${characterData.currentHp}/${characterData.maxHp}`;
-                    copyToClipboard(clipboardText + hpStatus, 'Dice roll copied!');
-                }
-            };
-            
-            const applySettingsChanges = () => {
-                let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
-
-                if (isJsonMode) {
-                    try {
-                        let newData = JSON.parse(dom.jsonEditor.value);
-
-                        if (!newData.name || !newData.abilities) {
-                            dom.jsonFeedback.textContent = "Error: Invalid JSON structure.";
-                            dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
-                            return;
-                        }
-
-                        if (newData.maxHp !== undefined && newData.currentHp !== undefined) {
-                            if (newData.maxHp < newData.currentHp) {
-                                newData.currentHp = newData.maxHp;
-                                showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
-                            } else if (newData.currentHp < 0) {
-                                newData.currentHp = 0;
-                                showToast("Current HP Auto-adjusted because it cannot be less than 0.");
+                    
+                    spellsHtml += `<div class="mb-4">
+                        <h4 class="font-cinzel text-lg text-amber-200 border-b-2 border-amber-800 pb-1 mb-2 flex justify-between">
+                            <span>${title}</span>
+                            ${headerInfo}
+                        </h4>
+                        ${levelData.spells.map(spell => {
+                            let useButton = '';
+                            if (level >= 1 && level <= 9) {
+                                const hasSlots = (levelData.slots || 0) > 0;
+                                useButton = `<button 
+                                    class="use-ability-btn ml-4 text-sm font-bold py-1 px-3 rounded ${hasSlots ? 'bg-red-800 hover:bg-red-700 text-white' : 'bg-gray-600 text-gray-400 cursor-not-allowed'}"
+                                    data-level="${level}" data-name="${spell.name}" data-action="use-spell" ${!hasSlots ? 'disabled' : ''}>
+                                    ${hasSlots ? 'Use' : 'No Slots'}
+                                </button>`;
+                            } else {
+                                useButton = `<button 
+                                    class="use-ability-btn ml-4 text-sm font-bold py-1 px-3 rounded bg-blue-800 hover:bg-blue-700 text-white"
+                                    data-level="${level}" data-name="${spell.name}" data-action="log-use">
+                                    Log Use
+                                </button>`;
                             }
-                        }
 
-                        characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
-                    } catch (error) {
-                        dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
+                            return `<div class="mb-1 flex justify-between items-center">
+                                <div>
+                                    <strong class="text-amber-100">${spell.name}</strong>
+                                    <p class="text-sm text-gray-300 pl-2">${spell.description}</p>
+                                </div>
+                                ${useButton}
+                            </div>`;
+                        }).join('')}
+                    </div>`;
+                }
+            });
+            dom.spellsList.innerHTML = spellsHtml || '<span class="italic text-gray-400">No spells or features</span>';
+            
+            Object.keys(characterData.coins).forEach(coin => { dom[`main${coin.charAt(0).toUpperCase() + coin.slice(1)}Input`].value = characterData.coins[coin] || 0; });
+            dom.adventureNotes.value = characterData.notes || "";
+        };
+
+        const populateSettingsModal = () => {
+            dom.charNameInput.value = characterData.name; dom.raceInput.value = characterData.race; dom.classInput.value = characterData.class;
+            dom.backgroundInput.value = characterData.background; dom.alignmentInput.value = characterData.alignment; dom.levelInput.value = characterData.level;
+            dom.maxHpInput.value = characterData.maxHp; dom.armorClassInput.value = characterData.armorClass; dom.speedInput.value = characterData.speed;
+            dom.abilityInputsContainer.innerHTML = Object.keys(characterData.abilities).map(key => `<div class="flex items-center justify-between"><label for="${key}-input" class="text-amber-300 text-sm capitalize">${key}</label><input type="number" id="${key}-input" value="${characterData.abilities[key]}" class="w-20 text-center px-2 py-1 rounded-lg bg-gray-700 text-amber-100"></div>`).join('');
+            dom.savingThrowProficienciesContainer.innerHTML = Object.keys(characterData.savingThrows).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key}-prof" ${characterData.proficiencies.savingThrows.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key}-prof" class="text-amber-300 text-sm capitalize">${key}</label></div>`).join('');
+            dom.skillProficienciesContainer.innerHTML = Object.keys(characterData.skills).map(key => `<div class="flex items-center gap-2"><input type="checkbox" id="${key.replace(/\s+/g, '-')}-prof" ${characterData.proficiencies.skills.includes(key) ? 'checked' : ''} class="w-4 h-4 accent-amber-500"><label for="${key.replace(/\s+/g, '-')}-prof" class="text-amber-300 text-sm">${key}</label></div>`).join('');
+            
+            const allSpells = [];
+            const spellsData = characterData.spellsAndSlots || {};
+            for (const level in spellsData) {
+                if (spellsData[level] && spellsData[level].spells) {
+                    spellsData[level].spells.forEach(spell => {
+                        allSpells.push(`${spell.name} | ${level} | ${spell.description}`);
+                    });
+                }
+            }
+            dom.spellsInput.value = allSpells.join('\n');
+            
+            const spellSlotsContainer = document.getElementById('spellSlotsContainer');
+            if (spellSlotsContainer) {
+                let slotsHtml = '';
+                for (let i = 1; i <= 9; i++) {
+                    const slots = spellsData[i] ? (spellsData[i].slots || 0) : 0;
+                    slotsHtml += `
+                        <div class="flex flex-col items-center">
+                            <label for="slot-remaining-${i}" class="text-amber-300 text-sm font-bold">Level ${i} Slots</label>
+                            <input type="number" id="slot-remaining-${i}" value="${slots}" class="w-20 text-center py-1 rounded bg-gray-700 text-amber-100">
+                        </div>
+                    `;
+                }
+                spellSlotsContainer.innerHTML = slotsHtml;
+            }
+
+            dom.autoCopyRollSetting.checked = appSettings.autoCopyRoll;
+            dom.jsonEditor.value = JSON.stringify(characterData, null, 2);
+            dom.jsonFeedback.textContent = '';
+        };
+        
+        const applySettingsChanges = () => {
+            let isJsonMode = !dom.jsonEditorContainer.classList.contains('hidden');
+            if (isJsonMode) {
+                try {
+                    let newData = JSON.parse(dom.jsonEditor.value);
+                    if (!newData.name || !newData.abilities) {
+                        dom.jsonFeedback.textContent = "Error: Invalid JSON structure.";
                         dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
                         return;
                     }
-                } else {
-                    const oldConMod = getAbilityModifier(characterData.abilities.constitution);
-
-                    characterData.name = dom.charNameInput.value || "Nameless";
-                    characterData.race = dom.raceInput.value;
-                    characterData.class = dom.classInput.value;
-                    characterData.background = dom.backgroundInput.value;
-                    characterData.alignment = dom.alignmentInput.value;
-                    characterData.level = parseInt(dom.levelInput.value, 10) || 1;
-                    characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
-                    characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
-
-                    Object.keys(characterData.abilities).forEach(key => {
-                        const input = document.getElementById(`${key}-input`);
-                        if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
-                    });
-
-                    const newConMod = getAbilityModifier(characterData.abilities.constitution);
-                    const hpChange = (newConMod - oldConMod) * characterData.level;
-                    const newMaxHp = (parseInt(dom.maxHpInput.value, 10) || 1) + hpChange;
-
-                    if (characterData.currentHp > newMaxHp) {
-                        characterData.currentHp = newMaxHp;
-                        showToast("Current HP Auto-adjusted because it cannot be more than Max HP.");
-                    } else if (characterData.currentHp < 0) {
-                        characterData.currentHp = 0;
-                        showToast("Current HP Auto-adjusted because it cannot be less than 0.");
-                    }
-
-                    characterData.maxHp = newMaxHp;
-
-                    characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
-                    characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
-                    characterData.spells = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
+                    characterData = { ...defaultCharacterTemplate, ...characterData, ...newData };
+                } catch (error) {
+                    dom.jsonFeedback.textContent = error.message || "Error: Invalid JSON format.";
+                    dom.jsonFeedback.className = "text-center text-sm font-bold mt-2 h-4 text-red-500";
+                    return;
                 }
-
-                characterData = calculateAllModifiers(characterData);
-                saveData('dndCharacterData', characterData);
-
-                appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
-                saveData('dndAppSettings', appSettings);
-
-                updateUI();
-                toggleModal(dom.settingsModal, false);
-            };
-
-            const init = () => {
-                let loadedCharacter = loadData('dndCharacterData');
-                if (loadedCharacter) {
-                    let mergedAbilities = { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities };
-                    let mergedSkills = { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills };
-                    let mergedCoins = { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins };
-                    characterData = { ...defaultCharacterTemplate, ...loadedCharacter };
-                    characterData.abilities = mergedAbilities;
-                    characterData.skills = mergedSkills;
-                    characterData.coins = mergedCoins;
-                } else {
-                    characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+            } else {
+                characterData.name = dom.charNameInput.value || "Nameless";
+                characterData.race = dom.raceInput.value;
+                characterData.class = dom.classInput.value;
+                characterData.background = dom.backgroundInput.value;
+                characterData.alignment = dom.alignmentInput.value;
+                characterData.level = parseInt(dom.levelInput.value, 10) || 1;
+                if (characterData.currentHp > characterData.maxHp) {
+    characterData.currentHp = characterData.maxHp;
+}
+characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
+                characterData.armorClass = parseInt(dom.armorClassInput.value, 10) || 10;
+                characterData.speed = parseInt(dom.speedInput.value, 10) || 30;
+                Object.keys(characterData.abilities).forEach(key => {
+                    const input = document.getElementById(`${key}-input`);
+                    if (input) characterData.abilities[key] = parseInt(input.value, 10) || 10;
+                });
+                characterData.proficiencies.savingThrows = Object.keys(characterData.savingThrows).filter(key => document.getElementById(`${key}-prof`).checked);
+                characterData.proficiencies.skills = Object.keys(characterData.skills).filter(key => document.getElementById(`${key.replace(/\s+/g, '-')}-prof`).checked);
+                
+                const newSpellsAndSlots = {};
+                const spellLines = dom.spellsInput.value.split('\n').filter(line => line.trim() !== '');
+                spellLines.forEach(line => {
+                    const parts = line.split('|').map(p => p.trim());
+                    if (parts.length === 3) {
+                        const [name, level, description] = parts;
+                        if (!newSpellsAndSlots[level]) newSpellsAndSlots[level] = { spells: [] };
+                        newSpellsAndSlots[level].spells.push({ name, description });
+                    }
+                });
+                for (let i = 1; i <= 9; i++) {
+                    const slotInput = document.getElementById(`slot-remaining-${i}`);
+                    if (slotInput) {
+                        const slots = parseInt(slotInput.value, 10) || 0;
+                        if (!newSpellsAndSlots[i]) {
+                           if (slots > 0) newSpellsAndSlots[i] = { spells: [], slots: slots };
+                        } else {
+                            newSpellsAndSlots[i].slots = slots;
+                        }
+                    }
                 }
-                
-                characterData = calculateAllModifiers(characterData);
-                
-                appSettings = loadData('dndAppSettings') || { ...defaultSettings };
-                
-                if (!loadedCharacter) {
-                    toggleModal(dom.onboardingModal, true);
-                } else {
-                    if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
-        characterData.currentHp = characterData.maxHp;
-    }
-    updateUI();
-    toggleModal(dom.onboardingModal, false);
-                }
-            };
-            
-            function setupEventListeners() {
-                dom.diceButtons.forEach(button => button.addEventListener('click', () => handleDiceClick(parseInt(button.dataset.sides, 10))));
-                
-                dom.modifierOptions.addEventListener('click', (e) => {
-                    const button = e.target.closest('button');
-                    if(button) handleModifierSelection(parseInt(button.dataset.modifier, 10), button.dataset.skill);
-                });
-                
-                dom.rollWithoutModifierBtn.addEventListener('click', () => handleModifierSelection(0, 'No Modifier'));
-
-                dom.hpChangeInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (!dom.hpChangeBtn.disabled) {
-                            dom.hpChangeBtn.click();
-                        }
-                    }
-                });
-
-                dom.hpChangeInput.addEventListener('input', () => {
-                    const value = dom.hpChangeInput.value.trim();
-                    const number = parseInt(value, 10);
-                    const btn = dom.hpChangeBtn;
-                    btn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
-                    if (isNaN(number) || value === '' || number === 0) {
-                        btn.textContent = 'Apply'; btn.disabled = true;
-                    } else if (number < 0) {
-                        btn.textContent = 'Damage'; btn.disabled = false;
-                        btn.classList.add('bg-red-800', 'hover:bg-red-700');
-                    } else {
-                        btn.textContent = 'Heal'; btn.disabled = false;
-                        btn.classList.add('bg-green-800', 'hover:bg-green-700');
-                    }
-                });
-
-                dom.hpChangeBtn.addEventListener('click', () => {
-                    const value = parseInt(dom.hpChangeInput.value, 10);
-                    if (isNaN(value)) return;
-
-                    const previousHp = characterData.currentHp;
-                    characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, characterData.currentHp + value));
-
-                    if (previousHp <= 0 && value < 0 && characterData.status === 'stable') {
-                        characterData.status = 'unconscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        saveData('dndCharacterData', characterData);
-                        showToast('Damage saat stabil! Kamu sekarat lagi.');
-                        showDeathSaveModal();
-                    }
-                    else if (previousHp <= 0 && value < 0 && (characterData.status === 'unconscious' || characterData.status !== 'dead')) {
-                        characterData.deathSaves.failures++;
-                        showToast('Damage saat pingsan! Satu kegagalan death save ditambahkan.');
-                        
-                        if (characterData.deathSaves.failures >= 3) {
-                            characterData.status = 'dead';
-                            dom.deathSaveTitle.textContent = "DEAD";
-                            dom.deathSaveStatus.textContent = "Petualanganmu telah berakhir.";
-                            dom.makeDeathSaveBtn.classList.add('hidden');
-                            dom.restartSameCharacterBtn.classList.remove('hidden');
-                            dom.createNewCharacterBtn.classList.remove('hidden');
-                        }
-                        updateDeathSaveDisplay();
-                    }
-                    else if (previousHp <= 0 && characterData.currentHp > 0) {
-                        characterData.status = 'conscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        toggleModal(dom.deathSaveModal, false);
-                    }
-                    else if (previousHp > 0 && characterData.currentHp <= 0) {
-                        characterData.status = 'unconscious';
-                        characterData.deathSaves = { successes: 0, failures: 0 };
-                        saveData('dndCharacterData', characterData);
-                        showDeathSaveModal();
-                    }
-
-                    saveData('dndCharacterData', characterData);
-                    updateUI();
-                    
-                    dom.hpChangeInput.value = '';
-                    dom.hpChangeBtn.textContent = 'Apply';
-                    dom.hpChangeBtn.disabled = true;
-                    dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
-                });
-
-                dom.makeDeathSaveBtn.addEventListener('click', () => {
-                    const roll = Math.floor(Math.random() * 20) + 1;
-                    dom.deathSaveResult.textContent = roll;
-                    let clipboardText = '';
-                    let shouldCopyToClipboard = false;
-                    
-                    if (roll === 20) {
-                        characterData.currentHp = 1;
-                        characterData.status = 'conscious';
-                        dom.deathSaveTitle.textContent = "REVIVED!";
-                        dom.deathSaveStatus.textContent = "Critical success! You regain consciousness with 1 HP.";
-                        dom.makeDeathSaveBtn.classList.add('hidden');
-                        dom.closeDeathSaveModalBtn.classList.remove('hidden');
-                        clipboardText = `Death Save sequence ended. Final roll was a critical success (20). Character revived with 1 HP.`;
-                        shouldCopyToClipboard = true;
-                    } else if (roll >= 10) {
-                        characterData.deathSaves.successes++;
-                        dom.deathSaveStatus.textContent = "Successful roll!";
-                        if (characterData.deathSaves.successes >= 3) {
-                            characterData.status = 'stable';
-                            dom.deathSaveTitle.textContent = "STABLE";
-                            dom.deathSaveStatus.textContent = "You are stable, but still unconscious.";
-                            dom.makeDeathSaveBtn.classList.add('hidden');
-                            dom.closeDeathSaveModalBtn.classList.remove('hidden');
-                            clipboardText = `Death Save sequence ended. Final roll was ${roll} (Success). Character is now stable with ${characterData.deathSaves.successes} successes and ${characterData.deathSaves.failures} failures.`;
-                            shouldCopyToClipboard = true;
-                        }
-                    } else {
-                        const isCritFail = roll === 1;
-                        characterData.deathSaves.failures += (isCritFail ? 2 : 1);
-                        dom.deathSaveStatus.textContent = (isCritFail) ? "Critical failure! (2 failures)" : "Failed roll.";
-                        
-                        if (characterData.deathSaves.failures >= 3) {
-                            characterData.status = 'dead';
-                            dom.deathSaveTitle.textContent = "DEAD";
-                            dom.deathSaveStatus.textContent = "Your adventure has come to an end.";
-                            dom.makeDeathSaveBtn.classList.add('hidden');
-                            dom.restartSameCharacterBtn.classList.remove('hidden');
-                            dom.createNewCharacterBtn.classList.remove('hidden');
-                             clipboardText = `Death Save sequence ended. Final roll was ${roll} (${isCritFail ? 'Critical Failure' : 'Failure'}). Character died with ${characterData.deathSaves.successes} successes and ${characterData.deathSaves.failures} failures.`;
-                             shouldCopyToClipboard = true;
-                        }
-                    }
-
-                    if(shouldCopyToClipboard && appSettings.autoCopyRoll) {
-                        copyToClipboard(clipboardText, 'Death save result copied!');
-                    }
-
-                    updateDeathSaveDisplay();
-                    saveData('dndCharacterData', characterData);
-                    updateUI();
-                });
-                
-                dom.closeDeathSaveModalBtn.addEventListener('click', () => toggleModal(dom.deathSaveModal, false));
-                
-                dom.adventureNotes.addEventListener('blur', () => {
-                    if (characterData.notes !== dom.adventureNotes.value) {
-                        characterData.notes = dom.adventureNotes.value;
-                        saveData('dndCharacterData', characterData);
-                        showToast('Notes saved!');
-                    }
-                });
-                
-                const resetCharacter = () => {
-                    localStorage.removeItem('dndCharacterData');
-                    localStorage.removeItem('dndAppSettings');
-                    toggleModal(dom.resetModal, false);
-                    toggleModal(dom.onboardingModal, true);
+                characterData.spellsAndSlots = newSpellsAndSlots;
+            }
+            characterData = calculateAllModifiers(characterData);
+            saveData('dndCharacterData', characterData);
+            appSettings.autoCopyRoll = dom.autoCopyRollSetting.checked;
+            saveData('dndAppSettings', appSettings);
+            updateUI();
+            toggleModal(dom.settingsModal, false);
+        };
+        
+        const init = () => {
+            let loadedCharacter = loadData('dndCharacterData');
+            if (loadedCharacter) {
+                characterData = {
+                    ...JSON.parse(JSON.stringify(defaultCharacterTemplate)),
+                    ...loadedCharacter,
+                    abilities: { ...defaultCharacterTemplate.abilities, ...loadedCharacter.abilities },
+                    skills: { ...defaultCharacterTemplate.skills, ...loadedCharacter.skills },
+                    coins: { ...defaultCharacterTemplate.coins, ...loadedCharacter.coins },
+                    spellsAndSlots: { ...defaultCharacterTemplate.spellsAndSlots, ...loadedCharacter.spellsAndSlots }
                 };
-
-                const restartSameCharacter = () => {
+                if (characterData.currentHp === undefined || characterData.currentHp > characterData.maxHp) {
                     characterData.currentHp = characterData.maxHp;
+                }
+            } else {
+                characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+                characterData.currentHp = characterData.maxHp;
+            }
+            characterData = calculateAllModifiers(characterData);
+            appSettings = loadData('dndAppSettings') || { ...defaultSettings };
+            if (!loadedCharacter) {
+                toggleModal(dom.onboardingModal, true);
+            } else {
+                updateUI();
+                toggleModal(dom.onboardingModal, false);
+            }
+        };
+        
+        const toggleModal = (modalElement, show) => {
+            if (show) {
+                allModals.forEach(modal => {
+                    if (modal !== modalElement) modal.classList.add('hidden');
+                });
+            }
+            if (modalElement) {
+                modalElement.classList.toggle('hidden', !show);
+                dom.body.classList.toggle('modal-open', show);
+            }
+        };
+
+        const toggleJsonView = (showJson) => {
+            const settingsContent = dom.settingsModalContent.querySelector('.space-y-4');
+            Array.from(settingsContent.children).forEach(child => {
+                if (!child.id.includes('jsonEditorContainer') && !child.classList.contains('text-center')) {
+                    child.classList.toggle('hidden', showJson);
+                }
+            });
+            dom.jsonEditorContainer.classList.toggle('hidden', !showJson);
+            dom.toggleJsonViewBtn.textContent = showJson ? 'Edit with Form' : 'Edit with JSON';
+        };
+
+        const showToast = (message) => {
+            dom.toast.textContent = message;
+            dom.toast.classList.add('show');
+            setTimeout(() => dom.toast.classList.remove('show'), 2000);
+        };
+
+        const copyToClipboard = (text, message) => navigator.clipboard.writeText(text).then(() => showToast(message)).catch(err => console.error(err));
+
+        const animateCount = (element, start, end, duration, onComplete) => {
+            if (start === end) {
+                if (onComplete) onComplete();
+                return;
+            }
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.max(10, Math.abs(Math.floor(duration / range)));
+            let current = start;
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = current;
+                if (current == end) {
+                    clearInterval(timer);
+                    if (onComplete) onComplete();
+                }
+            }, stepTime);
+        };
+
+        const animateAndShowResult = (sides, finalRoll, modifier, total, skillName) => {
+            if (isAnimating) return;
+            isAnimating = true;
+            const scrambleDuration = 1500, pauseAfterScramble = 300, modifierVisibleDuration = 800, countDuration = 350;
+            dom.rollResultDisplay.innerHTML = `
+                <span id="dice-type-text" class="text-xl text-amber-300 font-cinzel">Rolling d${sides}...</span>
+                <div id="dice-result-wrapper" class="relative">
+                    <span id="animated-dice-number" class="block text-6xl text-amber-100 font-bold">--</span>
+                    <span id="modifier-flyout" class="absolute text-2xl font-bold ml-2"></span>
+                </div>
+                <span id="roll-details-text" class="text-lg text-amber-400 mt-1">&nbsp;</span>`;
+            const animatedNumberEl = document.getElementById('animated-dice-number'), modifierFlyoutEl = document.getElementById('modifier-flyout'),
+                diceTypeTextEl = document.getElementById('dice-type-text'), rollDetailsTextEl = document.getElementById('roll-details-text');
+            const scrambleInterval = setInterval(() => { animatedNumberEl.textContent = Math.floor(Math.random() * sides) + 1; }, 40);
+            setTimeout(() => {
+                clearInterval(scrambleInterval);
+                animatedNumberEl.textContent = finalRoll;
+                setTimeout(() => {
+                    diceTypeTextEl.textContent = `${skillName}`;
+                    if (sides === 100 || modifier === 0) {
+                        rollDetailsTextEl.innerHTML = `Total: <span class="font-bold">${total}</span>`;
+                        rollDetailsTextEl.classList.add('show');
+                        isAnimating = false;
+                        return;
+                    }
+                    modifierFlyoutEl.textContent = formatModifier(modifier);
+                    modifierFlyoutEl.classList.add(modifier >= 0 ? 'text-green-400' : 'text-red-400', 'show');
+                    setTimeout(() => {
+                        modifierFlyoutEl.classList.remove('show');
+                        animateCount(animatedNumberEl, finalRoll, total, countDuration, () => {
+                            rollDetailsTextEl.innerHTML = `Modifier: ${formatModifier(modifier)} | Total: <span class="font-bold">${total}</span>`;
+                            rollDetailsTextEl.classList.add('show');
+                            isAnimating = false;
+                        });
+                    }, modifierVisibleDuration);
+                }, pauseAfterScramble);
+            }, scrambleDuration);
+        };
+
+        const updateDeathSaveDisplay = () => {
+            const { successes, failures } = characterData.deathSaves;
+            const successPips = Array(3).fill(0).map((_, i) => `<span class="h-4 w-4 rounded-full ${i < successes ? 'bg-green-500' : 'border-2 border-gray-500'}"></span>`).join('');
+            const failurePips = Array(3).fill(0).map((_, i) => `<span class="h-4 w-4 rounded-full ${i < failures ? 'bg-red-500' : 'border-2 border-gray-500'}"></span>`).join('');
+            dom.deathSaveSuccesses.innerHTML = successPips;
+            dom.deathSaveFailures.innerHTML = failurePips;
+        };
+
+        const showDeathSaveModal = () => {
+            dom.deathSaveResult.textContent = '';
+            dom.deathSaveTitle.textContent = "DYING";
+            dom.deathSaveStatus.textContent = "You are unconscious and in peril.";
+            dom.makeDeathSaveBtn.classList.remove('hidden');
+            dom.closeDeathSaveModalBtn.classList.add('hidden');
+            dom.restartSameCharacterBtn.classList.add('hidden');
+            dom.createNewCharacterBtn.classList.add('hidden');
+            updateDeathSaveDisplay();
+            toggleModal(dom.deathSaveModal, true);
+        };
+        
+        const handleDiceClick = (sides) => {
+            if (isAnimating) return;
+            if (sides !== 20) {
+                const roll = Math.floor(Math.random() * sides) + 1;
+                animateAndShowResult(sides, roll, 0, roll, `d${sides}`);
+                if (appSettings.autoCopyRoll) {
+                    copyToClipboard(`d${sides} Roll: ${roll} | HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Dice roll copied!');
+                }
+            } else {
+                currentDiceSides = 20;
+                dom.modifierOptions.innerHTML = `
+                    <div>
+                        <h4 class="font-cinzel text-lg text-amber-200 mb-2">Saving Throws</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.savingThrows).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key} Save" data-modifier="${mod}">${key.substring(0,3)} ${formatModifier(mod)}</button>`).join('')}</div>
+                    </div>
+                    <div>
+                        <h4 class="font-cinzel text-lg text-amber-200 mt-4 mb-2">Skills</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${Object.entries(characterData.skills).map(([key, mod]) => `<button class="bg-gray-700 hover:bg-gray-600 text-amber-200 font-bold py-2 px-2 rounded-lg transition-colors text-sm" data-skill="${key}" data-modifier="${mod}">${key} ${formatModifier(mod)}</button>`).join('')}</div>
+                    </div>`;
+                toggleModal(dom.modifierModal, true);
+            }
+        };
+
+        const handleModifierSelection = (modifier = 0, skillName = 'Manual') => {
+            if (isAnimating) return;
+            toggleModal(dom.modifierModal, false);
+            const roll = Math.floor(Math.random() * currentDiceSides) + 1;
+            const total = roll + modifier;
+            animateAndShowResult(currentDiceSides, roll, modifier, total, skillName);
+            if (appSettings.autoCopyRoll) {
+                let clipboardText = (skillName === 'No Modifier' || skillName === 'Manual')
+                    ? `d${currentDiceSides} Roll: ${total}`
+                    : `d${currentDiceSides} (${skillName}) Roll: ${total} (Dice: ${roll}, Modifier: ${modifier})`;
+                copyToClipboard(clipboardText + ` | HP: ${characterData.currentHp}/${characterData.maxHp}`, 'Dice roll copied!');
+            }
+        };
+
+        function setupEventListeners() {
+            dom.diceButtons.forEach(button => button.addEventListener('click', () => handleDiceClick(parseInt(button.dataset.sides, 10))));
+            dom.modifierOptions.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button) handleModifierSelection(parseInt(button.dataset.modifier, 10), button.dataset.skill);
+            });
+            dom.rollWithoutModifierBtn.addEventListener('click', () => handleModifierSelection(0, 'No Modifier'));
+            dom.hpChangeInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!dom.hpChangeBtn.disabled) dom.hpChangeBtn.click();
+                }
+            });
+            dom.hpChangeInput.addEventListener('input', () => {
+                const value = dom.hpChangeInput.value.trim();
+                const number = parseInt(value, 10);
+                const btn = dom.hpChangeBtn;
+                btn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+                if (isNaN(number) || value === '' || number === 0) {
+                    btn.textContent = 'Apply'; btn.disabled = true;
+                } else if (number < 0) {
+                    btn.textContent = 'Damage'; btn.disabled = false;
+                    btn.classList.add('bg-red-800', 'hover:bg-red-700');
+                } else {
+                    btn.textContent = 'Heal'; btn.disabled = false;
+                    btn.classList.add('bg-green-800', 'hover:bg-green-700');
+                }
+            });
+            dom.hpChangeBtn.addEventListener('click', () => {
+                const value = parseInt(dom.hpChangeInput.value, 10);
+                if (isNaN(value)) return;
+                const previousHp = characterData.currentHp;
+                characterData.currentHp = Math.max(0, Math.min(characterData.maxHp, characterData.currentHp + value));
+                if (previousHp > 0 && characterData.currentHp <= 0) {
+                characterData.status = 'unconscious';
+                characterData.deathSaves = { successes: 0, failures: 0, rolls: [] };
+                showDeathSaveModal();
+                } else if (characterData.currentHp > 0 && characterData.status !== 'conscious') {
                     characterData.status = 'conscious';
                     characterData.deathSaves = { successes: 0, failures: 0 };
-                    saveData('dndCharacterData', characterData);
-                    updateUI();
                     toggleModal(dom.deathSaveModal, false);
-                };
-                
-                const setupCurrencyInputHandler = (inputEl, coinKey) => {
-                    const saveChange = () => {
-                        const value = parseInt(inputEl.value, 10);
-                        const newAmount = isNaN(value) ? 0 : Math.max(0, value);
-                        if (characterData.coins[coinKey] !== newAmount) {
-                            characterData.coins[coinKey] = newAmount;
-                            saveData('dndCharacterData', characterData);
-                            showToast('Currency updated!');
-                        }
-                        inputEl.value = newAmount; 
-                    };
-
-                    inputEl.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            inputEl.blur();
-                        }
-                    });
-                    inputEl.addEventListener('blur', saveChange);
-                };
-
-                setupCurrencyInputHandler(dom.mainPpInput, 'pp');
-                setupCurrencyInputHandler(dom.mainGpInput, 'gp');
-                setupCurrencyInputHandler(dom.mainEpInput, 'ep');
-                setupCurrencyInputHandler(dom.mainSpInput, 'sp');
-                setupCurrencyInputHandler(dom.mainCpInput, 'cp');
-
-                dom.createCharacterBtn.addEventListener('click', () => {
-                    characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
-                    const conMod = getAbilityModifier(characterData.abilities.constitution);
-                    characterData.maxHp = characterData.hitDie + conMod;
-                    characterData.currentHp = characterData.maxHp;
-                    characterData = calculateAllModifiers(characterData);
-                    appSettings = JSON.parse(JSON.stringify(defaultSettings));
-                    toggleModal(dom.onboardingModal, false);
-                    populateSettingsModal();
-                    toggleJsonView(false);
-                    toggleModal(dom.settingsModal, true);
-                    dom.cancelSettingsBtn.classList.add('hidden');
-                });
-
-                dom.openSettingsBtn.addEventListener('click', () => {
-                    populateSettingsModal();
-                    toggleJsonView(false);
-                    toggleModal(dom.settingsModal, true);
-                    dom.cancelSettingsBtn.classList.remove('hidden');
-                });
-                
-                dom.settingsModalContent.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
-                        e.preventDefault();
-                        applySettingsChanges();
-                    }
-                });
-
-                dom.settingsModalContent.addEventListener('focusin', (e) => {
-                    if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
-                        e.target.dataset.originalValue = e.target.value;
-                        e.target.select();
-                    }
-                });
-
-                dom.settingsModalContent.addEventListener('focusout', (e) => {
-                     if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
-                         if (e.target.value === '') e.target.value = e.target.dataset.originalValue;
-                    }
-                });
-                
-                dom.toggleJsonViewBtn.addEventListener('click', () => toggleJsonView(dom.jsonEditorContainer.classList.contains('hidden')));
-                
-                dom.copyJsonBtn.addEventListener('click', () => {
-                    copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!');
-                });
-                
-                dom.saveSettingsBtn.addEventListener('click', applySettingsChanges);
-                dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
-                dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
-                dom.confirmResetBtn.addEventListener('click', resetCharacter);
-                dom.restartSameCharacterBtn.addEventListener('click', restartSameCharacter);
-                dom.createNewCharacterBtn.addEventListener('click', resetCharacter);
-                dom.cancelResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, false));
-                
-                allModals.forEach(modal => modal.addEventListener('click', (e) => {
-                    if (e.target === modal) toggleModal(modal, false);
-                }));
-            }
-
-            // --- KICKSTART APP ---
-            init();
-            setupEventListeners();
-            
-             if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js') // Pastikan path ini benar
-                .then(registration => {
-                    console.log('Service Worker berhasil didaftarkan: ', registration);
-                })
-                .catch(error => {
-                    console.log('Pendaftaran Service Worker gagal: ', error);
-                });
-        });
+                }
+                saveData('dndCharacterData', characterData);
+                updateUI();
+                dom.hpChangeInput.value = '';
+                dom.hpChangeBtn.textContent = 'Apply';
+                dom.hpChangeBtn.disabled = true;
+                dom.hpChangeBtn.classList.remove('bg-red-800', 'hover:bg-red-700', 'bg-green-800', 'hover:bg-green-700');
+            });
+           dom.makeDeathSaveBtn.addEventListener('click', () => {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    if (characterData.deathSaves && Array.isArray(characterData.deathSaves.rolls)) {
+        characterData.deathSaves.rolls.push(roll);
+    } else {
+        // Fallback untuk data lama yang mungkin belum punya array rolls
+        characterData.deathSaves.rolls = [roll];
     }
-        })
-    </script>
+    dom.deathSaveResult.textContent = roll;
+
+    let isFinished = false;
+    let finalOutcome = "";
+
+    if (roll === 20) {
+        characterData.currentHp = 1;
+        characterData.status = 'conscious';
+        dom.deathSaveTitle.textContent = "REVIVED!";
+        dom.deathSaveStatus.textContent = "Critical success! You regain 1 HP.";
+        dom.makeDeathSaveBtn.classList.add('hidden');
+        dom.closeDeathSaveModalBtn.classList.remove('hidden');
+        isFinished = true;
+        finalOutcome = "Revived (Critical Success)";
+    } else if (roll >= 10) {
+        characterData.deathSaves.successes++;
+        if (characterData.deathSaves.successes >= 3) {
+            characterData.status = 'stable';
+            dom.deathSaveTitle.textContent = "STABLE";
+            dom.deathSaveStatus.textContent = "You are stable, but unconscious.";
+            dom.makeDeathSaveBtn.classList.add('hidden');
+            dom.closeDeathSaveModalBtn.classList.remove('hidden');
+            isFinished = true;
+            finalOutcome = "Stable";
+        }
+    } else {
+        characterData.deathSaves.failures += (roll === 1 ? 2 : 1);
+        if (characterData.deathSaves.failures >= 3) {
+            characterData.status = 'dead';
+            dom.deathSaveTitle.textContent = "DEAD";
+            dom.deathSaveStatus.textContent = "Your adventure has ended.";
+            dom.makeDeathSaveBtn.classList.add('hidden');
+            dom.restartSameCharacterBtn.classList.remove('hidden');
+            dom.createNewCharacterBtn.classList.remove('hidden');
+            isFinished = true;
+            finalOutcome = "Dead";
+        }
+    }
+
+    // Hanya buat dan salin rangkuman jika proses death save sudah selesai
+    if (isFinished && appSettings.autoCopyRoll) {
+        const rollsHistory = characterData.deathSaves.rolls.join(', ');
+        const summary = `${characterData.name} - Death Saving Throw Summary
+Rolls: ${rollsHistory}
+Final Outcome: ${finalOutcome}`;
+        
+        copyToClipboard(summary, 'Death save summary copied!');
+    }
+
+    updateDeathSaveDisplay();
+    saveData('dndCharacterData', characterData);
+    updateUI();
+});
+            dom.closeDeathSaveModalBtn.addEventListener('click', () => toggleModal(dom.deathSaveModal, false));
+            dom.adventureNotes.addEventListener('blur', () => {
+                if (characterData.notes !== dom.adventureNotes.value) {
+                    characterData.notes = dom.adventureNotes.value;
+                    saveData('dndCharacterData', characterData);
+                    showToast('Notes saved!');
+                }
+            });
+            const resetCharacter = () => {
+                localStorage.removeItem('dndCharacterData');
+                localStorage.removeItem('dndAppSettings');
+                toggleModal(dom.resetModal, false);
+                toggleModal(dom.deathSaveModal, false);
+                init();
+            };
+            const restartSameCharacter = () => {
+                characterData.currentHp = characterData.maxHp;
+                characterData.status = 'conscious';
+                characterData.deathSaves = { successes: 0, failures: 0 };
+                saveData('dndCharacterData', characterData);
+                updateUI();
+                toggleModal(dom.deathSaveModal, false);
+            };
+            const setupCurrencyInputHandler = (inputEl, coinKey) => {
+                const saveChange = () => {
+                    const value = parseInt(inputEl.value, 10);
+                    const newAmount = isNaN(value) ? 0 : Math.max(0, value);
+                    if (characterData.coins[coinKey] !== newAmount) {
+                        characterData.coins[coinKey] = newAmount;
+                        saveData('dndCharacterData', characterData);
+                        showToast('Currency updated!');
+                    }
+                    inputEl.value = newAmount; 
+                };
+                inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); inputEl.blur(); } });
+                inputEl.addEventListener('blur', saveChange);
+            };
+            setupCurrencyInputHandler(dom.mainPpInput, 'pp');
+            setupCurrencyInputHandler(dom.mainGpInput, 'gp');
+            setupCurrencyInputHandler(dom.mainEpInput, 'ep');
+            setupCurrencyInputHandler(dom.mainSpInput, 'sp');
+            setupCurrencyInputHandler(dom.mainCpInput, 'cp');
+            dom.createCharacterBtn.addEventListener('click', () => {
+                characterData = JSON.parse(JSON.stringify(defaultCharacterTemplate));
+                characterData.currentHp = characterData.maxHp;
+                characterData = calculateAllModifiers(characterData);
+                appSettings = JSON.parse(JSON.stringify(defaultSettings));
+                toggleModal(dom.onboardingModal, false);
+                populateSettingsModal();
+                toggleJsonView(false);
+                toggleModal(dom.settingsModal, true);
+                dom.cancelSettingsBtn.classList.add('hidden');
+            });
+            dom.openSettingsBtn.addEventListener('click', () => {
+                populateSettingsModal();
+                toggleJsonView(false);
+                toggleModal(dom.settingsModal, true);
+                dom.cancelSettingsBtn.classList.remove('hidden');
+            });
+            dom.toggleJsonViewBtn.addEventListener('click', () => toggleJsonView(dom.jsonEditorContainer.classList.contains('hidden')));
+            dom.copyJsonBtn.addEventListener('click', () => copyToClipboard(dom.jsonEditor.value, 'Character JSON copied!'));
+            dom.saveSettingsBtn.addEventListener('click', applySettingsChanges);
+            dom.cancelSettingsBtn.addEventListener('click', () => toggleModal(dom.settingsModal, false));
+            dom.openResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, true));
+            dom.confirmResetBtn.addEventListener('click', resetCharacter);
+            dom.restartSameCharacterBtn.addEventListener('click', restartSameCharacter);
+            dom.createNewCharacterBtn.addEventListener('click', resetCharacter);
+            dom.cancelResetBtn.addEventListener('click', () => toggleModal(dom.resetModal, false));
+            allModals.forEach(modal => modal.addEventListener('click', (e) => { if (e.target === modal) toggleModal(modal, false); }));
+
+            dom.spellsList.addEventListener('click', (e) => {
+                const button = e.target.closest('.use-ability-btn');
+                if (!button) return;
+
+                const { level, name, action } = button.dataset;
+
+                if (action === 'use-spell') {
+                    const levelData = characterData.spellsAndSlots[level];
+                    if (levelData && (levelData.slots || 0) > 0) {
+                        levelData.slots--;
+                        saveData('dndCharacterData', characterData);
+                        updateUI();
+                        showToast(`Used '${name}'! Slots level ${level} remaining: ${levelData.slots}`);
+                    }
+                } else if (action === 'log-use') {
+                    showToast(`Used '${name}'!`);
+                }
+            });
+        }
+
+        // --- KICKSTART APP ---
+        init();
+        setupEventListeners();
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(r => console.log('Service Worker registered.'))
+                    .catch(e => console.log('Service Worker registration failed.', e));
+            });
+        }
+    });
+</script>
 </body>
 </html>
