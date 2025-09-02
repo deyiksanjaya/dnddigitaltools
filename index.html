@@ -524,45 +524,84 @@
     coins: { pp: 0, gp: 10, ep: 0, sp: 0, cp: 0 } // Set starting coins based on the generated background.
 };
 
-const aiPromptTemplate = `const defaultCharacterTemplate = {
-    name: "New Rogue", // Generate a fitting character name.
-    level: 1, // Set the character's starting level (e.g., 1 or 3).
-    race: "Lightfoot Halfling", // Generate a character race.
-    class: "Rogue", // Generate a character class.
-    background: "Urchin", // Generate a background that fits the class/race.
-    alignment: "Chaotic Neutral", // Generate a suitable alignment based on the character concept.
-    maxHp: 8, // Calculate max HP based on class, level, and Constitution modifier.
-    armorClass: 13, // Calculate Armor Class based on starting gear and Dexterity modifier.
-    speed: 25, // Set movement speed based on the generated race.
-    hitDie: 8, // Set the hit die type based on the generated class (e.g., 8 for d8, 10 for d10).
-    status: 'conscious', // Set to 'conscious' for a new character.
-    deathSaves: { successes: 0, failures: 0, rolls: [] }, // Leave at default values; this is managed by the app.
-    abilities: {
-        strength: 8, // Generate base ability scores using Standard Array (15,14,13,12,10,8) and apply racial bonuses.
-        dexterity: 15,
-        constitution: 10,
-        intelligence: 12,
-        wisdom: 14,
-        charisma: 13
-    },
-    // DO NOT FILL. This object is calculated automatically by the application.
-    savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 },
-    proficiencies: {
-        savingThrows: ["dexterity", "intelligence"], // List the two saving throw proficiencies from the generated class as an array of strings.
-        skills: ["Stealth", "Sleight of Hand", "Acrobatics", "Investigation"] // List all skill proficiencies from race, class, and background as an array of strings.
-    },
-    notes: "", // This field is for user notes during gameplay. Leave it empty.
-    // DO NOT FILL. This object is calculated automatically by the application.
-    skills: {
-        "Acrobatics": 0, "Animal Handling": 0, "Arcana": 0, "Athletics": 0, "Deception": 0,
-        "History": 0, "Insight": 0, "Intimidation": 0, "Investigation": 0, "Medicine": 0,
-        "Nature": 0, "Perception": 0, "Performance": 0, "Persuasion": 0, "Religion": 0,
-        "Sleight of Hand": 0, "Stealth": 0, "Survival": 0
-    },
-    // Populate with spells and features based on class and level. Use an empty object {} if none.
-    spellsAndSlots: {}, 
-    coins: { pp: 0, gp: 10, ep: 0, sp: 0, cp: 0 } // Set starting coins based on the generated background.
-};`;
+const aiPromptTemplate = `Generate a DnD character according to template bellow. (insert your character details here)
+{
+  "name": "Archeanor", // Generate a fitting character name.
+  "level": 1, // Set the character's level.
+  "race": "Lightfoot Halfling", // Generate a character race.
+  "class": "Rogue", // Generate a character class.
+  "background": "Criminal", // Generate a background that fits the class/race.
+  "alignment": "Chaotic Neutral", // Generate a suitable alignment based on the character concept.
+  "maxHp": 8, // Calculate max HP based on class, level, and Constitution modifier.
+  "armorClass": 13, // Calculate Armor Class based on armor, shield, and Dexterity modifier.
+  "speed": 25, // Set movement speed based on race.
+  "hitDie": 8, // Set the hit die type based on class (e.g., 8 for d8).
+  "status": "conscious", // Set to 'conscious' for a new character.
+  "deathSaves": { // Leave at default values.
+    "successes": 0,
+    "failures": 0,
+    "rolls": []
+  },
+  "abilities": { // Generate base ability scores and apply racial bonuses.
+    "strength": 8,
+    "dexterity": 17,
+    "constitution": 10,
+    "intelligence": 12,
+    "wisdom": 14,
+    "charisma": 14
+  },
+  "savingThrows": { // Calculate and fill in the final saving throw modifiers (Ability Mod + Proficiency if proficient).
+    "strength": -1,
+    "dexterity": 5,
+    "constitution": 0,
+    "intelligence": 3,
+    "wisdom": 2,
+    "charisma": 2
+  },
+  "proficiencies": {
+    "savingThrows": [ // List the saving throw proficiencies from the class.
+      "dexterity",
+      "intelligence"
+    ],
+    "skills": [ // List all skill proficiencies from race, class, and background.
+      "Deception",
+      "Persuasion",
+      "Sleight of Hand",
+      "Stealth"
+    ]
+  },
+  "notes": "", // This field is for user notes during gameplay. Leave it empty.
+  "skills": { // Calculate and fill in the final skill modifiers (Ability Mod + Proficiency if proficient).
+    "Acrobatics": 3,
+    "Animal Handling": 2,
+    "Arcana": 1,
+    "Athletics": -1,
+    "Deception": 4,
+    "History": 1,
+    "Insight": 2,
+    "Intimidation": 2,
+    "Investigation": 1,
+    "Medicine": 2,
+    "Nature": 1,
+    "Perception": 2,
+    "Performance": 2,
+    "Persuasion": 4,
+    "Religion": 1,
+    "Sleight of Hand": 5,
+    "Stealth": 5,
+    "Survival": 2
+  },
+  "spellsAndSlots": {}, // Populate with spells and features. Use an empty object {} if none.
+  "coins": { // Set starting coins based on background.
+    "pp": 0,
+    "gp": 15,
+    "ep": 0,
+    "sp": 0,
+    "cp": 0
+  },
+  "currentHp": 8, // Set current HP. For a new character, this is the same as maxHp.
+  "proficiencyBonus": 2 // Calculate and set the proficiency bonus based on the character's level.
+    }`;
         const defaultSettings = { autoCopyRoll: true };
 
         // --- DOM ELEMENT REFERENCES ---
